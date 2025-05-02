@@ -1,183 +1,91 @@
 
+public abstract class Personne {
 
-/**
- * Class Personne
- */
-abstract public class Personne {
+    protected int numCompte;
+    protected String nom;
+    protected String prenom;
+    protected String identifiant;
+    protected String adresse;
+    protected int tel;
+    protected String email;
+    protected String mdp;
 
-  //
-  // Fields
-  //
+    public Personne(int numCompte, String nom, String prenom, String identifiant, String adresse, int tel, String email, String mdp) {
+        this.numCompte = numCompte;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.identifiant = identifiant;
+        this.adresse = adresse;
+        this.tel = tel;
+        this.email = email;
+        this.mdp = mdp;
+    }
 
-  protected int numCompte;
-  protected String nom;
-  protected String prenom;
-  protected String Identifiant;
-  protected String adresse;
-  protected int tel;
-  protected String email;
-  protected String mdp;
-  
-  //
-  // Constructors
-  //
-  public Personne () { };
-  
-  //
-  // Methods
-  //
+    public int getNumCompte() {
+        return this.numCompte;
+    }
 
+    public void setNumCompte(int numCompte) {
+        this.numCompte = numCompte;
+    }
 
-  //
-  // Accessor methods
-  //
+    public String getNom() {
+        return this.nom;
+    }
 
-  /**
-   * Set the value of numCompte
-   * @param newVar the new value of numCompte
-   */
-  public void setNumCompte (int newVar) {
-    numCompte = newVar;
-  }
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
 
-  /**
-   * Get the value of numCompte
-   * @return the value of numCompte
-   */
-  public int getNumCompte () {
-    return numCompte;
-  }
+    public String getPrenom() {
+        return this.prenom;
+    }
 
-  /**
-   * Set the value of nom
-   * @param newVar the new value of nom
-   */
-  public void setNom (String newVar) {
-    nom = newVar;
-  }
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
 
-  /**
-   * Get the value of nom
-   * @return the value of nom
-   */
-  public String getNom () {
-    return nom;
-  }
+    public String getIdentifiant() {
+        return this.identifiant;
+    }
 
-  /**
-   * Set the value of prenom
-   * @param newVar the new value of prenom
-   */
-  public void setPrenom (String newVar) {
-    prenom = newVar;
-  }
+    public void setIdentifiant(String identifiant) {
+        this.identifiant = identifiant;
+    }
 
-  /**
-   * Get the value of prenom
-   * @return the value of prenom
-   */
-  public String getPrenom () {
-    return prenom;
-  }
+    public String getAdresse() {
+        return this.adresse;
+    }
 
-  /**
-   * Set the value of Identifiant
-   * @param newVar the new value of Identifiant
-   */
-  public void setIdentifiant (String newVar) {
-    Identifiant = newVar;
-  }
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
 
-  /**
-   * Get the value of Identifiant
-   * @return the value of Identifiant
-   */
-  public String getIdentifiant () {
-    return Identifiant;
-  }
+    public int getTel() {
+        return this.tel;
+    }
 
-  /**
-   * Set the value of adresse
-   * @param newVar the new value of adresse
-   */
-  public void setAdresse (String newVar) {
-    adresse = newVar;
-  }
+    public void setTel(int tel) {
+        this.tel = tel;
+    }
 
-  /**
-   * Get the value of adresse
-   * @return the value of adresse
-   */
-  public String getAdresse () {
-    return adresse;
-  }
+    public String getEmail() {
+        return this.email;
+    }
 
-  /**
-   * Set the value of tel
-   * @param newVar the new value of tel
-   */
-  public void setTel (int newVar) {
-    tel = newVar;
-  }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-  /**
-   * Get the value of tel
-   * @return the value of tel
-   */
-  public int getTel () {
-    return tel;
-  }
+    public String getMdp() {
+        return this.mdp;
+    }
 
-  /**
-   * Set the value of email
-   * @param newVar the new value of email
-   */
-  public void setEmail (String newVar) {
-    email = newVar;
-  }
+    public void setMdp(String mdp) {
+        this.mdp = mdp;
+    }
 
-  /**
-   * Get the value of email
-   * @return the value of email
-   */
-  public String getEmail () {
-    return email;
-  }
-
-  /**
-   * Set the value of mdp
-   * @param newVar the new value of mdp
-   */
-  public void setMdp (String newVar) {
-    mdp = newVar;
-  }
-
-  /**
-   * Get the value of mdp
-   * @return the value of mdp
-   */
-  public String getMdp () {
-    return mdp;
-  }
-
-  //
-  // Other methods
-  //
-
-  /**
-   * @param        mdp
-   * @param        Identifiant
-   */
-  public void seConnecter(String mdp, String Identifiant)
-  {
-  }
-
-
-  /**
-   */
-  public void seDeconnecter()
-  {
-  }
-
+    public abstract void seConnecter(String identifiant, String mdp);
+    public abstract void seConnecter();
 
 }
