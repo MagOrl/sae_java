@@ -1,103 +1,87 @@
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.*;
-
-
-/**
- * Class Commande
- */
 public class Commande {
-
-  //
-  // Fields
-  //
 
   private int numcom;
   private String datecom;
+  private Client cli;
+  private List<DetailCommande> detailcom;
+  private boolean enligne;
+  private boolean livraison; // false dans le magasin , true chez soit
+  private Magasin mag;
 
-  private Magasin m_magasin;
-
-  private Personne m_compte;
-  
-  //
-  // Constructors
-  //
-  public Commande () { };
-  
-  //
-  // Methods
-  //
-
-
-  //
-  // Accessor methods
-  //
-
-  /**
-   * Set the value of numcom
-   * @param newVar the new value of numcom
-   */
-  public void setNumcom (int newVar) {
-    numcom = newVar;
+  public Commande(int numcom, String datecom, Client cli, boolean enligne, Magasin mag) {
+    this.numcom = numcom;
+    this.datecom = datecom;
+    this.cli = cli;
+    this.detailcom = new ArrayList<>();
+    this.enligne = enligne;
+    this.mag = mag;
   }
 
-  /**
-   * Get the value of numcom
-   * @return the value of numcom
-   */
-  public int getNumcom () {
-    return numcom;
+  public int getNumcom() {
+    return this.numcom;
   }
 
-  /**
-   * Set the value of datecom
-   * @param newVar the new value of datecom
-   */
-  public void setDatecom (String newVar) {
-    datecom = newVar;
+  public void setNumcom(int numcom) {
+    this.numcom = numcom;
   }
 
-  /**
-   * Get the value of datecom
-   * @return the value of datecom
-   */
-  public String getDatecom () {
-    return datecom;
+  public String getDatecom() {
+    return this.datecom;
   }
 
-  /**
-   * Set the value of m_magasin
-   * @param newVar the new value of m_magasin
-   */
-  private void setMagasin (Magasin newVar) {
-    m_magasin = newVar;
+  public void setDatecom(String datecom) {
+    this.datecom = datecom;
   }
 
-  /**
-   * Get the value of m_magasin
-   * @return the value of m_magasin
-   */
-  private Magasin getMagasin () {
-    return m_magasin;
+  public Client getCli() {
+    return this.cli;
   }
 
-  /**
-   * Set the value of m_compte
-   * @param newVar the new value of m_compte
-   */
-  private void setCompte (Personne newVar) {
-    m_compte = newVar;
+  public void setCli(Client cli) {
+    this.cli = cli;
   }
 
-  /**
-   * Get the value of m_compte
-   * @return the value of m_compte
-   */
-  private Personne getCompte () {
-    return m_compte;
+  public List<DetailCommande> getDetailcom() {
+    return this.detailcom;
   }
 
-  //
-  // Other methods
-  //
+  public void setDetailcom(List<DetailCommande> detailcom) {
+    this.detailcom = detailcom;
+  }
+
+  public boolean isEnligne() {
+    return this.enligne;
+  }
+
+  public boolean getEnligne() {
+    return this.enligne;
+  }
+
+  public void setEnligne(boolean enligne) {
+    this.enligne = enligne;
+  }
+
+  public Magasin getMag() {
+    return this.mag;
+  }
+
+  public void setMag(Magasin mag) {
+    this.mag = mag;
+  }
+
+  public boolean isLivraison() {
+    return this.livraison;
+  }
+
+  public boolean getLivraison() {
+    return this.livraison;
+  }
+
+  public void setLivraison(boolean livraison) {
+    this.livraison = livraison;
+  }
 
 }
