@@ -1,85 +1,80 @@
-
 import java.util.*;
 
-
-/**
- * Class Livre
- */
 public class Livre {
 
-  //
-  // Fields
-  //
+  private int isbn;
+  private String titre;
+  private int nbPages;
+  private String datePubli;
+  private double prix;
 
+  public Livre(int isbn, String titre, int nbPages, String datePubli, double prix){
+    this.isbn = isbn;
+    this.titre = titre;
+    this.nbPages = nbPages;
+    this.datePubli = datePubli;
+    this.prix = prix;
+  };
 
-  private Vector auteursVector = new Vector();
+  public int getIsbn(){
+    return this.isbn;
+  };
 
-  private Vector editeursVector = new Vector();
-  
-  //
-  // Constructors
-  //
-  public Livre () { };
-  
-  //
-  // Methods
-  //
+  public String getTitre(){
+    return this.titre;
+  };
 
+  public int getNbPages(){
+    return this.nbPages;
+  };
 
-  //
-  // Accessor methods
-  //
+  public String getDatePubli(){
+    return this.datePubli;
+  };
 
-  /**
-   * Add a Auteurs object to the auteursVector List
-   */
-  private void addAuteurs (Auteur new_object) {
-    auteursVector.add(new_object);
+  public double getPrix(){
+    return this.prix;
+  };
+
+  public void setIsbn(int newIsbn){
+    this.isbn = newIsbn;
+  };
+
+  public void setTitre(String newTitre){
+    this.titre = newTitre;
+  };
+
+  public void setNbPages(int newNbPages){
+    this.nbPages = newNbPages;
+  };
+
+  public void setDatePubli(String newDatePubli){
+    this.datePubli = newDatePubli;
+  };
+
+  public void setPrix(double newPrix){
+    this.prix = newPrix;
+  };
+
+  @Override
+  public String toString(){
+    return getTitre()+
+    " (isbn: "+getIsbn()+
+    " nombre de pages: "+getNbPages()+
+    " date de publication: "+getDatePubli()+
+    " prix: "+getPrix()+")";
   }
 
-  /**
-   * Remove a Auteurs object from auteursVector List
-   */
-  private void removeAuteurs (Auteur new_object)
-  {
-    auteursVector.remove(new_object);
+  @Override
+  public boolean equals(Object o){
+    if (o == null){return false;}
+    if (o == this){return true;}
+    if (!(o instanceof Livre)){return false;}
+    Livre tmp = (Livre) o;
+    return this.getIsbn()==tmp.getIsbn()
+    && this.getTitre().equals(tmp.getTitre())
+    && this.getNbPages()==tmp.getNbPages()
+    && this.getDatePubli().equals(tmp.getDatePubli())
+    && this.getPrix()==tmp.getPrix();
   }
-
-  /**
-   * Get the List of Auteurs objects held by auteursVector
-   * @return List of Auteurs objects held by auteursVector
-   */
-  private List getAuteursList () {
-    return (List) auteursVector;
-  }
-
-
-  /**
-   * Add a Editeurs object to the editeursVector List
-   */
-  private void addEditeurs (Editeur new_object) {
-    editeursVector.add(new_object);
-  }
-
-  /**
-   * Remove a Editeurs object from editeursVector List
-   */
-  private void removeEditeurs (Editeur new_object)
-  {
-    editeursVector.remove(new_object);
-  }
-
-  /**
-   * Get the List of Editeurs objects held by editeursVector
-   * @return List of Editeurs objects held by editeursVector
-   */
-  private List getEditeursList () {
-    return (List) editeursVector;
-  }
-
-
-  //
-  // Other methods
-  //
-
 }
