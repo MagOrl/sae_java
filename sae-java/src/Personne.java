@@ -87,5 +87,6 @@ public abstract class Personne {
 
     public abstract void seConnecter(String identifiant, String mdp);
     public abstract void seConnecter();
+  
 
 }
