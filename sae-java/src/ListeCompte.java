@@ -25,6 +25,9 @@ public class ListeCompte {
     public boolean compteExiste(Personne prs){
         return listComptes.get(ind(prs)).contains(prs);
     } 
+    public int getNbDeClient(){
+        return listComptes.get(0).size();
+    }
     @Override
     public String toString(){
         return ""+listComptes;
