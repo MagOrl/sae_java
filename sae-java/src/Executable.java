@@ -6,6 +6,8 @@ public class Executable {
     private static ListeCompte dataComptes;
 
     public static void main(String[] args) {
+        ConnexionMySQL connexion = new ConnexionMySQL();
+        
         dataComptes = new ListeCompte();
         boolean quitte = false;
         bvn();
