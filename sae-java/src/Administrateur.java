@@ -1,4 +1,5 @@
 public class Administrateur extends Personne {
+<<<<<<< HEAD
 
   private List<Magasin> magasinsAdministrateur;
   public Administrateur(int numCompte, String nom, String prenom, String identifiant, String adresse, int tel, String email, String mdp){
@@ -20,5 +21,4 @@ public class Administrateur extends Personne {
   public void consulteStats(){
 
   }
-
 }

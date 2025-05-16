@@ -37,6 +37,5 @@ public class Vendeur extends Personne{
         
     }
 
-
 }
 

@@ -85,7 +85,4 @@ public abstract class Personne {
         this.mdp = mdp;
     }
 
-    public abstract void seConnecter(String identifiant, String mdp);
-    public abstract void seDeconnecter();
-
 }
