@@ -1,23 +1,52 @@
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.AbstractMap;
-import java.util.Map;
 
 public class Requetes {
+
     private ConnexionMySQL laConnexion;
     private Statement st;
 
     public Requetes(ConnexionMySQL laConnexion) {
         this.laConnexion = laConnexion;
     }
-    public void creeClient() throws SQLException {
-        int numCli = clientMax()+1;
+
+    public void creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville, String email, int tel, String mdp) throws SQLException {
+        int numCli = clientMax() + 1;
         this.st = this.laConnexion.createStatement();
-		PreparedStatement ps = this.laConnexion.prepareStatement("insert into CLIENT values (?,?,?,?,?,?)");
+        PreparedStatement ps = this.laConnexion.prepareStatement("insert into CLIENT values (?,?,?,?,?,?,?,?,?,?)");
         ps.setInt(1, numCli);
-		ps.setString(2, j.getPseudo());
+        ps.setString(2, identif);
+        ps.setString(3, nom);
+        ps.setString(4, prenom);
+        ps.setString(5, adresse);
+        ps.setString(6, codepostal);
+        ps.setString(7, ville);
+        ps.setString(8, email);
+        ps.setInt(9, tel);
+        ps.setString(10, mdp);
         ps.executeUpdate();
+    }
+
+    public Client trouveClient(int numcli) throws SQLException {
+        Client cli = new Client();
+        this.st = this.laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery("SELECT " + numcli + "FROM CLIENT");
+        while (rs.next()) {
+            cli = new Client(numcli, rs.getString("nomcli"), rs.getString("prenomcli"), rs.getString("identifiant"), rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), rs.getString("mdp"), rs.getString("codepostal"), rs.getString("villecli"));
+        }
+        rs.close();
+        return cli;
+    }
+
+    public boolean connectClient(String email, String mdp) throws SQLException {
+        this.st = this.laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery("SELECT email,mdp FROM CLIENT WHERE email =" + email + "and mdp = " + mdp);
+        return rs.getFetchSize() != 0;
+    }
+
+    public boolean connectClient(int tel, String mdp) throws SQLException {
+        this.st = this.laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery("SELECT email,mdp FROM CLIENT WHERE tel =" + tel + "and mdp = " + mdp);
+        return rs.getFetchSize() != 0;
     }
 
     public int clientMax() throws SQLException {

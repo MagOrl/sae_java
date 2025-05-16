@@ -9,8 +9,10 @@ public abstract class Personne {
     protected int tel;
     protected String email;
     protected String mdp;
-
-    public Personne(int numCompte, String nom, String prenom, String identifiant, String adresse, int tel, String email, String mdp) {
+    protected int codePostal;
+    protected String ville;
+    public Personne(){}
+    public Personne(int numCompte, String nom, String prenom, String identifiant, String adresse, int tel, String email, String mdp, String codePostal, String ville) {
         this.numCompte = numCompte;
         this.nom = nom;
         this.prenom = prenom;
@@ -84,7 +86,5 @@ public abstract class Personne {
     public void setMdp(String mdp) {
         this.mdp = mdp;
     }
-
-  
 
 }

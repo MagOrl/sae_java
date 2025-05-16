@@ -3,12 +3,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Executable {
-    private static ListeCompte dataComptes;
 
     public static void main(String[] args) throws ClassNotFoundException {
-        ConnexionMySQL connexion = new ConnexionMySQL();
-        
-        dataComptes = new ListeCompte();
+        ConnexionMySQL connexion = new ConnexionMySQL();        
         boolean quitte = false;
         bvn();
         menuConnex();
@@ -100,10 +97,11 @@ public class Executable {
             usr = new Scanner(System.in);
             System.out.println("Entrez votre mot de passe");
             data.add(usr.nextLine());
-            data.add((dataComptes.getNbDeClient()) + "");
+
+            
             fini = true;
         }
-        dataComptes.ajtePers(new Client(Integer.valueOf(data.get(7)), data.get(0), data.get(1), data.get(2), data.get(3),Integer.valueOf(data.get(7)), data.get(5), data.get(6)));
+        
         menuConnex();
     }
 
