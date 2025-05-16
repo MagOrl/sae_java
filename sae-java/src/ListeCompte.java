@@ -11,6 +11,7 @@ public class ListeCompte {
         // ex : si vous voulez prendre les listes d'administrateur faites
         // listComptes.get(2)
     }
+
     public int ind(Object prs){
         if(!(prs instanceof Personne))return -1;
         if(prs instanceof Client) return 0;
@@ -24,6 +25,9 @@ public class ListeCompte {
     public boolean compteExiste(Personne prs){
         return listComptes.get(ind(prs)).contains(prs);
     } 
+    public int getNbDeClient(){
+        return listComptes.get(0).size();
+    }
     @Override
     public String toString(){
         return ""+listComptes;

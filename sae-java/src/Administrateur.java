@@ -1,61 +1,6 @@
-
-
-/**
- * Class Administrateur
- */
 public class Administrateur extends Personne {
-
-  //
-  // Fields
-  //
-
-  
-  //
-  // Constructors
-  //
-  public Administrateur () { };
-  
-  //
-  // Methods
-  //
-
-
-  //
-  // Accessor methods
-  //
-
-  //
-  // Other methods
-  //
-
-  /**
-   * @param        vendeur
-   */
-  public void creerCompteVendeur(Vendeur vendeur)
-  {
+  public Administrateur(int numCompte, String nom, String prenom, String identifiant, String adresse, int tel,
+      String email, String mdp) {
+    super(numCompte, nom, prenom, identifiant, adresse, tel, email, mdp);
   }
-
-
-  /**
-   * @param        magasin
-   */
-  public void ajouteNouvelleLibrairie(Magasin magasin)
-  {
-  }
-
-
-  /**
-   */
-  public void gererStock()
-  {
-  }
-
-
-  /**
-   */
-  public void consulteStats()
-  {
-  }
-
-
 }
