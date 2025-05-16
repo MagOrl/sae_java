@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Executable {
     private static ListeCompte dataComptes;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException {
         ConnexionMySQL connexion = new ConnexionMySQL();
         
         dataComptes = new ListeCompte();

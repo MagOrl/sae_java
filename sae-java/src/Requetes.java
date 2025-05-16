@@ -5,13 +5,12 @@ import java.util.AbstractMap;
 import java.util.Map;
 
 public class Requetes {
-    ConnexionMySQL laConnexion;
-    Statement st;
+    private ConnexionMySQL laConnexion;
+    private Statement st;
 
-    Requetes(ConnexionMySQL laConnexion) {
+    public Requetes(ConnexionMySQL laConnexion) {
         this.laConnexion = laConnexion;
     }
-
     public void creeClient() throws SQLException {
         int numCli = clientMax()+1;
         this.st = this.laConnexion.createStatement();
