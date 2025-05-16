@@ -1,59 +1,41 @@
-
-import java.util.*;
-
-
-/**
- * Class Editeur
- */
 public class Editeur {
 
-  //
-  // Fields
-  //
+  private int idEditeur;
+  private String nomEditeur;
 
-
-  private Vector livresVector = new Vector();
-  
-  //
-  // Constructors
-  //
-  public Editeur () { };
-  
-  //
-  // Methods
-  //
-
-
-  //
-  // Accessor methods
-  //
-
-  /**
-   * Add a Livres object to the livresVector List
-   */
-  private void addLivres (Livre new_object) {
-    livresVector.add(new_object);
+  public Editeur(int id, String nom) {
+    this.idEditeur = id;
+    this.nomEditeur = nom;
   }
 
-  /**
-   * Remove a Livres object from livresVector List
-   */
-  private void removeLivres (Livre new_object)
-  {
-    livresVector.remove(new_object);
+  public int getId() {
+    return this.idEditeur;
   }
 
-  /**
-   * Get the List of Livres objects held by livresVector
-   * @return List of Livres objects held by livresVector
-   */
-  private List getLivresList () {
-    return (List) livresVector;
+  public String getNom() {
+    return this.nomEditeur;
   }
 
+  public void setId(int newId) {
+    this.idEditeur = newId;
+  }
 
-  //
-  // Other methods
-  //
+  public void setNom(String newName) {
+    this.nomEditeur = newName;
+  }
 
+  @Override
+  public String toString() {
+    return this.nomEditeur+" (Id: "+this.idEditeur+")";
+  }
+
+  @Override
+  public boolean equals(Object o){
+    if (o == null){return false;}
+    if (o == this){return true;}
+    if (!(o instanceof Editeur)){return false;}
+    Editeur tmp = (Editeur) o;
+    return this.getId()==tmp.getId()
+    && this.getNom().equals(tmp.getNom());
+  }
 }
