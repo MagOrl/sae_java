@@ -7,8 +7,10 @@ public class Vendeur extends Personne{
         this.magasinVendeur = magasin;
     }
 
-    public void ajouteLivreStock(Livre livre){
+    
 
+    public void ajouteLivreStock(Livre livre){
+        
     }
 
     public void majQteLivre(int nvQte){
@@ -35,6 +37,12 @@ public class Vendeur extends Personne{
     @Override
     public void seDeconnecter(){
         
+    }
+
+
+
+    public Magasin getMagasinVendeur() {
+      return magasinVendeur;
     }
 
 }
