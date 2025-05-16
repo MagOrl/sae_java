@@ -1,31 +1,21 @@
-
-
-/**
- * Class Classification
- */
 public class Classification {
+  private int idClassi;
+  private String nomClassi;
 
-  //
-  // Fields
-  //
-
+  public Classification (int id, String nom) {
+    this.idClassi = id;
+    this.nomClassi = nom;
+  };
   
-  //
-  // Constructors
-  //
-  public Classification () { };
-  
-  //
-  // Methods
-  //
+  public int getId() {
+    return this.idClassi;
+  }
 
+  public String getNom() {
+    return this.nomClassi;
+  }
 
-  //
-  // Accessor methods
-  //
-
-  //
-  // Other methods
-  //
-
+  public String toString() {
+    return this.nomClassi+" : "+this.idClassi;
+  }
 }
