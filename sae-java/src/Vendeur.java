@@ -16,7 +16,7 @@ public class Vendeur extends Personne{
     }
 
     public boolean verifDispoLivre(){
-        if(magasinVendeur.getLivres)
+        
     }
 
     public void passerCommande(){
