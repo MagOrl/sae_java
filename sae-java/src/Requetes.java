@@ -43,9 +43,9 @@ public class Requetes {
         return cli;
     }
 
-    public boolean connectClient(String email, String mdp) throws SQLException {
+    public boolean connectClient(String identif, String mdp) throws SQLException {
         this.st = this.laConnexion.createStatement();
-        ResultSet rs = this.st.executeQuery("SELECT email,mdp FROM CLIENT WHERE email =" + email + "and mdp = " + mdp);
+        ResultSet rs = this.st.executeQuery("SELECT email,mdp FROM CLIENT WHERE identifiant =" + identif + "and mdp = " + mdp);
         return rs.getFetchSize() != 0;
     }
 

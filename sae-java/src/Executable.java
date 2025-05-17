@@ -21,11 +21,11 @@ public class Executable {
                     quitte = true;
                     break;
                 case "1":
-                    menuCreaCompte();
+                    menuCreaCompte(usr);
 
                     break;
                 case "2":
-                    menuCreaCompte();
+                    menuCreaCompte(usr);
                     break;
             }
 
@@ -51,36 +51,59 @@ public class Executable {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         System.out.println("entrez une séléction");
     }
+    // private static void menuConnecter(){
+    // Requetes query = new Requetes(connexion);
+    // System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+    // System.out.println("│ CONNEXION │");
+    // System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+    // boolean fini = false;
+    // while (!fini) {
+    // try{
+    // query.connectClient(, null)
+    // }
 
-    private static void menuCreaCompte() {
+    // }
+    // }
+
+    private static void menuCreaCompte(Scanner usr) {
         Requetes query = new Requetes(connexion);
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Pour créer le compte, veuillez entrer correctement les informations.               │");
+        System.out.println("│ [0]Quitter                                                                         │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        boolean fini = false;
-
-        while (!fini) {
-            try {
-                query.creeClient(demandeUtilisateur("indentifiant"), demandeUtilisateur("nom"),
-                        demandeUtilisateur("prenom"),
-                        demandeUtilisateur("code postale"),
-                        demandeUtilisateur("adresse"), demandeUtilisateur("ville"), demandeUtilisateur("email"),
-                        demandeUtilisateur("numéro de téléphone"),
-                        demandeUtilisateur("mot de passe"));
-            } catch (NumberFormatException | SQLException e) {
-                e.printStackTrace();
-            }
-            fini = true;
+        try {
+            query.creeClient(demandeUtilisateur("indentifiant", usr), demandeUtilisateur("nom", usr),
+                    demandeUtilisateur("prenom", usr),
+                    demandeUtilisateur("code postale", usr),
+                    demandeUtilisateur("adresse", usr), demandeUtilisateur("ville", usr),
+                    demandeUtilisateur("email", usr),
+                    demandeUtilisateur("numéro de téléphone", usr),
+                    demandeUtilisateur("mot de passe", usr));
+        } catch (NumberFormatException | SQLException e) {
+            e.printStackTrace();
+        } catch (QuitterExecption e) {
+            menuConnex();
+            return;
         }
         menuConnex();
     }
 
-    public static String demandeUtilisateur(String demande) {
-        Scanner usr = new Scanner(System.in);
+    public static String demandeUtilisateur(String demande,Scanner usr) throws QuitterExecption {
         System.out.println("Entrez votre " + demande);
-        System.out.println("Votre " + demande + " " + usr.nextLine());
-        System.out.println("Entrez pour continuer");
-        return usr.nextLine();
+        String res = usr.nextLine(); 
+        try{
+        if (Integer.parseInt(res) == 0) throw new QuitterExecption();
+        else {
+            System.out.println("Votre " + demande + " " + res);
+            System.out.println("Apuyez 2 fois sur entrez pour continuer");
+            System.out.println("");
+            return res;
+        }
+        }catch(NumberFormatException e){
+            System.out.println("Entrez votre " + demande);
+            System.out.println("Votre " + demande + " " + res);
+            System.out.println("");
+            return res;
+        }
     }
-
 }
