@@ -10,7 +10,6 @@ public class Requetes {
             try {
                 laConnexion.connecter("localhost","Librairie", "root", "mypassword");
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
     }

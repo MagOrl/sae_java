@@ -21,7 +21,7 @@ public class Executable {
                     quitte = true;
                     break;
                 case "1":
-                    menuCreaCompte(usr);
+                    menuConnecter(usr);
 
                     break;
                 case "2":
@@ -51,19 +51,22 @@ public class Executable {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         System.out.println("entrez une séléction");
     }
-    // private static void menuConnecter(){
-    // Requetes query = new Requetes(connexion);
-    // System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-    // System.out.println("│ CONNEXION │");
-    // System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-    // boolean fini = false;
-    // while (!fini) {
-    // try{
-    // query.connectClient(, null)
-    // }
 
-    // }
-    // }
+    private static void menuConnecter(Scanner usr) {
+        Requetes query = new Requetes(connexion);
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ CONNEXION                                                                          │");
+        System.out.println("│ [0] Quitter                                                                        │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+        try {
+            query.connectClient(demandeConnexion("identifiant", usr), demandeConnexion("mot de passe", usr));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (QuitterExecption e) {
+            menuConnex();
+            return;
+        }
+    }
 
     private static void menuCreaCompte(Scanner usr) {
         Requetes query = new Requetes(connexion);
@@ -88,22 +91,37 @@ public class Executable {
         menuConnex();
     }
 
-    public static String demandeUtilisateur(String demande,Scanner usr) throws QuitterExecption {
+    private static String demandeUtilisateur(String demande, Scanner usr) throws QuitterExecption {
         System.out.println("Entrez votre " + demande);
-        String res = usr.nextLine(); 
+        String res = usr.nextLine();
+        try {
+            if (Integer.parseInt(res) == 0)
+                throw new QuitterExecption();
+            else {
+                System.out.println("Votre " + demande + " " + res);
+                System.out.println("");
+                return res;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Votre " + demande + " " + res);
+            System.out.println("");
+            return res;
+        }
+    }
+
+    private static String demandeConnexion(String demande,Scanner usr) throws QuitterExecption{
+        System.out.println("Entrez votre "+demande);
+        String res = usr.nextLine();
         try{
-        if (Integer.parseInt(res) == 0) throw new QuitterExecption();
-        else {
-            System.out.println("Votre " + demande + " " + res);
-            System.out.println("Apuyez 2 fois sur entrez pour continuer");
-            System.out.println("");
-            return res;
-        }
+            if (Integer.parseInt(res)==0) throw new QuitterExecption();
+            else{
+                System.out.println("Votre"+demande+" "+res);
+                System.out.println(" ");
+            }
         }catch(NumberFormatException e){
-            System.out.println("Entrez votre " + demande);
-            System.out.println("Votre " + demande + " " + res);
-            System.out.println("");
-            return res;
+            System.out.println("Votre"+demande+" "+res);
+            System.out.println(" ");
         }
+        return res;
     }
 }
