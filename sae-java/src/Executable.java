@@ -1,11 +1,14 @@
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Executable {
+    private static ConnexionMySQL connexion;
 
     public static void main(String[] args) throws ClassNotFoundException {
-        ConnexionMySQL connexion = new ConnexionMySQL();        
+        connexion = new ConnexionMySQL();
         boolean quitte = false;
         bvn();
         menuConnex();
@@ -46,63 +49,38 @@ public class Executable {
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        System.out.println("entrez la séction de votre choix");
+        System.out.println("entrez une séléction");
     }
 
     private static void menuCreaCompte() {
+        Requetes query = new Requetes(connexion);
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Pour créer le compte, veuillez entrer correctement les informations.               │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        System.out.println("Entrez votre nom");
-        Scanner usr = new Scanner(System.in);
         boolean fini = false;
-        List<String> data = new ArrayList<>();// numCompte, String nom, String prenom, String identifiant, String
-                                              // adresse, int tel, String email, String mdp
 
         while (!fini) {
-            data.add(usr.nextLine());
-            System.out.println("Votre nom : " + data.get(0));
-            // usr.close();
-
-            usr = new Scanner(System.in);
-            System.out.println("Entrez votre prénom");
-            data.add(usr.nextLine());
-            System.out.println("Votre prénom: " + data.get(1));
-            // usr.close();
-
-            usr = new Scanner(System.in);
-            System.out.println("Entrez votre identifiant");
-            data.add(usr.nextLine());
-            System.out.println("Votre identifiant: " + data.get(2));
-            // usr.close();
-
-            usr = new Scanner(System.in);
-            System.out.println("Entrez votre adresse :");
-            data.add(usr.nextLine());
-            System.out.println("Votre adresse: " + data.get(3));
-            // usr.close();
-
-            usr = new Scanner(System.in);
-            System.out.println("Entrez votre numéro de téléphone");
-            data.add(usr.nextLine());
-            System.out.println("Votre prénom: " + data.get(4));
-            // usr.close();
-
-            usr = new Scanner(System.in);
-            System.out.println("Entrez votre email");
-            data.add(usr.nextLine());
-            System.out.println("Votre email: " + data.get(5));
-            // usr.close();
-
-            usr = new Scanner(System.in);
-            System.out.println("Entrez votre mot de passe");
-            data.add(usr.nextLine());
-
-            
+            try {
+                query.creeClient(demandeUtilisateur("indentifiant"), demandeUtilisateur("nom"),
+                        demandeUtilisateur("prenom"),
+                        demandeUtilisateur("code postale"),
+                        demandeUtilisateur("adresse"), demandeUtilisateur("ville"), demandeUtilisateur("email"),
+                        demandeUtilisateur("numéro de téléphone"),
+                        demandeUtilisateur("mot de passe"));
+            } catch (NumberFormatException | SQLException e) {
+                e.printStackTrace();
+            }
             fini = true;
         }
-        
         menuConnex();
+    }
+
+    public static String demandeUtilisateur(String demande) {
+        Scanner usr = new Scanner(System.in);
+        System.out.println("Entrez votre " + demande);
+        System.out.println("Votre " + demande + " " + usr.nextLine());
+        System.out.println("Entrez pour continuer");
+        return usr.nextLine();
     }
 
 }

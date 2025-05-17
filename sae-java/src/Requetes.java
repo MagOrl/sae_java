@@ -7,9 +7,15 @@ public class Requetes {
 
     public Requetes(ConnexionMySQL laConnexion) {
         this.laConnexion = laConnexion;
+            try {
+                laConnexion.connecter("localhost","Librairie", "root", "mypassword");
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     }
 
-    public void creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville, String email, int tel, String mdp) throws SQLException {
+    public void creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville, String email, String tel, String mdp) throws SQLException {
         int numCli = clientMax() + 1;
         this.st = this.laConnexion.createStatement();
         PreparedStatement ps = this.laConnexion.prepareStatement("insert into CLIENT values (?,?,?,?,?,?,?,?,?,?)");
@@ -21,7 +27,7 @@ public class Requetes {
         ps.setString(6, codepostal);
         ps.setString(7, ville);
         ps.setString(8, email);
-        ps.setInt(9, tel);
+        ps.setInt(9, Integer.parseInt(tel));
         ps.setString(10, mdp);
         ps.executeUpdate();
     }
