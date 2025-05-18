@@ -7,14 +7,15 @@ public class Requetes {
 
     public Requetes(ConnexionMySQL laConnexion) {
         this.laConnexion = laConnexion;
-            try {
-                laConnexion.connecter("localhost","Librairie", "root", "mypassword");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        try {
+            laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville, String email, String tel, String mdp) throws SQLException {
+    public void creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville,
+            String email, String tel, String mdp) throws SQLException {
         int numCli = clientMax() + 1;
         this.st = this.laConnexion.createStatement();
         PreparedStatement ps = this.laConnexion.prepareStatement("insert into CLIENT values (?,?,?,?,?,?,?,?,?,?)");
@@ -36,7 +37,9 @@ public class Requetes {
         this.st = this.laConnexion.createStatement();
         ResultSet rs = this.st.executeQuery("SELECT " + numcli + "FROM CLIENT");
         while (rs.next()) {
-            cli = new Client(numcli, rs.getString("nomcli"), rs.getString("prenomcli"), rs.getString("identifiant"), rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), rs.getString("mdp"), rs.getString("codepostal"), rs.getString("villecli"));
+            cli = new Client(numcli, rs.getString("nomcli"), rs.getString("prenomcli"), rs.getString("identifiant"),
+                    rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), rs.getString("motdepasse"),
+                    rs.getString("codepostal"), rs.getString("villecli"));
         }
         rs.close();
         return cli;
@@ -44,13 +47,8 @@ public class Requetes {
 
     public boolean connectClient(String identif, String mdp) throws SQLException {
         this.st = this.laConnexion.createStatement();
-        ResultSet rs = this.st.executeQuery("SELECT email,mdp FROM CLIENT WHERE identifiant =" + identif + "and mdp = " + mdp);
-        return rs.getFetchSize() != 0;
-    }
-
-    public boolean connectClient(int tel, String mdp) throws SQLException {
-        this.st = this.laConnexion.createStatement();
-        ResultSet rs = this.st.executeQuery("SELECT email,mdp FROM CLIENT WHERE tel =" + tel + "and mdp = " + mdp);
+        ResultSet rs = this.st
+                .executeQuery("SELECT * FROM CLIENT WHERE identifiant = '" + identif + "'and motdepasse ='" + mdp + "'");
         return rs.getFetchSize() != 0;
     }
 

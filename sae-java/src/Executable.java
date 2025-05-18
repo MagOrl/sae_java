@@ -115,11 +115,11 @@ public class Executable {
         try{
             if (Integer.parseInt(res)==0) throw new QuitterExecption();
             else{
-                System.out.println("Votre"+demande+" "+res);
+                System.out.println("Votre "+demande+" "+res);
                 System.out.println(" ");
             }
         }catch(NumberFormatException e){
-            System.out.println("Votre"+demande+" "+res);
+            System.out.println("Votre "+demande+" "+res);
             System.out.println(" ");
         }
         return res;
