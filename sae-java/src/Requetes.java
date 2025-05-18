@@ -49,7 +49,7 @@ public class Requetes {
         this.st = this.laConnexion.createStatement();
         ResultSet rs = this.st
                 .executeQuery("SELECT * FROM CLIENT WHERE identifiant = '" + identif + "'and motdepasse ='" + mdp + "'");
-        return rs.getFetchSize() != 0;
+        return rs.next();
     }
 
     public int clientMax() throws SQLException {

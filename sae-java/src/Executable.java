@@ -59,7 +59,15 @@ public class Executable {
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         try {
-            query.connectClient(demandeConnexion("identifiant", usr), demandeConnexion("mot de passe", usr));
+            if (query.connectClient(demandeConnexion("identifiant", usr), demandeConnexion("mot de passe", usr)))
+                bvn();
+            else {
+                System.out.println("Mauvais mot de passe ou identifiant veuillez réesayer");
+                System.out.println("Si vous n'avez pas de compte, veuillez en crée un");
+                menuConnecter(usr);
+                System.out.println("To be built...");
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (QuitterExecption e) {
@@ -109,17 +117,18 @@ public class Executable {
         }
     }
 
-    private static String demandeConnexion(String demande,Scanner usr) throws QuitterExecption{
-        System.out.println("Entrez votre "+demande);
+    private static String demandeConnexion(String demande, Scanner usr) throws QuitterExecption {
+        System.out.println("Entrez votre " + demande);
         String res = usr.nextLine();
-        try{
-            if (Integer.parseInt(res)==0) throw new QuitterExecption();
-            else{
-                System.out.println("Votre "+demande+" "+res);
+        try {
+            if (Integer.parseInt(res) == 0)
+                throw new QuitterExecption();
+            else {
+                System.out.println("Votre " + demande + " " + res);
                 System.out.println(" ");
             }
-        }catch(NumberFormatException e){
-            System.out.println("Votre "+demande+" "+res);
+        } catch (NumberFormatException e) {
+            System.out.println("Votre " + demande + " " + res);
             System.out.println(" ");
         }
         return res;
