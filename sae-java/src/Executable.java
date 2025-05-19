@@ -140,9 +140,11 @@ public class Executable {
 
     private static void menuClient(Client cli, Scanner usr) {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ [1] Consulte les catalogues .                                                      │");
+        System.out.println("│ Bonjour "+cli.getIdentifiant()+"                                                                       │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Gestion comptes .                                                              │");
+        System.out.println("│ [1] Consulte les catalogues                                                        │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [2] Gestion comptes                                                                │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [3] Consulte panier                                                                │");
         System.out.println("│                                                                                    │");
