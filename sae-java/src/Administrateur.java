@@ -12,12 +12,15 @@ public class Administrateur extends Personne {
   }
 
   public void creerCompteVendeur(int numCompte, String nom, String prenom, String identifiant, String adresse, int tel, String email, String mdp, Magasin magasin) throws SQLException{
-    
-    Vendeur vendeur = new Vendeur(numCompte, nom, prenom, identifiant, adresse, tel, email, mdp, magasin);
-    PreparedStatement ps = this.connexion.prepareStatement("create user 'vendeur"+vendeur.getMagasinVendeur()+"'@'%' identified by '"+mdp+"'");
-    ps.executeUpdate();
-    PreparedStatement ps2 = this.connexion.prepareStatement("grant 'vendeur' to '"+vendeur.getMagasinVendeur()+"'@'%'");
-    ps2.executeUpdate();
+    try{
+      Vendeur vendeur = new Vendeur(numCompte, nom, prenom, identifiant, adresse, tel, email, mdp, magasin);
+      PreparedStatement ps = this.connexion.prepareStatement("create user 'vendeur"+vendeur.getMagasinVendeur()+"'@'%' identified by '"+mdp+"'");
+      ps.executeUpdate();
+      PreparedStatement ps2 = this.connexion.prepareStatement("grant 'vendeur' to '"+vendeur.getMagasinVendeur()+"'@'%'");
+      ps2.executeUpdate();
+    }catch(SQLException e){
+      System.out.println("");
+    }
     //create user 'adminVacances'@'%' identified by 'mdpadmin';
     //grant 'administrateur' to 'adminVacances'@'%';
   }
