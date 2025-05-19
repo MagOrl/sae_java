@@ -59,13 +59,15 @@ public class Executable {
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         try {
-            if (query.connectClient(demandeConnexion("identifiant", usr), demandeConnexion("mot de passe", usr)))
+            String identif = demandeConnexion("identifiant", usr);
+            String mdp = demandeConnexion("mot de passe", usr);
+            if (query.connectClient(identif, mdp)) {
                 bvn();
-            else {
+                menuClient(query.trouveClient(identif, mdp), usr);
+            } else {
                 System.out.println("Mauvais mot de passe ou identifiant veuillez réesayer");
                 System.out.println("Si vous n'avez pas de compte, veuillez en crée un");
                 menuConnecter(usr);
-                System.out.println("To be built...");
             }
 
         } catch (SQLException e) {
@@ -80,6 +82,7 @@ public class Executable {
         Requetes query = new Requetes(connexion);
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Pour créer le compte, veuillez entrer correctement les informations.               │");
+        System.out.println("│                                                                                    │");
         System.out.println("│ [0]Quitter                                                                         │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         try {
@@ -93,6 +96,7 @@ public class Executable {
         } catch (NumberFormatException | SQLException e) {
             e.printStackTrace();
         } catch (QuitterExecption e) {
+            bvn();
             menuConnex();
             return;
         }
@@ -132,5 +136,37 @@ public class Executable {
             System.out.println(" ");
         }
         return res;
+    }
+
+    private static void menuClient(Client cli, Scanner usr) {
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ [1] Consulte les catalogues .                                                      │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [2] Gestion comptes .                                                              │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [3] Consulte panier                                                                │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [0] Quitter                                                                        │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+        boolean quitte = false;
+        while (!quitte && usr.hasNext()) {
+            String res = usr.nextLine();
+            switch (res) {
+                case"0":
+                    bvn();
+                    menuConnex();
+                    quitte=true;
+                    break;
+                case "1":
+                    System.out.println("to be built");break;
+                case "2":
+                    System.out.println("to be built");break;
+                case "3":
+                    System.out.println("to be built");break;
+
+            }
+
+        }
+
     }
 }

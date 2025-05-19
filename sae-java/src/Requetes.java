@@ -14,7 +14,7 @@ public class Requetes {
         }
     }
 
-    public void creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville,
+    public int creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville,
             String email, String tel, String mdp) throws SQLException {
         int numCli = clientMax() + 1;
         this.st = this.laConnexion.createStatement();
@@ -30,14 +30,28 @@ public class Requetes {
         ps.setInt(9, Integer.parseInt(tel));
         ps.setString(10, mdp);
         ps.executeUpdate();
+        return numCli;
     }
 
     public Client trouveClient(int numcli) throws SQLException {
         Client cli = new Client();
         this.st = this.laConnexion.createStatement();
-        ResultSet rs = this.st.executeQuery("SELECT " + numcli + "FROM CLIENT");
+        ResultSet rs = this.st.executeQuery("SELECT * FROM CLIENT WHERE numcli ="+numcli);
         while (rs.next()) {
             cli = new Client(numcli, rs.getString("nomcli"), rs.getString("prenomcli"), rs.getString("identifiant"),
+                    rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), rs.getString("motdepasse"),
+                    rs.getString("codepostal"), rs.getString("villecli"));
+        }
+        rs.close();
+        return cli;
+    }
+
+    public Client trouveClient(String identif,String mdp) throws SQLException {
+        Client cli = new Client();
+        this.st = this.laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery("SELECT * FROM CLIENT WHERE identifiant ='"+identif+"'"+"and motdepasse ='"+mdp+"'");
+        while (rs.next()) {
+            cli = new Client(rs.getInt("idcli"), rs.getString("nomcli"), rs.getString("prenomcli"), rs.getString("identifiant"),
                     rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), rs.getString("motdepasse"),
                     rs.getString("codepostal"), rs.getString("villecli"));
         }
@@ -48,7 +62,8 @@ public class Requetes {
     public boolean connectClient(String identif, String mdp) throws SQLException {
         this.st = this.laConnexion.createStatement();
         ResultSet rs = this.st
-                .executeQuery("SELECT * FROM CLIENT WHERE identifiant = '" + identif + "'and motdepasse ='" + mdp + "'");
+                .executeQuery(
+                        "SELECT * FROM CLIENT WHERE identifiant = '" + identif + "'and motdepasse ='" + mdp + "'");
         return rs.next();
     }
 
