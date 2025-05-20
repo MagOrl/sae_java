@@ -140,13 +140,14 @@ public class Executable {
 
     private static void menuClient(Client cli, Scanner usr) {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Bonjour "+cli.getIdentifiant()+"                                                                       │");
+        System.out.println("│ Bonjour " + cli.getIdentifiant()
+                + "                                                                       │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [1] Consulte les catalogues                                                        │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [2] Gestion comptes                                                                │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [3] Consulte panier                                                                │");
+        System.out.println("│ [3] Historique commande                                                            │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -154,21 +155,85 @@ public class Executable {
         while (!quitte && usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
-                case"0":
+                case "0":
                     bvn();
                     menuConnex();
-                    quitte=true;
+                    quitte = true;
                     break;
                 case "1":
-                    System.out.println("to be built");break;
+                    System.out.println("to be built");
+                    break;
                 case "2":
-                    System.out.println("to be built");break;
+                    gestionCompte(cli, usr);
+                    break;
                 case "3":
-                    System.out.println("to be built");break;
+                    System.out.println("to be built");
+                    break;
 
             }
 
         }
+
+    }
+
+    private static void afficheGestionCompte() {
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ [1] Voir mes informations personelle                                               │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [2] Changer mes informations personelle                                            │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [0]Quitter                                                                         │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+
+    }
+
+    private static void gestionCompte(Client cli, Scanner usr) {
+        afficheGestionCompte();
+        boolean quitte = false;
+        while (!quitte && usr.hasNext()) {
+            String res = usr.nextLine();
+            switch (res) {
+                case "0":
+                    quitte = true;
+                    break;
+                case "1":
+                    voirInfoperso(cli, usr);
+                    break;
+                case "2":
+                    changeInfoPerso(cli, usr);
+                    break;
+            }
+
+        }
+    }
+
+    private static void voirInfoperso(Client cli, Scanner usr) {
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ Voici vos informations :                                                           │");
+        System.out.println(cli);
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+        System.out.println(" [0] Quitter");
+        boolean quitte = false;
+        while (!quitte && usr.hasNext()) {
+            String res = usr.nextLine();
+            switch (res) {
+                case "0":
+                    afficheGestionCompte();
+                    quitte = true;
+                    break;
+                default:
+                    System.out.println("C'est 0 pour quitter");
+                    break;
+            }
+
+        }
+    }
+
+    private static void changeInfoPerso(Client cli, Scanner usr) {
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ Que voulez vous changer ?                                                          │");
+        System.out.println("│                                                                                    │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
 
     }
 }
