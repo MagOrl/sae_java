@@ -138,7 +138,7 @@ public class Executable {
         return res;
     }
 
-    private static void menuClient(Client cli, Scanner usr) {
+    private static void afficheMenuClient(Client cli) {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Bonjour " + cli.getIdentifiant()
                 + "                                                                       │");
@@ -151,6 +151,10 @@ public class Executable {
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+    }
+
+    private static void menuClient(Client cli, Scanner usr) {
+        afficheMenuClient(cli);
         boolean quitte = false;
         while (!quitte && usr.hasNext()) {
             String res = usr.nextLine();
@@ -194,6 +198,7 @@ public class Executable {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
+                    afficheMenuClient(cli);
                     quitte = true;
                     break;
                 case "1":
@@ -229,11 +234,65 @@ public class Executable {
         }
     }
 
-    private static void changeInfoPerso(Client cli, Scanner usr) {
+    private static void afficheChangeInfoPerso() {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Que voulez vous changer ?                                                          │");
         System.out.println("│                                                                                    │");
+        System.out.println("│ [1] Mon identifiant                                                                │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [2] Mon mot de passe                                                               │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [3] Mon email                                                                      │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [4] Mon numéro de téléphone                                                        │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [0] Quitter                                                                        │");
+        System.out.println("│                                                                                    │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+
+    }
+
+    private static void changeInfoPerso(Client cli, Scanner usr) {
+        afficheChangeInfoPerso();
+        Requetes query = new Requetes(connexion);
+        boolean quitte = false;
+        while (!quitte && usr.hasNext()) {
+            String res = usr.nextLine();
+            switch (res) {
+                case "0":
+                    afficheGestionCompte();
+                    quitte = true;
+                    break;
+                case "1":
+                    System.out.println("Le nouveau identifiant :");
+                    cli.setIdentifiant(usr.nextLine());
+                    afficheChangeInfoPerso();
+                    break;
+                case "2":
+                    System.out.println("Le nouveau mot de passe :");
+                    cli.setMdp(usr.nextLine());
+                    afficheChangeInfoPerso();
+                    break;
+                case "3":
+                    System.out.println("Le nouveau email :");
+                    cli.setEmail(usr.nextLine());
+                    afficheChangeInfoPerso();
+                    break;
+                case "4":
+                    System.out.println("Le nouveau numéro de téléphone :");
+                    cli.setTel(Integer.parseInt(usr.nextLine()));
+                    afficheChangeInfoPerso();
+                    break;
+                default:
+                    System.out.println("les choix vont de 0 à 4");
+                    break;
+            }
+            try {
+                query.majClient(cli);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 }

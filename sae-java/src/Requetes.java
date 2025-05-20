@@ -36,7 +36,7 @@ public class Requetes {
     public Client trouveClient(int numcli) throws SQLException {
         Client cli = new Client();
         this.st = this.laConnexion.createStatement();
-        ResultSet rs = this.st.executeQuery("SELECT * FROM CLIENT WHERE numcli ="+numcli);
+        ResultSet rs = this.st.executeQuery("SELECT * FROM CLIENT WHERE numcli =" + numcli);
         while (rs.next()) {
             cli = new Client(numcli, rs.getString("nomcli"), rs.getString("prenomcli"), rs.getString("identifiant"),
                     rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), rs.getString("motdepasse"),
@@ -46,12 +46,14 @@ public class Requetes {
         return cli;
     }
 
-    public Client trouveClient(String identif,String mdp) throws SQLException {
+    public Client trouveClient(String identif, String mdp) throws SQLException {
         Client cli = new Client();
         this.st = this.laConnexion.createStatement();
-        ResultSet rs = this.st.executeQuery("SELECT * FROM CLIENT WHERE identifiant ='"+identif+"'"+"and motdepasse ='"+mdp+"'");
+        ResultSet rs = this.st.executeQuery(
+                "SELECT * FROM CLIENT WHERE identifiant ='" + identif + "'" + "and motdepasse ='" + mdp + "'");
         while (rs.next()) {
-            cli = new Client(rs.getInt("idcli"), rs.getString("nomcli"), rs.getString("prenomcli"), rs.getString("identifiant"),
+            cli = new Client(rs.getInt("idcli"), rs.getString("nomcli"), rs.getString("prenomcli"),
+                    rs.getString("identifiant"),
                     rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), rs.getString("motdepasse"),
                     rs.getString("codepostal"), rs.getString("villecli"));
         }
@@ -76,5 +78,15 @@ public class Requetes {
         }
         rs.close();
         return max;
+    }
+
+    public void majClient(Client cli) throws SQLException{
+        PreparedStatement ps = this.laConnexion.prepareStatement("UPDATE CLIENT SET identifiant = ?, motdepasse= ?, email = ?,tel =? WHERE idcli = ?");
+        ps.setString(1,cli.getIdentifiant());
+        ps.setString(2,cli.getMdp());
+        ps.setString(3,cli.getEmail());
+        ps.setInt(4,cli.getTel());
+        ps.setInt(5, cli.getNumCompte());
+        ps.executeUpdate();
     }
 }
