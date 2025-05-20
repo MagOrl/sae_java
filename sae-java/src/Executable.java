@@ -147,7 +147,7 @@ public class Executable {
         System.out.println("│                                                                                    │");
         System.out.println("│ [2] Gestion comptes                                                                │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [3] Historique commande                                                            │");
+        System.out.println("│ [3] Historique de commandes                                                        │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -173,11 +173,8 @@ public class Executable {
                 case "3":
                     System.out.println("to be built");
                     break;
-
             }
-
         }
-
     }
 
     private static void afficheGestionCompte() {

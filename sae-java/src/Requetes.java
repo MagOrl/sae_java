@@ -89,4 +89,5 @@ public class Requetes {
         ps.setInt(5, cli.getNumCompte());
         ps.executeUpdate();
     }
+    //select numcom,numlig,datecom, enligne, livraison,titre,qte,prixvente FROM COMMANDE NATURAL JOIN DETAILCOMMANDE NATURAL JOIN LIVRE WHERE idcli = ? ORDER BY datecom ;
 }
