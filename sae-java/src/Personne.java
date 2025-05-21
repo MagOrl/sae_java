@@ -9,8 +9,14 @@ public abstract class Personne {
     protected int tel;
     protected String email;
     protected String mdp;
+    protected String codePostal;
+    protected String ville;
 
-    public Personne(int numCompte, String nom, String prenom, String identifiant, String adresse, int tel, String email, String mdp) {
+    public Personne() {
+    }
+
+    public Personne(int numCompte, String nom, String prenom, String identifiant, String adresse, int tel, String email,
+            String mdp, String codePostal, String ville) {
         this.numCompte = numCompte;
         this.nom = nom;
         this.prenom = prenom;
@@ -83,6 +89,30 @@ public abstract class Personne {
 
     public void setMdp(String mdp) {
         this.mdp = mdp;
+    }
+
+    public String getCodePostal() {
+        return this.getCodePostal();
+    }
+
+    public void setCodePostal(String codepostal) {
+        this.codePostal = codepostal;
+    }
+
+    public String getVille() {
+        return this.ville;
+    }
+
+    public void setVille(String ville) {
+        this.ville = ville;
+    }
+    @Override
+    public String toString(){
+        return "Numéro de compte : "+this.numCompte+"\n"+
+        "Nom : "+this.nom+"  "+"Prenom : " +this.prenom+"\n"+
+        "Identifiant : "+this.identifiant+"  "+"Adresse : "+this.adresse+"\n"+
+        "Téléphone : "+tel+"  "+"Email : "+this.email+"  Code postal : "+this.codePostal+
+        "  Ville : "+this.ville;
     }
 
 }
