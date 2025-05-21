@@ -22,11 +22,12 @@ public class Executable {
                     break;
                 case "1":
                     menuConnecter(usr);
-
                     break;
                 case "2":
                     menuCreaCompte(usr);
                     break;
+                default:
+                    System.out.println("Entrez un chiffre entre 0 et 2 svp.");
             }
 
         }
@@ -171,7 +172,7 @@ public class Executable {
                     gestionCompte(cli, usr);
                     break;
                 case "3":
-                    System.out.println("to be built");
+                    afficheHistorique(cli, usr);
                     break;
             }
         }
@@ -289,6 +290,35 @@ public class Executable {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static void afficheHistorique(Client cli, Scanner usr) {
+        Requetes query = new Requetes(connexion);
+        String res = "";
+        try {
+            res = query.afficheHistoriqueCommande(cli);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ L'historique de vos commandes :                                                    │");
+        System.out.println(res);
+        System.out.println("│ [0] Quitter                                                                        │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+        boolean quitte = false;
+        while (!quitte && usr.hasNext()) {
+            String rep = usr.nextLine();
+            switch (rep) {
+                case "0":
+                quitte = true;
+                afficheMenuClient(cli);
+                    break;
+                default:
+                System.out.println("0 pour quitter");
+                    break;
+            }
+
         }
 
     }

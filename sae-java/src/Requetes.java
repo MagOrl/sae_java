@@ -80,14 +80,45 @@ public class Requetes {
         return max;
     }
 
-    public void majClient(Client cli) throws SQLException{
-        PreparedStatement ps = this.laConnexion.prepareStatement("UPDATE CLIENT SET identifiant = ?, motdepasse= ?, email = ?,tel =? WHERE idcli = ?");
-        ps.setString(1,cli.getIdentifiant());
-        ps.setString(2,cli.getMdp());
-        ps.setString(3,cli.getEmail());
-        ps.setInt(4,cli.getTel());
+    public void majClient(Client cli) throws SQLException {
+        PreparedStatement ps = this.laConnexion
+                .prepareStatement("UPDATE CLIENT SET identifiant = ?, motdepasse= ?, email = ?,tel =? WHERE idcli = ?");
+        ps.setString(1, cli.getIdentifiant());
+        ps.setString(2, cli.getMdp());
+        ps.setString(3, cli.getEmail());
+        ps.setInt(4, cli.getTel());
         ps.setInt(5, cli.getNumCompte());
         ps.executeUpdate();
     }
-    //select numcom,numlig,datecom, enligne, livraison,titre,qte,prixvente FROM COMMANDE NATURAL JOIN DETAILCOMMANDE NATURAL JOIN LIVRE WHERE idcli = ? ORDER BY datecom ;
+
+    public String afficheHistoriqueCommande(Client cli) throws SQLException {
+        this.st = laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery(
+                "select numcom,numlig,datecom, enligne, livraison,titre,qte,prixvente FROM COMMANDE NATURAL JOIN DETAILCOMMANDE NATURAL JOIN LIVRE WHERE idcli = "
+                        + cli.getNumCompte() + " ORDER BY datecom");
+        // rs.first();
+        // numcomSave = rs.getInt("numcom");
+        // rs.beforeFirst();
+        if (!rs.next())
+            return "Aucune commande effectuer pour le moment";
+        rs.beforeFirst();
+        int numcomSave = -1;
+        String res = "";
+        int cpt = 0;
+        while (rs.next()) {
+            String enligne = rs.getString("enLigne").equals("O") ? "en ligne" : "en magasin";
+            String livraison = rs.getString("livraison").equals("M") ? "récuperer au magasin" : "livrer au domicile";
+            if (rs.getInt("numcom") == numcomSave) {
+                res += rs.getString("numlig") + "  " + rs.getString("titre") + "  " + rs.getInt("prixvente")
+                        + "€  quantité : " + rs.getInt("qte");
+            } else {
+                numcomSave = rs.getInt("numcom");
+                res += "\n \nLa commande " + rs.getInt("numcom") + "\n"
+                        + "le " + rs.getString("datecom") + " " + enligne + " " + livraison + "\n";
+                res += rs.getString("numlig") + "  " + rs.getString("titre") + "  " + rs.getString("prixvente")
+                        + "€  quantité : " + rs.getString("qte")+"\n";
+            }
+        }
+        return res;
+    }
 }
