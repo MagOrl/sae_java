@@ -109,16 +109,23 @@ public class Requetes {
             String enligne = rs.getString("enLigne").equals("O") ? "en ligne" : "en magasin";
             String livraison = rs.getString("livraison").equals("M") ? "récuperer au magasin" : "livrer au domicile";
             if (rs.getInt("numcom") == numcomSave) {
-                res += rs.getString("numlig") + "  " + rs.getString("titre") + "  " + rs.getInt("prixvente")
+                res += "\n" + rs.getString("numlig") + "  " + rs.getString("titre") + "  " + rs.getInt("prixvente")
                         + "€  quantité : " + rs.getInt("qte");
+                cpt = cpt + (rs.getInt("prixvente") * rs.getInt("qte"));
             } else {
+                if (numcomSave != -1) {
+                    res += "\nprix total : " + cpt + " €";
+                    cpt = 0;
+                }
                 numcomSave = rs.getInt("numcom");
                 res += "\n \nLa commande " + rs.getInt("numcom") + "\n"
                         + "le " + rs.getString("datecom") + " " + enligne + " " + livraison + "\n";
-                res += rs.getString("numlig") + "  " + rs.getString("titre") + "  " + rs.getString("prixvente")
-                        + "€  quantité : " + rs.getString("qte")+"\n";
+                res += rs.getString("numlig") + "  " + rs.getString("titre") + "  " + rs.getInt("prixvente")
+                        + "€  quantité : " + rs.getInt("qte");
+                cpt = cpt + (rs.getInt("prixvente") * rs.getInt("qte"));
             }
         }
+        res += "\nprix total : " + cpt + " €";
         return res;
     }
 }
