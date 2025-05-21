@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.HashMap;
 
 public class Requetes {
 
@@ -125,7 +126,28 @@ public class Requetes {
                 cpt = cpt + (rs.getInt("prixvente") * rs.getInt("qte"));
             }
         }
+        rs.close();
         res += "\nprix total : " + cpt + " €";
         return res;
     }
+
+    public HashMap<Integer,String> afficheThemes() throws SQLException {
+        this.st = laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery("SELECT * FROM CLASSIFICATION GROUP BY FLOOR(iddewey/100)");
+        HashMap<Integer,String> res = new HashMap<>();
+        int i = 1;
+        while (rs.next()) {
+            res.put(i, rs.getString("nomclass"));
+            i++;
+        }
+        rs.close();
+        return res;
+
+    }
+    
+
 }
+// SELECT LIVRE.*
+// FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN CLASSIFICATION NATURAL JOIN
+// POSSEDER NATURAL JOIN MAGASIN
+// WHERE (titre = " ", )

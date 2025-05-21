@@ -1,6 +1,7 @@
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -150,7 +151,7 @@ public class Executable {
         System.out.println("│                                                                                    │");
         System.out.println("│ [3] Historique de commandes                                                        │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [0] Quitter                                                                        │");
+        System.out.println("│ [0] Déconnecter                                                                    │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
 
@@ -363,9 +364,9 @@ public class Executable {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Les catalogues :                                                                   │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [1] Livres selon une catégorie                                                     │");
+        System.out.println("│ [1] Chercher selon theme                                                           │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Le catalogue                                                                   │");
+        System.out.println("│ [2] Chercher selon titre                                                           │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -381,12 +382,57 @@ public class Executable {
                     quitte = true;
                     afficheConsulteCatalogue();
                     break;
-                
+                case "1":
+                    selonTheme(cli, usr);
+                    break;
                 default:
-                    System.out.println("Veuillez enregistrer une séléction valide");
+                    System.out.println("Veuillez entrer une séléction valide");
                     break;
             }
 
+        }
+    }
+
+    private static void afficheSelonTheme(HashMap<Integer,String> hm) {
+        for(Integer i:hm.keySet()){
+            System.out.println("["+i+"] "+hm.get(i));
+        }
+        System.out.println("[0] Quitter");
+        System.out.println("Entrez le thème de votre choix");
+    }
+
+    private static void selonTheme(Client cli, Scanner usr) {
+        Requetes query = new Requetes(connexion);
+        HashMap<Integer,String> themes = new HashMap<>();
+        try {
+            themes = query.afficheThemes();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        afficheSelonTheme(themes);
+        boolean quitte = false;
+        while (!quitte && usr.hasNext()) {
+            String res = usr.next();
+            switch (res) {
+                case "0":
+                    quitte = true;
+                    afficheRechercheLivre();
+                    break;
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                case "9":
+                case "10":
+                    System.out.println("to be built");
+                    break;
+                default:
+                    System.out.println("Veuillez entrer une séléction valide");
+                    break;
+            }
         }
     }
 }
