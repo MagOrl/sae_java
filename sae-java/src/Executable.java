@@ -166,7 +166,7 @@ public class Executable {
                     quitte = true;
                     break;
                 case "1":
-                    System.out.println("to be built");
+                    consulteCatalogue(cli, usr);
                     break;
                 case "2":
                     gestionCompte(cli, usr);
@@ -293,7 +293,7 @@ public class Executable {
         }
     }
 
-    public static void afficheHistorique(Client cli, Scanner usr) {
+    private static void afficheHistorique(Client cli, Scanner usr) {
         Requetes query = new Requetes(connexion);
         String res = "";
         try {
@@ -311,15 +311,84 @@ public class Executable {
             String rep = usr.nextLine();
             switch (rep) {
                 case "0":
-                quitte = true;
-                afficheMenuClient(cli);
+                    quitte = true;
+                    afficheMenuClient(cli);
                     break;
                 default:
-                System.out.println("0 pour quitter");
+                    System.out.println("0 pour quitter");
                     break;
             }
 
         }
 
     }
+
+    private static void afficheConsulteCatalogue() {
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ Les catalogues :                                                                   │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [1] Rechercher selon critère                                                       │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [2] Le catalogue                                                                   │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [0] Quitter                                                                        │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+
+    }
+
+    private static void consulteCatalogue(Client cli, Scanner usr) {
+        afficheConsulteCatalogue();
+        boolean quitte = false;
+        while (!quitte && usr.hasNext()) {
+            String res = usr.nextLine();
+            switch (res) {
+                case "0":
+                    afficheMenuClient(cli);
+                    quitte = true;
+                    break;
+                case "1":
+                    rechercheLivre(cli, usr);
+                    break;
+                case "2":
+                    System.out.println("to be built");
+                    break;
+                default:
+                    System.out.println("Mettre une valeur entre 0 et 2");
+                    break;
+            }
+        }
+    }
+
+    private static void afficheRechercheLivre() {
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ Les catalogues :                                                                   │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [1] Livres selon une catégorie                                                     │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [2] Le catalogue                                                                   │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [0] Quitter                                                                        │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+    }
+
+    private static void rechercheLivre(Client cli, Scanner usr) {
+        afficheRechercheLivre();
+        boolean quitte = false;
+        while (!quitte && usr.hasNext()) {
+            String res = usr.nextLine();
+            switch (res) {
+                case "0":
+                    quitte = true;
+                    afficheConsulteCatalogue();
+                    break;
+                
+                default:
+                    System.out.println("Veuillez enregistrer une séléction valide");
+                    break;
+            }
+
+        }
+    }
 }
+
+// SELECT LIVRE.*
