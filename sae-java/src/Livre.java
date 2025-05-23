@@ -1,20 +1,22 @@
 public class Livre {
 
-  private int isbn;
+  private String isbn;
   private String titre;
   private int nbPages;
   private String datePubli;
   private double prix;
+  private int qte;
 
-  public Livre(int isbn, String titre, int nbPages, String datePubli, double prix){
+  public Livre(String isbn, String titre, int nbPages, String datePubli, double prix,int qte){
     this.isbn = isbn;
     this.titre = titre;
     this.nbPages = nbPages;
     this.datePubli = datePubli;
     this.prix = prix;
+    this.qte = 0;
   };
 
-  public int getIsbn(){
+  public String getIsbn(){
     return this.isbn;
   };
 
@@ -34,7 +36,7 @@ public class Livre {
     return this.prix;
   };
 
-  public void setIsbn(int newIsbn){
+  public void setIsbn(String newIsbn){
     this.isbn = newIsbn;
   };
 
@@ -53,6 +55,9 @@ public class Livre {
   public void setPrix(double newPrix){
     this.prix = newPrix;
   };
+  public int getQte(){
+    return this.qte;
+  }
 
   @Override
   public String toString(){

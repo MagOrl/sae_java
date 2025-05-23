@@ -1,6 +1,7 @@
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class Executable {
@@ -36,14 +37,14 @@ public class Executable {
     private static void bvn() {
         System.out.println(
                 "                      _    _               ___                        \n"
-                + //
-                "                     | |  (_)_ ___ _ ___  | __|_ ___ __ _ _ ___ ______\n"
-                + //
-                "                     | |__| \\ V / '_/ -_) | _|\\ \\ / '_ \\ '_/ -_|_-<_-<\n"
-                + //
-                "                     |____|_|\\_/|_| \\___| |___/_\\_\\ .__/_| \\___/__/__/\n"
-                + //
-                "                                                  |_|                 ");
+                        + //
+                        "                     | |  (_)_ ___ _ ___  | __|_ ___ __ _ _ ___ ______\n"
+                        + //
+                        "                     | |__| \\ V / '_/ -_) | _|\\ \\ / '_ \\ '_/ -_|_-<_-<\n"
+                        + //
+                        "                     |____|_|\\_/|_| \\___| |___/_\\_\\ .__/_| \\___/__/__/\n"
+                        + //
+                        "                                                  |_|                 ");
     }
 
     private static void menuConnex() {
@@ -113,8 +114,8 @@ public class Executable {
         String res = usr.nextLine();
         try {
             if (Integer.parseInt(res) == 0) {
-                throw new QuitterExecption(); 
-            }else {
+                throw new QuitterExecption();
+            } else {
                 System.out.println("Votre " + demande + " " + res);
                 System.out.println("");
                 return res;
@@ -131,8 +132,8 @@ public class Executable {
         String res = usr.nextLine();
         try {
             if (Integer.parseInt(res) == 0) {
-                throw new QuitterExecption(); 
-            }else {
+                throw new QuitterExecption();
+            } else {
                 System.out.println("Votre " + demande + " " + res);
                 System.out.println(" ");
             }
@@ -347,7 +348,7 @@ public class Executable {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    afficheMenuClient(cli);
+                    menuClient(cli, usr);
                     quitte = true;
                     break;
                 case "1":
@@ -383,7 +384,7 @@ public class Executable {
             switch (res) {
                 case "0":
                     quitte = true;
-                    afficheConsulteCatalogue();
+                    consulteCatalogue(cli, usr);
                     break;
                 case "1":
                     selonTheme(cli, usr);
@@ -400,8 +401,8 @@ public class Executable {
         for (Integer i : hm.keySet()) {
             System.out.println("[" + i + "] " + hm.get(i));
         }
-        System.out.println("[0] Quitter");
         System.out.println("Entrez le thème de votre choix");
+        System.out.println("[10] Quitter");
     }
 
     private static void selonTheme(Client cli, Scanner usr) {
@@ -417,10 +418,11 @@ public class Executable {
         while (!quitte && usr.hasNext()) {
             String res = usr.next();
             switch (res) {
-                case "0":
+                case "10":
                     quitte = true;
-                    afficheRechercheLivre();
+                    rechercheLivre(cli, usr);
                     break;
+                case "0":
                 case "1":
                 case "2":
                 case "3":
@@ -428,22 +430,51 @@ public class Executable {
                 case "5":
                 case "6":
                 case "7":
+                case "8":
                 case "9":
-                case "10":
                     try {
-                        System.out.println(query.rechercheTheme(Integer.parseInt(res)));
+                        catalogue(query.rechercheTheme(Integer.parseInt(res)), usr, cli);
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
                     break;
                 default:
-                    System.out.println("Veuillez entrer une séléction valide");
+                    System.out.println("Veuillez entrer une séléction valide, si vous voulez quittez faites 10");
                     break;
             }
         }
     }
 
-// private static void 
-}
+    private static void afficheCatalogue(List<Livre> livres) {
+        String column1Format = "%-50.50s";
+        String column2Format = "%-8.8s";
+        String column3Format = "%8.8s";
+        String formatInfo = column1Format + " " + column2Format + " " + column3Format;
+        System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+        for (int i = 0; i < livres.size(); ++i) {
+            System.out.format(formatInfo, "[" + i + "] Titre : " + livres.get(i).getTitre(),
+                    "qte : " + livres.get(i).getQte(), livres.get(i).getPrix() + " €");
+            System.out.println();
+        }
+        System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+        System.out.println("[0] Quitter");
 
-// SELECT LIVRE.*
+    }
+
+    private static void catalogue(List<Livre> livres, Scanner usr, Client cli) {
+        afficheCatalogue(livres);
+        boolean quitte = false;
+        while (!quitte && usr.hasNext()) {
+            String res = usr.nextLine();
+            switch (res) {
+                case "0":
+                    quitte = true;
+                    selonTheme(cli, usr);
+                    break;
+                default:
+                    System.out.println("Mettre une séléction valide");
+                    break;
+            }
+        }
+    }
+}

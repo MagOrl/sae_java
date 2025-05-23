@@ -12,8 +12,8 @@ public class Requetes {
     public Requetes(ConnexionMySQL laConnexion) {
         this.laConnexion = laConnexion;
         try {
-            // laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
-            laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev", "arsamerzoev");
+            laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
+            // laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev", "arsamerzoev");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -140,7 +140,7 @@ public class Requetes {
         this.st = laConnexion.createStatement();
         ResultSet rs = this.st.executeQuery("SELECT * FROM CLASSIFICATION GROUP BY FLOOR(iddewey/100)");
         HashMap<Integer, String> res = new HashMap<>();
-        int i = 1;
+        int i = 0;
         while (rs.next()) {
             res.put(i, rs.getString("nomclass"));
             i++;
@@ -153,11 +153,11 @@ public class Requetes {
     public List<Livre> rechercheTheme(int thm) throws SQLException {
         thm = thm*100;
         this.st = laConnexion.createStatement();
-        String query = "SELECT LIVRE.* FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN POSSEDER NATURAL JOIN MAGASIN WHERE iddewey>=" + thm + " and iddewey<=" + (thm + 10);
+        String query = "SELECT LIVRE.*,qte FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN POSSEDER NATURAL JOIN MAGASIN WHERE iddewey>=" + thm + " and iddewey<=" + (thm + 90);
         ResultSet rs = this.st.executeQuery(query);
         List<Livre> catalogue = new ArrayList<>();
         while (rs.next()) {
-            catalogue.add(new Livre(rs.getInt("isbn"), rs.getString("titre"), rs.getInt("nbpage"), rs.getString("datepubli"), rs.getInt("prix")));
+            catalogue.add(new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"), rs.getString("datepubli"), rs.getInt("prix"),rs.getInt("qte")));
         }
         rs.close();
         return catalogue;
