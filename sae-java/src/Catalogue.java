@@ -1,79 +1,106 @@
+import java.util.List;
+import java.util.ArrayList;
 
-import java.util.*;
-
-
-/**
- * Class Catalogue
- */
 public class Catalogue {
 
-  //
-  // Fields
-  //
+  /**
+  * Attibuts de la classe Catalogue
+  */
+  private List<Livre> livre;
 
-  private Livre nouvelleAttribut;
+  /**
+  * Constructeur de la classe Catalogue
+  */
+  public Catalogue() {
+    this.livre = new ArrayList<>();
+  }
 
-  private Vector livresVector = new Vector();
+  /**
+  * Methodes de la classe Catalogue
+  */ 
+
+  /**
+   * recupère les livres du catalogue
+   * @return les livres du catalogue
+   */
+  public List<Livre> getLivre() {
+    return this.livre;
+  }
+
+  /**
+   * Recherche un livre par son Titre
+   * @param titre le titre du livre à rechercher
+   * @return la liste des livres trouvés
+   */
   
-  //
-  // Constructors
-  //
-  public Catalogue () { };
-  
-  //
-  // Methods
-  //
-  public Livre getNouvelleAttribut(Livre nouvelleAttribut){
-    this.nouvelleAttribut= nouvelleAttribut;
-  }
-
-
-  //
-  // Accessor methods
-  //
-
-  /**
-   * Set the value of nouvel_attribut
-   * @param newVar the new value of nouvel_attribut
-   */
-  public void setNouvel_attribut (Livre newVar) {
-    nouvel_attribut = newVar;
+  public List<Livre> rechercherLivreParTitre(String titre) {
+    List<Livre> livresTrouves = new ArrayList<>();
+    for (Livre l : this.livre) {
+      if (l.getTitre().equals(titre)) {
+        livresTrouves.add(l);
+      }
+    }
+    return livresTrouves;
   }
 
   /**
-   * Get the value of nouvel_attribut
-   * @return the value of nouvel_attribut
+   * Recherche un livre par son auteur
+   * @param auteur le nom de l'auteur du livre à rechercher
+   * @return la liste des livres trouvés
    */
-  public Livre getNouvel_attribut () {
-    return nouvel_attribut;
+  public List<Livre> rechercherLivreParAuteur(String auteur) {
+    List<Livre> livresTrouves = new ArrayList<>();
+    for (Livre l : this.livre) {
+      if (l.getAuteur().equals(auteur)) {
+        livresTrouves.add(l);
+      }
+    }
+    return livresTrouves;
   }
 
   /**
-   * Add a Livres object to the livresVector List
+   * Le nombre de livres dans le catalogue
+   * @return le nombre de livres
    */
-  private void addLivres (Livre new_object) {
-    livresVector.add(new_object);
+  public int getNombreLivres() {
+    return this.livre.size();
   }
 
   /**
-   * Remove a Livres object from livresVector List
+   * Trier les livres par titre
+   * @return Liste des livres triés par titre
    */
-  private void removeLivres (Livre new_object)
-  {
-    livresVector.remove(new_object);
+  public List<Livre> trierLivresParTitre() {
+    this.livre.sort((l1, l2) -> l1.getTitre().compareTo(l2.getTitre()));
+    return this.livre;
   }
 
   /**
-   * Get the List of Livres objects held by livresVector
-   * @return List of Livres objects held by livresVector
+   * Trier les livres par auteur
+   * @return Liste des livres triés par auteur
    */
-  private List getLivresList () {
-    return (List) livresVector;
+  public List<Livre> trierLivresParAuteur() {
+    this.livre.sort((l1, l2) -> l1.getAuteur().compareTo(l2.getAuteur()));
+    return this.livre;
+  }
+
+  /**
+   * Trier les livres par date de publication
+   * @return Liste des livres triés par date de publication
+   */
+  public List<Livre> trierLivresParDate() {
+    this.livre.sort((l1, l2) -> l1.getDatePublication().compareTo(l2.getDatePublication()));
+    return this.livre;
   }
 
 
-  //
-  // Other methods
-  //
+
+  /**
+  * Afficheur de la classe Auteur
+  */
+  @Override
+  public String toString() {
+    return null;
+  }
 
 }
