@@ -1,5 +1,8 @@
+
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Requetes {
 
@@ -9,7 +12,8 @@ public class Requetes {
     public Requetes(ConnexionMySQL laConnexion) {
         this.laConnexion = laConnexion;
         try {
-            laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
+            // laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
+            laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev", "arsamerzoev");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -96,12 +100,13 @@ public class Requetes {
         this.st = laConnexion.createStatement();
         ResultSet rs = this.st.executeQuery(
                 "select numcom,numlig,datecom, enligne, livraison,titre,qte,prixvente FROM COMMANDE NATURAL JOIN DETAILCOMMANDE NATURAL JOIN LIVRE WHERE idcli = "
-                        + cli.getNumCompte() + " ORDER BY datecom");
+                + cli.getNumCompte() + " ORDER BY datecom");
         // rs.first();
         // numcomSave = rs.getInt("numcom");
         // rs.beforeFirst();
-        if (!rs.next())
+        if (!rs.next()) {
             return "Aucune commande effectuer pour le moment";
+        }
         rs.beforeFirst();
         int numcomSave = -1;
         String res = "";
@@ -131,10 +136,10 @@ public class Requetes {
         return res;
     }
 
-    public HashMap<Integer,String> afficheThemes() throws SQLException {
+    public HashMap<Integer, String> afficheThemes() throws SQLException {
         this.st = laConnexion.createStatement();
         ResultSet rs = this.st.executeQuery("SELECT * FROM CLASSIFICATION GROUP BY FLOOR(iddewey/100)");
-        HashMap<Integer,String> res = new HashMap<>();
+        HashMap<Integer, String> res = new HashMap<>();
         int i = 1;
         while (rs.next()) {
             res.put(i, rs.getString("nomclass"));
@@ -144,8 +149,19 @@ public class Requetes {
         return res;
 
     }
-    
 
+    public List<Livre> rechercheTheme(int thm) throws SQLException {
+        thm = thm*100;
+        this.st = laConnexion.createStatement();
+        String query = "SELECT LIVRE.* FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN POSSEDER NATURAL JOIN MAGASIN WHERE iddewey>=" + thm + " and iddewey<=" + (thm + 10);
+        ResultSet rs = this.st.executeQuery(query);
+        List<Livre> catalogue = new ArrayList<>();
+        while (rs.next()) {
+            catalogue.add(new Livre(rs.getInt("isbn"), rs.getString("titre"), rs.getInt("nbpage"), rs.getString("datepubli"), rs.getInt("prix")));
+        }
+        rs.close();
+        return catalogue;
+    }
 }
 // SELECT LIVRE.*
 // FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN CLASSIFICATION NATURAL JOIN

@@ -1,11 +1,10 @@
+
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
 
 public class Executable {
+
     private static ConnexionMySQL connexion;
 
     public static void main(String[] args) throws ClassNotFoundException {
@@ -36,11 +35,15 @@ public class Executable {
 
     private static void bvn() {
         System.out.println(
-                "                      _    _               ___                        \n" + //
-                        "                     | |  (_)_ ___ _ ___  | __|_ ___ __ _ _ ___ ______\n" + //
-                        "                     | |__| \\ V / '_/ -_) | _|\\ \\ / '_ \\ '_/ -_|_-<_-<\n" + //
-                        "                     |____|_|\\_/|_| \\___| |___/_\\_\\ .__/_| \\___/__/__/\n" + //
-                        "                                                  |_|                 ");
+                "                      _    _               ___                        \n"
+                + //
+                "                     | |  (_)_ ___ _ ___  | __|_ ___ __ _ _ ___ ______\n"
+                + //
+                "                     | |__| \\ V / '_/ -_) | _|\\ \\ / '_ \\ '_/ -_|_-<_-<\n"
+                + //
+                "                     |____|_|\\_/|_| \\___| |___/_\\_\\ .__/_| \\___/__/__/\n"
+                + //
+                "                                                  |_|                 ");
     }
 
     private static void menuConnex() {
@@ -109,9 +112,9 @@ public class Executable {
         System.out.println("Entrez votre " + demande);
         String res = usr.nextLine();
         try {
-            if (Integer.parseInt(res) == 0)
-                throw new QuitterExecption();
-            else {
+            if (Integer.parseInt(res) == 0) {
+                throw new QuitterExecption(); 
+            }else {
                 System.out.println("Votre " + demande + " " + res);
                 System.out.println("");
                 return res;
@@ -127,9 +130,9 @@ public class Executable {
         System.out.println("Entrez votre " + demande);
         String res = usr.nextLine();
         try {
-            if (Integer.parseInt(res) == 0)
-                throw new QuitterExecption();
-            else {
+            if (Integer.parseInt(res) == 0) {
+                throw new QuitterExecption(); 
+            }else {
                 System.out.println("Votre " + demande + " " + res);
                 System.out.println(" ");
             }
@@ -393,9 +396,9 @@ public class Executable {
         }
     }
 
-    private static void afficheSelonTheme(HashMap<Integer,String> hm) {
-        for(Integer i:hm.keySet()){
-            System.out.println("["+i+"] "+hm.get(i));
+    private static void afficheSelonTheme(HashMap<Integer, String> hm) {
+        for (Integer i : hm.keySet()) {
+            System.out.println("[" + i + "] " + hm.get(i));
         }
         System.out.println("[0] Quitter");
         System.out.println("Entrez le thème de votre choix");
@@ -403,7 +406,7 @@ public class Executable {
 
     private static void selonTheme(Client cli, Scanner usr) {
         Requetes query = new Requetes(connexion);
-        HashMap<Integer,String> themes = new HashMap<>();
+        HashMap<Integer, String> themes = new HashMap<>();
         try {
             themes = query.afficheThemes();
         } catch (SQLException e) {
@@ -427,7 +430,11 @@ public class Executable {
                 case "7":
                 case "9":
                 case "10":
-                    System.out.println("to be built");
+                    try {
+                        System.out.println(query.rechercheTheme(Integer.parseInt(res)));
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
                     break;
                 default:
                     System.out.println("Veuillez entrer une séléction valide");
@@ -435,6 +442,8 @@ public class Executable {
             }
         }
     }
+
+// private static void 
 }
 
 // SELECT LIVRE.*
