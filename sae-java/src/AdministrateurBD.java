@@ -1,7 +1,7 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class AdministrateurBD {
 
@@ -59,35 +59,74 @@ public class AdministrateurBD {
                         "SELECT * FROM CLIENT WHERE identifiant = '" + identif + "'and motdepasse ='" + mdp + "'");
         return rs.next();
     }
+    
+    public void ajouteNouvelleLibrairie(Magasin magasin){
+      try{
+        PreparedStatement ps = this.connexion.prepareStatement("insert into MAGASIN values(?,?,?)");
+        ps.setInt(1, magasin.getId());
+        ps.setString(2, magasin.getNom());
+        ps.setString(2, magasin.getVille());
+        ps.executeUpdate();
+      }catch(SQLException e){
+        System.out.println("Une erreur est survenue lors de l'ajout de la librairie au réseau");
+      }
+    }
 
-    //public void creerCompteVendeur(int numCompte, String nom, String prenom, String identifiant, String adresse, int tel, String email, String mdp, Magasin magasin) throws SQLException{
-    //try{
-    //  Vendeur vendeur = new Vendeur(numCompte, nom, prenom, identifiant, adresse, tel, email, mdp, magasin);
-    //  PreparedStatement ps = this.connexion.prepareStatement("create user 'vendeur"+vendeur.getMagasinVendeur()+"'@'%' identified by '"+mdp+"'");
-    //  ps.executeUpdate();
-    //  PreparedStatement ps2 = this.connexion.prepareStatement("grant 'vendeur' to '"+vendeur.getMagasinVendeur()+"'@'%'");
-    //  ps2.executeUpdate();
-    //}catch(SQLException e){
-    //  System.out.println("");
-    //}
-    //create user 'adminVacances'@'%' identified by 'mdpadmin';
-    //grant 'administrateur' to 'adminVacances'@'%';
-  //}
-//
-  //public void ajouteNouvelleLibrairie(Magasin magasin) throws SQLException{
-  //  PreparedStatement ps = this.connexion.prepareStatement("insert into MAGASIN values(?,?,?)");
-  //  ps.setInt(1, magasin.getId());
-  //  ps.setString(2, magasin.getNom());
-  //  ps.setString(2, magasin.getVille());
-  //  ps.executeUpdate();
-  //}
-//
-  public void gererStock(){
+    public void AjouterLivre(Livre livre){
+      try {
+        PreparedStatement ps = this.connexion.prepareStatement("insert into LIVRE values(?,?,?,?,?)");
+        ps.setInt(1, livre.getIsbn());   
+        ps.setString(2, livre.getTitre()); 
+        ps.setInt(3, livre.getNbPages());   
+        ps.setInt(4, (livre.getDatePubli()));   
+        ps.setDouble(5, livre.getPrix());
+        ps.executeUpdate();   
+      } catch (SQLException e) {
+        System.out.println("Une erreur est survenue lors de l'ajout du livre veuillez réessayer");
+      }
+    }
 
-  }
 
-  public void consulteStats(){
+    public void SupprimerLivre(Livre livre){
+      try{
+        PreparedStatement ps = this.connexion.prepareStatement("DELETE FROM LIVRE WHERE isbn = ?");
+        ps.setInt(1, livre.getIsbn());
+        ps.executeUpdate();
+      }catch(SQLException e){
+        System.out.println("Une erreur est survenue lors de la suppression du livre veuillez réessayer");
+      }
+    }
 
-  }
+    public void majQteLivre(Livre livre, Magasin mag, int qte){
+      try{
+        this.st = connexion.createStatement();
+	  	  ResultSet r = this.st.executeQuery("select qte from LIVRE natural join POSSERDER natural join MAGASIN where isbn = "+ livre.getIsbn()+" and idmag = " + mag.getId() + "");
+        qte += r.getInt("qte");
+
+        PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSERDER SET qte = ? WHERE isbn = ?");
+        ps.setInt(1, qte);
+        ps.setInt(2, livre.getIsbn());
+        ps.executeUpdate();
+      }catch(SQLException e){
+        System.out.println("Une erreur est survenue lors de la mise à jour de la quantité veuillez réessayer");
+      }
+    }
+
+    public void afficherStockLibrairie(Magasin mag){
+      try{
+        this.st = connexion.createStatement();
+        ResultSet r = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix from LIVRE natural join POSSERDER natural join MAGASIN where idmag = "+ mag.getId());
+        while(r.next()){
+          Livre livreActuel = new Livre(Integer.parseInt(r.getString("isbn")), r.getString("titre"), r.getInt("nbpages"), r.getInt("datepubli"), r.getDouble("prix"));
+          System.out.println(livreActuel + "/n");
+        }
+      }catch(SQLException e){
+        System.out.println("Une erreur est survenue lors de l'affichage du stock");
+      }
+    }
+
+    public void consulteStats(){
+
+    }
     
 }

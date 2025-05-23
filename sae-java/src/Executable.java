@@ -1,7 +1,4 @@
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class Executable {
@@ -422,7 +419,7 @@ public class Executable {
                     break;
 
                 case "3":
-
+                    menuGererStocksGlobaux(admin, usr);
                     break;
                 
                 case "4":
@@ -438,6 +435,44 @@ public class Executable {
             }
         }
         
+    }
+
+    private void afficheMenuGererStocksGlobaux(){
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ Que souhaitez vous faire ?                                                         │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [1] Ajouter un livre a une librairie                                               │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [2] Supprimer un livre d'une librairie                                             │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [3] Mettre à jour la quantité d'un livre                                           │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [4] Afficher le stock de la librairie                                              │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [5] Changer de librairie                                                           │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [0] Retour                                                                         │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+    }
+
+    private void menuGererStocksGlobaux(Administrateur admin, Scanner usr){
+        afficheMenuGererStocksGlobaux();
+        boolean retour = false;
+        while(!retour && usr.hasNext()){
+            String res = usr.nextLine();
+            switch(res){
+              case "1":
+              case "2":
+              case "3":
+              case "4": //afficher le stock de la librairie concernée
+              case "5": //changer de librairie
+              case "0":
+                menuAdmin(admin, usr);
+                break; //quitter
+              default: System.out.println("veuillez entrer un nombre entre 1 et 6");
+
+            }
+        }
     }
 }
 
