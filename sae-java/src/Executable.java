@@ -23,6 +23,8 @@ public class Executable {
                 case "2":
                     menuCreaCompte(usr);
                     break;
+                case "3": 
+                    menuAdmin(connexionAdmin(usr), usr);
                 default:
                     System.out.println("Entrez un chiffre entre 0 et 2 svp.");
             }
@@ -44,6 +46,8 @@ public class Executable {
         System.out.println("│ [1] Se connecter                                                                   │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [2] Créer un compte                                                                │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [3] Se connecter en tant qu'administrateur                                                 │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -388,9 +392,18 @@ public class Executable {
         }
     }
 
+    private static Administrateur connexionAdmin(Scanner usr){
+        AdministrateurBD Aconnexion = new AdministrateurBD(connexion);
+            System.out.println("Entrez votre identifiant");
+            String identifiant = usr.nextLine();
+            System.out.println("Entrez votre mot de passe");
+            String mdp = usr.nextLine();
+            return Aconnexion.trouveAdmin(identifiant, mdp);
+    }
+
     private static void afficheMenuAdmin(Administrateur admin){
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Bonjour " + admin.getPrenom() + " Que souhaitez vous faire ?                       │");
+        System.out.println("│ Bonjour " + admin.getPrenom() + " que souhaitez vous faire ?                       │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [1] Créer un compte vendeur                                                        │");
         System.out.println("│                                                                                    │");
@@ -404,14 +417,16 @@ public class Executable {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
 
-    private void menuAdmin(Administrateur admin, Scanner usr){
+    private static void menuAdmin(Administrateur admin, Scanner usr){
         afficheMenuAdmin(admin);
         boolean quitter = false;
         while(!quitter && usr.hasNext()){
             String res = usr.nextLine();
             switch (res) {
+                case "0":
+                    quitter = true;
                 case "1":
-                    
+                    CreerCompteVendeur(admin, usr);
                     break;
                 
                 case "2":
@@ -419,7 +434,7 @@ public class Executable {
                     break;
 
                 case "3":
-                    menuGererStocksGlobaux(admin, usr);
+                    //menuGererStocksGlobaux(admin, usr);
                     break;
                 
                 case "4":
@@ -437,9 +452,40 @@ public class Executable {
         
     }
 
-    private void afficheMenuGererStocksGlobaux(){
+    private static void CreerCompteVendeur(Administrateur admin, Scanner usr){
+        try{
+            AdministrateurBD adminBD = new AdministrateurBD(connexion);
+            System.out.println("Entrez l'identifiant du vendeur");
+            String identifiant = usr.nextLine();
+            System.out.println("Entrez le nom du vendeur");
+            String nom = usr.nextLine();
+            System.out.println("Entrez le prénom du vendeur");
+            String prenom = usr.nextLine();
+            System.out.println("Entrez l'adresse du vendeur");
+            String adresse = usr.nextLine();
+            System.out.println("Entrez le codePostal du vendeur");
+            String codePostal = usr.nextLine();
+            System.out.println("Entrez la ville du vendeur");
+            String ville = usr.nextLine();
+            System.out.println("Entrez l'email du vendeur");
+            String email = usr.nextLine();
+            System.out.println("Entrez le numéro de télephone du vendeur");
+            String tel = usr.nextLine();
+            System.out.println("Entrez le mot de passe du vendeur");
+            String mdp = usr.nextLine();
+            System.out.println("Entrez le nom du magasin du vendeur");
+            String magasin = usr.nextLine();
+            adminBD.CreerCompteVendeur(nom, prenom, identifiant, adresse, tel, email, mdp, codePostal, ville, magasin);
+        }catch(SQLException e){
+            System.out.println("Un problème est survenu lors de la création du compte");
+            menuAdmin(admin, usr);
+        }
+
+    }
+
+    private static void afficheMenuGererStocksGlobaux(Magasin mag){
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Que souhaitez vous faire ?                                                         │");
+        System.out.println("│ Que souhaitez vous faire ?                  Librairie actuelle : " +mag.getNom()+" │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [1] Ajouter un livre a une librairie                                               │");
         System.out.println("│                                                                                    │");
@@ -455,8 +501,8 @@ public class Executable {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
 
-    private void menuGererStocksGlobaux(Administrateur admin, Scanner usr){
-        afficheMenuGererStocksGlobaux();
+    private static void menuGererStocksGlobaux(Administrateur admin, Magasin mag, Scanner usr){
+        afficheMenuGererStocksGlobaux(mag);
         boolean retour = false;
         while(!retour && usr.hasNext()){
             String res = usr.nextLine();

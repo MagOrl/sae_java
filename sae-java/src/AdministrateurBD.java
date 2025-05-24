@@ -17,10 +17,30 @@ public class AdministrateurBD {
         }
     }
 
-    public Vendeur CreerCompteVendeur(String nom, String prenom, String identifiant, String adresse, String tel, String email, String mdp, String codePostal, String ville, Magasin magasin) throws SQLException{
-      int numVendeur = clientMax() + 1;
+    public Administrateur trouveAdmin(String identifiant, String mdp){
+      Administrateur admin = null;
       try{
+        this.st = this.connexion.createStatement();
+        ResultSet rs = this.st
+                  .executeQuery(
+                          "SELECT * FROM CLIENT WHERE identifiant ='" + identifiant + "'" + "and motdepasse ='"+mdp+"'" );
+        while(rs.next()){
+          admin = new Administrateur(clientMax(), rs.getString("nomcli"), rs.getString("prenomcli"), identifiant,rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), mdp, rs.getString("codepostal"), rs.getString("villecli"));
+        }
+        rs.close();
+      }catch(SQLException e){
+        System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte créez en un");
+      }
+      return admin;
+    }
+
+    public Vendeur CreerCompteVendeur(String nom, String prenom, String identifiant, String adresse, String tel, String email, String mdp, String codePostal, String ville, String nommag) throws SQLException{
+      int numVendeur = clientMax() + 1;
       this.st = this.connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select idmag, villemag from MAGASIN where nommag ='" +nommag+ "'");
+      System.out.println("test 1");
+      Magasin mag = new Magasin(Integer.parseInt(rs.getString("idmag")), nommag, rs.getString("villemag"));
+      System.out.println("test 2");
       PreparedStatement ps = this.connexion.prepareStatement("insert into CLIENT values (?,?,?,?,?,?,?,?,?,?)");
         ps.setInt(1, numVendeur);
         ps.setString(2, identifiant);
@@ -33,12 +53,10 @@ public class AdministrateurBD {
         ps.setInt(9, Integer.parseInt(tel));
         ps.setString(10, mdp);
         ps.executeUpdate();
-        
-      }catch(SQLException e){
-        System.out.println("Un problème est survenu lors de la création du compte");
-      }
+      System.out.println("test 3");
       Integer telToInt = Integer.valueOf(tel);
-      return new Vendeur(numVendeur, nom, prenom, identifiant, adresse, telToInt, email, mdp, codePostal, ville, magasin);
+      System.out.println("test 4");
+      return new Vendeur(numVendeur, nom, prenom, identifiant, adresse, telToInt, email, mdp, codePostal, ville, mag);
     }
 
     public int clientMax() throws SQLException {
@@ -52,7 +70,7 @@ public class AdministrateurBD {
         return max;
     }
 
-    public boolean connectAdmin(String identif, String mdp) throws SQLException {
+    public boolean connectAdmin(String identif, String mdp) throws SQLException{
         this.st = this.connexion.createStatement();
         ResultSet rs = this.st
                 .executeQuery(
@@ -60,20 +78,16 @@ public class AdministrateurBD {
         return rs.next();
     }
     
-    public void ajouteNouvelleLibrairie(Magasin magasin){
-      try{
+    public void ajouteNouvelleLibrairie(Magasin magasin) throws SQLException{
         PreparedStatement ps = this.connexion.prepareStatement("insert into MAGASIN values(?,?,?)");
         ps.setInt(1, magasin.getId());
         ps.setString(2, magasin.getNom());
         ps.setString(2, magasin.getVille());
         ps.executeUpdate();
-      }catch(SQLException e){
-        System.out.println("Une erreur est survenue lors de l'ajout de la librairie au réseau");
-      }
+        //System.out.println("Une erreur est survenue lors de l'ajout de la librairie au réseau");
     }
 
-    public void AjouterLivre(Livre livre){
-      try {
+    public void AjouterLivre(Livre livre) throws SQLException{
         PreparedStatement ps = this.connexion.prepareStatement("insert into LIVRE values(?,?,?,?,?)");
         ps.setInt(1, livre.getIsbn());   
         ps.setString(2, livre.getTitre()); 
@@ -81,24 +95,18 @@ public class AdministrateurBD {
         ps.setInt(4, (livre.getDatePubli()));   
         ps.setDouble(5, livre.getPrix());
         ps.executeUpdate();   
-      } catch (SQLException e) {
-        System.out.println("Une erreur est survenue lors de l'ajout du livre veuillez réessayer");
-      }
+        //System.out.println("Une erreur est survenue lors de l'ajout du livre veuillez réessayer");
     }
 
 
-    public void SupprimerLivre(Livre livre){
-      try{
+    public void SupprimerLivre(Livre livre) throws SQLException{
         PreparedStatement ps = this.connexion.prepareStatement("DELETE FROM LIVRE WHERE isbn = ?");
         ps.setInt(1, livre.getIsbn());
         ps.executeUpdate();
-      }catch(SQLException e){
-        System.out.println("Une erreur est survenue lors de la suppression du livre veuillez réessayer");
-      }
+        //System.out.println("Une erreur est survenue lors de la suppression du livre veuillez réessayer");
     }
 
-    public void majQteLivre(Livre livre, Magasin mag, int qte){
-      try{
+    public void majQteLivre(Livre livre, Magasin mag, int qte) throws SQLException{
         this.st = connexion.createStatement();
 	  	  ResultSet r = this.st.executeQuery("select qte from LIVRE natural join POSSERDER natural join MAGASIN where isbn = "+ livre.getIsbn()+" and idmag = " + mag.getId() + "");
         qte += r.getInt("qte");
@@ -107,22 +115,18 @@ public class AdministrateurBD {
         ps.setInt(1, qte);
         ps.setInt(2, livre.getIsbn());
         ps.executeUpdate();
-      }catch(SQLException e){
-        System.out.println("Une erreur est survenue lors de la mise à jour de la quantité veuillez réessayer");
-      }
+        //System.out.println("Une erreur est survenue lors de la mise à jour de la quantité veuillez réessayer");
     }
 
-    public void afficherStockLibrairie(Magasin mag){
-      try{
+    public void afficherStockLibrairie(Magasin mag) throws SQLException{
         this.st = connexion.createStatement();
         ResultSet r = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix from LIVRE natural join POSSERDER natural join MAGASIN where idmag = "+ mag.getId());
         while(r.next()){
           Livre livreActuel = new Livre(Integer.parseInt(r.getString("isbn")), r.getString("titre"), r.getInt("nbpages"), r.getInt("datepubli"), r.getDouble("prix"));
           System.out.println(livreActuel + "/n");
         }
-      }catch(SQLException e){
-        System.out.println("Une erreur est survenue lors de l'affichage du stock");
-      }
+        //System.out.println("Une erreur est survenue lors de l'affichage du stock");
+      
     }
 
     public void consulteStats(){
