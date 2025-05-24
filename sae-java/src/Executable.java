@@ -1,5 +1,6 @@
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.List;
 
 public class Executable {
     private static ConnexionMySQL connexion;
@@ -47,7 +48,7 @@ public class Executable {
         System.out.println("│                                                                                    │");
         System.out.println("│ [2] Créer un compte                                                                │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [3] Se connecter en tant qu'administrateur                                                 │");
+        System.out.println("│ [3] Se connecter en tant qu'administrateur                                         │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -394,14 +395,25 @@ public class Executable {
 
     private static Administrateur connexionAdmin(Scanner usr){
         AdministrateurBD Aconnexion = new AdministrateurBD(connexion);
+        Administrateur admin = null;
+        String identifiant = null;
+        String mdp = null;
+        try{
             System.out.println("Entrez votre identifiant");
-            String identifiant = usr.nextLine();
+            identifiant = usr.nextLine();
             System.out.println("Entrez votre mot de passe");
-            String mdp = usr.nextLine();
-            return Aconnexion.trouveAdmin(identifiant, mdp);
+            mdp = usr.nextLine();
+            admin = Aconnexion.trouveAdmin(identifiant, mdp);
+        }catch(SQLException e){
+            System.out.println("Identifiant ou mot de passe incorect");
+
+        }
+        return admin;
+        
     }
 
     private static void afficheMenuAdmin(Administrateur admin){
+        try{
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Bonjour " + admin.getPrenom() + " que souhaitez vous faire ?                       │");
         System.out.println("│                                                                                    │");
@@ -415,6 +427,10 @@ public class Executable {
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+        }catch(NullPointerException e){
+            System.out.println("Identifiant ou mot de passe incorect");
+
+        }
     }
 
     private static void menuAdmin(Administrateur admin, Scanner usr){
@@ -426,15 +442,15 @@ public class Executable {
                 case "0":
                     quitter = true;
                 case "1":
-                    CreerCompteVendeur(admin, usr);
+                    creerCompteVendeur(admin, usr);
                     break;
                 
                 case "2":
-
+                    ajouterNouvelleLibrairie(admin, usr);
                     break;
 
                 case "3":
-                    //menuGererStocksGlobaux(admin, usr);
+                    menuGererStocksGlobaux(admin, usr);
                     break;
                 
                 case "4":
@@ -452,7 +468,7 @@ public class Executable {
         
     }
 
-    private static void CreerCompteVendeur(Administrateur admin, Scanner usr){
+    private static void creerCompteVendeur(Administrateur admin, Scanner usr){
         try{
             AdministrateurBD adminBD = new AdministrateurBD(connexion);
             System.out.println("Entrez l'identifiant du vendeur");
@@ -476,11 +492,57 @@ public class Executable {
             System.out.println("Entrez le nom du magasin du vendeur");
             String magasin = usr.nextLine();
             adminBD.CreerCompteVendeur(nom, prenom, identifiant, adresse, tel, email, mdp, codePostal, ville, magasin);
+            System.out.println("Le compte à bien été crée");
+            menuAdmin(admin, usr);
         }catch(SQLException e){
             System.out.println("Un problème est survenu lors de la création du compte");
             menuAdmin(admin, usr);
         }
 
+    }
+
+    private static void ajouterNouvelleLibrairie(Administrateur admin, Scanner usr){
+        AdministrateurBD adminBD = new AdministrateurBD(connexion);
+        try{
+            System.out.println("Entrez l'identifiant de la nouvelle librairie");
+            String idmag = usr.nextLine();
+            System.out.println("Entrez le nom de la librairie");
+            String nommag = usr.nextLine();
+            System.out.println("Entrez la ville de la librairie");
+            String villemag = usr.nextLine();
+            adminBD.ajouteNouvelleLibrairie(idmag, nommag, villemag);
+            System.out.println("La librairie a été ajoutée");
+            menuAdmin(admin, usr);
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'ajout d'une nouvelle librairie");
+            menuAdmin(admin, usr);
+        }
+    }
+
+    private static void afficheChoixLibrairie(Scanner usr){
+        try{
+            AdministrateurBD adminBD = new AdministrateurBD(connexion);
+            int cpt = 1;
+            List<String> lesLibrairies = adminBD.choixLibrairie();
+            System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+            System.out.println("│ Choisissez une librairie                                                           │");
+            for(String librairie : lesLibrairies){
+                System.out.println("│"+"["+cpt+"]"+ " " + librairie + "                                     │");
+                cpt++;
+            }
+            System.out.println("│ [0] Retour                                                                         │");
+            System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors du choix de la librairie");
+        }
+    }
+
+    private static Magasin choixLibrairie(Administrateur admin, Scanner usr){
+        try{
+            afficheChoixLibrairie(usr);
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors du choix de la librairie");
+        }
     }
 
     private static void afficheMenuGererStocksGlobaux(Magasin mag){

@@ -1,16 +1,16 @@
 public class Magasin {
 
-  private int idMag;
+  private String idMag;
   private String nomMag;
   private String villeMag;
 
-  public Magasin(int id, String nom, String ville) {
+  public Magasin(String id, String nom, String ville) {
     this.idMag = id;
     this.nomMag = nom;
     this.villeMag = ville;
   }
 
-  public int getId() {
+  public String getId() {
     return this.idMag;
   }
 
@@ -22,7 +22,7 @@ public class Magasin {
     return this.villeMag;
   }
 
-  public void setId(int newId) {
+  public void setId(String newId) {
     this.idMag = newId;
   }
 
@@ -45,7 +45,7 @@ public class Magasin {
     if (o == this){return true;}
     if (!(o instanceof Magasin)){return false;}
     Magasin tmp = (Magasin) o;
-    return this.getId()==tmp.getId()
+    return this.getId().equals(tmp.getId())
     && this.getNom().equals(tmp.getNom())
     && this.getVille().equals(tmp.getVille());
   }

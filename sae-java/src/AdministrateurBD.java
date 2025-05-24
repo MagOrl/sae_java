@@ -2,6 +2,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.ArrayList;
 
 public class AdministrateurBD {
 
@@ -17,7 +19,7 @@ public class AdministrateurBD {
         }
     }
 
-    public Administrateur trouveAdmin(String identifiant, String mdp){
+    public Administrateur trouveAdmin(String identifiant, String mdp) throws SQLException{
       Administrateur admin = null;
       try{
         this.st = this.connexion.createStatement();
@@ -36,12 +38,13 @@ public class AdministrateurBD {
 
     public Vendeur CreerCompteVendeur(String nom, String prenom, String identifiant, String adresse, String tel, String email, String mdp, String codePostal, String ville, String nommag) throws SQLException{
       int numVendeur = clientMax() + 1;
+      Magasin mag = null;
       this.st = this.connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select idmag, villemag from MAGASIN where nommag ='" +nommag+ "'");
-      System.out.println("test 1");
-      Magasin mag = new Magasin(Integer.parseInt(rs.getString("idmag")), nommag, rs.getString("villemag"));
-      System.out.println("test 2");
-      PreparedStatement ps = this.connexion.prepareStatement("insert into CLIENT values (?,?,?,?,?,?,?,?,?,?)");
+      while(rs.next()){
+        mag = new Magasin(rs.getString("idmag"), nommag, rs.getString("villemag"));
+      }
+        PreparedStatement ps = this.connexion.prepareStatement("insert into CLIENT values (?,?,?,?,?,?,?,?,?,?)");
         ps.setInt(1, numVendeur);
         ps.setString(2, identifiant);
         ps.setString(3, nom);
@@ -53,9 +56,7 @@ public class AdministrateurBD {
         ps.setInt(9, Integer.parseInt(tel));
         ps.setString(10, mdp);
         ps.executeUpdate();
-      System.out.println("test 3");
       Integer telToInt = Integer.valueOf(tel);
-      System.out.println("test 4");
       return new Vendeur(numVendeur, nom, prenom, identifiant, adresse, telToInt, email, mdp, codePostal, ville, mag);
     }
 
@@ -78,13 +79,36 @@ public class AdministrateurBD {
         return rs.next();
     }
     
-    public void ajouteNouvelleLibrairie(Magasin magasin) throws SQLException{
+    public void ajouteNouvelleLibrairie(String idmag, String nommag, String villemag) throws SQLException{
+      try{
+        Magasin magasin = new Magasin(idmag, nommag, villemag);
         PreparedStatement ps = this.connexion.prepareStatement("insert into MAGASIN values(?,?,?)");
-        ps.setInt(1, magasin.getId());
+        ps.setString(1, magasin.getId());
         ps.setString(2, magasin.getNom());
-        ps.setString(2, magasin.getVille());
+        ps.setString(3, magasin.getVille());
         ps.executeUpdate();
+      }catch(SQLException e){
+        e.printStackTrace();
+      }
         //System.out.println("Une erreur est survenue lors de l'ajout de la librairie au réseau");
+    }
+
+    public List<String> choixLibrairie() throws SQLException{
+      List<String> lesLibrairies = new ArrayList<>();
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select nommag from MAGASIN");
+      while(rs.next()){
+        lesLibrairies.add(rs.getString("nommag"));
+      }
+      return lesLibrairies;
+    }
+
+    public Magasin trouveLibrairie(String nommag) throws SQLException{
+      Magasin mag = null;
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select idmag, villemag from MAGASIN where nommag ='" +nommag+"'");
+      mag = new Magasin(rs.getString("idmag"), nommag, rs.getString("villemag"));
+      return mag;
     }
 
     public void AjouterLivre(Livre livre) throws SQLException{
