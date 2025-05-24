@@ -13,7 +13,7 @@ public class Livre {
     this.nbPages = nbPages;
     this.datePubli = datePubli;
     this.prix = prix;
-    this.qte = 0;
+    this.qte = qte;
   };
 
   public String getIsbn(){

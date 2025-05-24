@@ -13,7 +13,8 @@ public class Requetes {
         this.laConnexion = laConnexion;
         try {
             laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
-            // laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev", "arsamerzoev");
+            // laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev",
+            // "arsamerzoev");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -100,7 +101,7 @@ public class Requetes {
         this.st = laConnexion.createStatement();
         ResultSet rs = this.st.executeQuery(
                 "select numcom,numlig,datecom, enligne, livraison,titre,qte,prixvente FROM COMMANDE NATURAL JOIN DETAILCOMMANDE NATURAL JOIN LIVRE WHERE idcli = "
-                + cli.getNumCompte() + " ORDER BY datecom");
+                        + cli.getNumCompte() + " ORDER BY datecom");
         // rs.first();
         // numcomSave = rs.getInt("numcom");
         // rs.beforeFirst();
@@ -150,18 +151,43 @@ public class Requetes {
 
     }
 
-    public List<Livre> rechercheTheme(int thm) throws SQLException {
-        thm = thm*100;
+    public List<List<Livre>> rechercheTheme(int thm) throws SQLException {
+        thm = thm * 100;
         this.st = laConnexion.createStatement();
-        String query = "SELECT LIVRE.*,qte FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN POSSEDER NATURAL JOIN MAGASIN WHERE iddewey>=" + thm + " and iddewey<=" + (thm + 90);
+        String query = "SELECT LIVRE.*,qte FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN POSSEDER WHERE iddewey>="
+                + thm + " and iddewey<=" + (thm + 90);
         ResultSet rs = this.st.executeQuery(query);
-        List<Livre> catalogue = new ArrayList<>();
-        while (rs.next()) {
-            catalogue.add(new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"), rs.getString("datepubli"), rs.getInt("prix"),rs.getInt("qte")));
+        List<List<Livre>> catalogue = new ArrayList<>();
+        int taille = nbLigneRequetes(rs);
+        for (int i = 0; i < taille; ++i) {
+            catalogue.add(new ArrayList<>());
+            for (int y = 0; y < 10; ++y) {
+                if (rs.next()) {
+                    catalogue.get(i).add(new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"),
+                            rs.getString("datepubli"), rs.getInt("prix"), rs.getInt("qte")));
+                }
+            }
         }
         rs.close();
+        taille = catalogue.size()-1;
+        while (taille >= 0) {
+            if (catalogue.get(taille).isEmpty())
+                catalogue.remove(catalogue.get(taille));
+            --taille;
+        }
         return catalogue;
+
     }
+    public int nbLigneRequetes(ResultSet rs) throws SQLException {
+        int res = 0;
+        while (rs.next()) {
+            ++res;
+        }
+        rs.first();
+        return res;
+
+    }
+
 }
 // SELECT LIVRE.*
 // FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN CLASSIFICATION NATURAL JOIN

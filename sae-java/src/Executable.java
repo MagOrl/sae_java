@@ -8,19 +8,24 @@ public class Executable {
 
     private static ConnexionMySQL connexion;
 
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) {
+        Scanner usr = new Scanner(System.in);
+        try {
+            principale(usr);
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private static void principale(Scanner usr) throws ClassNotFoundException {
         connexion = new ConnexionMySQL();
-        boolean quitte = false;
         bvn();
         menuConnex();
-        Scanner usr = new Scanner(System.in);
-        String res = "";
-        while (!quitte && usr.hasNextLine()) {
-            res = usr.nextLine();
+        while (usr.hasNextLine()) {
+            String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    quitte = true;
-                    break;
+                    usr.close();
                 case "1":
                     menuConnecter(usr);
                     break;
@@ -30,7 +35,6 @@ public class Executable {
                 default:
                     System.out.println("Entrez un chiffre entre 0 et 2 svp.");
             }
-
         }
     }
 
@@ -161,14 +165,16 @@ public class Executable {
 
     private static void menuClient(Client cli, Scanner usr) {
         afficheMenuClient(cli);
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    bvn();
-                    menuConnex();
-                    quitte = true;
+                    try {
+                        principale(usr);
+                        return;
+                    } catch (ClassNotFoundException ex) {
+                        ex.printStackTrace();
+                    }
                     break;
                 case "1":
                     consulteCatalogue(cli, usr);
@@ -179,6 +185,10 @@ public class Executable {
                 case "3":
                     afficheHistorique(cli, usr);
                     break;
+                case"4":
+                return;
+                default:
+                    System.out.println("Mettre une séléction valide");
             }
         }
     }
@@ -196,14 +206,12 @@ public class Executable {
 
     private static void gestionCompte(Client cli, Scanner usr) {
         afficheGestionCompte();
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
                     afficheMenuClient(cli);
-                    quitte = true;
-                    break;
+                    return;
                 case "1":
                     voirInfoperso(cli, usr);
                     break;
@@ -221,13 +229,11 @@ public class Executable {
         System.out.println(cli);
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         System.out.println(" [0] Quitter");
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    afficheGestionCompte();
-                    quitte = true;
+                    gestionCompte(cli, usr);
                     break;
                 default:
                     System.out.println("C'est 0 pour quitter");
@@ -258,14 +264,12 @@ public class Executable {
     private static void changeInfoPerso(Client cli, Scanner usr) {
         afficheChangeInfoPerso();
         Requetes query = new Requetes(connexion);
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    afficheGestionCompte();
-                    quitte = true;
-                    break;
+                    gestionCompte(cli, usr);
+                    return;
                 case "1":
                     System.out.println("Le nouveau identifiant :");
                     cli.setIdentifiant(usr.nextLine());
@@ -311,14 +315,12 @@ public class Executable {
         System.out.println(res);
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String rep = usr.nextLine();
             switch (rep) {
                 case "0":
-                    quitte = true;
                     afficheMenuClient(cli);
-                    break;
+                    return;
                 default:
                     System.out.println("0 pour quitter");
                     break;
@@ -332,9 +334,9 @@ public class Executable {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Les catalogues :                                                                   │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [1] Rechercher selon critère                                                       │");
+        System.out.println("│ [1] Rechercher selon thème                                                         │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Le catalogue                                                                   │");
+        System.out.println("│ [2] Le catalogue qu'on vous recommande                                             │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -343,16 +345,14 @@ public class Executable {
 
     private static void consulteCatalogue(Client cli, Scanner usr) {
         afficheConsulteCatalogue();
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
                     menuClient(cli, usr);
-                    quitte = true;
-                    break;
+                    return;
                 case "1":
-                    rechercheLivre(cli, usr);
+                    selonTheme(cli, usr);
                     break;
                 case "2":
                     System.out.println("to be built");
@@ -361,39 +361,6 @@ public class Executable {
                     System.out.println("Mettre une valeur entre 0 et 2");
                     break;
             }
-        }
-    }
-
-    private static void afficheRechercheLivre() {
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Les catalogues :                                                                   │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [1] Chercher selon theme                                                           │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Chercher selon titre                                                           │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0] Quitter                                                                        │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-    }
-
-    private static void rechercheLivre(Client cli, Scanner usr) {
-        afficheRechercheLivre();
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
-            String res = usr.nextLine();
-            switch (res) {
-                case "0":
-                    quitte = true;
-                    consulteCatalogue(cli, usr);
-                    break;
-                case "1":
-                    selonTheme(cli, usr);
-                    break;
-                default:
-                    System.out.println("Veuillez entrer une séléction valide");
-                    break;
-            }
-
         }
     }
 
@@ -414,14 +381,12 @@ public class Executable {
             e.printStackTrace();
         }
         afficheSelonTheme(themes);
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.next();
             switch (res) {
                 case "10":
-                    quitte = true;
-                    rechercheLivre(cli, usr);
-                    break;
+                    consulteCatalogue(cli, usr);
+                    return;
                 case "0":
                 case "1":
                 case "2":
@@ -445,31 +410,50 @@ public class Executable {
         }
     }
 
-    private static void afficheCatalogue(List<Livre> livres) {
+    private static void afficheCatalogue(List<List<Livre>> livres, int ind) {
         String column1Format = "%-50.50s";
         String column2Format = "%-8.8s";
         String column3Format = "%8.8s";
         String formatInfo = column1Format + " " + column2Format + " " + column3Format;
         System.out.println("────────────────────────────────────────────────────────────────────────────────────");
-        for (int i = 0; i < livres.size(); ++i) {
-            System.out.format(formatInfo, "[" + i + "] Titre : " + livres.get(i).getTitre(),
-                    "qte : " + livres.get(i).getQte(), livres.get(i).getPrix() + " €");
+        for (int i = 0; i < livres.get(ind).size(); ++i) {
+            System.out.format(formatInfo, "[" + i + "] Titre : " + livres.get(ind).get(i).getTitre(),
+                    "qte : " + livres.get(ind).get(i).getQte(), livres.get(ind).get(i).getPrix() + " €");
             System.out.println();
         }
         System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+        if (ind < livres.size()) {
+            System.out.println("[12] Suivant");
+        }
+        if (ind > 0) {
+            System.out.println("[11] Précédent");
+        }
         System.out.println("[0] Quitter");
-
     }
 
-    private static void catalogue(List<Livre> livres, Scanner usr, Client cli) {
-        afficheCatalogue(livres);
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+    private static void catalogue(List<List<Livre>> livres, Scanner usr, Client cli) {
+        int ind = 0;
+        afficheCatalogue(livres, ind);
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    quitte = true;
                     selonTheme(cli, usr);
+                    return;
+                // break;
+                case "11":
+                    try {
+                        afficheCatalogue(livres, --ind);
+                    } catch (IndexOutOfBoundsException ex) {
+                        System.out.println("vous ne pouvez pas passez au précédent");
+                    }
+                    break;
+                case "12":
+                    try {
+                        afficheCatalogue(livres, ++ind);
+                    } catch (IndexOutOfBoundsException ex) {
+                        System.out.println("Mettre une séléction suivant");
+                    }
                     break;
                 default:
                     System.out.println("Mettre une séléction valide");
