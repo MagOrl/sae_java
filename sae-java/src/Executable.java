@@ -20,7 +20,7 @@ public class Executable {
     private static void principale(Scanner usr) throws ClassNotFoundException {
         connexion = new ConnexionMySQL();
         bvn();
-        menuConnex();
+        afficheMenuConnex();
         while (usr.hasNextLine()) {
             String res = usr.nextLine();
             switch (res) {
@@ -51,7 +51,7 @@ public class Executable {
                         "                                                  |_|                 ");
     }
 
-    private static void menuConnex() {
+    private static void afficheMenuConnex() {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ [1] Se connecter                                                                   │");
         System.out.println("│                                                                                    │");
@@ -83,7 +83,7 @@ public class Executable {
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (QuitterExecption e) {
-            menuConnex();
+            afficheMenuConnex();
             return;
         }
     }
@@ -107,10 +107,10 @@ public class Executable {
             e.printStackTrace();
         } catch (QuitterExecption e) {
             bvn();
-            menuConnex();
+            afficheMenuConnex();
             return;
         }
-        menuConnex();
+        afficheMenuConnex();
     }
 
     private static String demandeUtilisateur(String demande, Scanner usr) throws QuitterExecption {
@@ -169,24 +169,21 @@ public class Executable {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    try {
-                        principale(usr);
-                        return;
-                    } catch (ClassNotFoundException ex) {
-                        ex.printStackTrace();
-                    }
-                    break;
+                    bvn();
+                    afficheMenuConnex();
+                    return;
                 case "1":
                     consulteCatalogue(cli, usr);
+                    afficheMenuClient(cli);
                     break;
                 case "2":
                     gestionCompte(cli, usr);
+                    afficheMenuClient(cli);
                     break;
                 case "3":
                     afficheHistorique(cli, usr);
+                    afficheMenuClient(cli);
                     break;
-                case"4":
-                return;
                 default:
                     System.out.println("Mettre une séléction valide");
             }
@@ -210,13 +207,14 @@ public class Executable {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    afficheMenuClient(cli);
                     return;
                 case "1":
                     voirInfoperso(cli, usr);
+                    afficheGestionCompte();
                     break;
                 case "2":
                     changeInfoPerso(cli, usr);
+                    afficheGestionCompte();
                     break;
             }
 
@@ -233,8 +231,7 @@ public class Executable {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    gestionCompte(cli, usr);
-                    break;
+                    return;
                 default:
                     System.out.println("C'est 0 pour quitter");
                     break;
@@ -268,7 +265,6 @@ public class Executable {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    gestionCompte(cli, usr);
                     return;
                 case "1":
                     System.out.println("Le nouveau identifiant :");
@@ -319,7 +315,6 @@ public class Executable {
             String rep = usr.nextLine();
             switch (rep) {
                 case "0":
-                    afficheMenuClient(cli);
                     return;
                 default:
                     System.out.println("0 pour quitter");
@@ -349,10 +344,10 @@ public class Executable {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    menuClient(cli, usr);
                     return;
                 case "1":
                     selonTheme(cli, usr);
+                    afficheConsulteCatalogue();
                     break;
                 case "2":
                     System.out.println("to be built");
@@ -385,7 +380,6 @@ public class Executable {
             String res = usr.next();
             switch (res) {
                 case "10":
-                    consulteCatalogue(cli, usr);
                     return;
                 case "0":
                 case "1":
@@ -399,6 +393,7 @@ public class Executable {
                 case "9":
                     try {
                         catalogue(query.rechercheTheme(Integer.parseInt(res)), usr, cli);
+                        afficheSelonTheme(themes);
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
@@ -428,23 +423,25 @@ public class Executable {
         if (ind > 0) {
             System.out.println("[11] Précédent");
         }
-        System.out.println("[0] Quitter");
+        System.out.println("[10] Quitter");
+        System.out.println("[0->9] Commander le livre de votre choix et préciser la quantité avec un espace");
     }
 
     private static void catalogue(List<List<Livre>> livres, Scanner usr, Client cli) {
         int ind = 0;
         afficheCatalogue(livres, ind);
+        Requetes query = new Requetes(connexion);
         while (usr.hasNext()) {
             String res = usr.nextLine();
-            switch (res) {
-                case "0":
-                    selonTheme(cli, usr);
+            String[] splitRes = res.split(" "); // 0 : ind livre 1: qte
+            switch (splitRes[0]) {
+                case "10":
                     return;
-                // break;
                 case "11":
                     try {
                         afficheCatalogue(livres, --ind);
                     } catch (IndexOutOfBoundsException ex) {
+                        afficheCatalogue(livres, ++ind);
                         System.out.println("vous ne pouvez pas passez au précédent");
                     }
                     break;
@@ -452,7 +449,27 @@ public class Executable {
                     try {
                         afficheCatalogue(livres, ++ind);
                     } catch (IndexOutOfBoundsException ex) {
-                        System.out.println("Mettre une séléction suivant");
+                        afficheCatalogue(livres, --ind);
+                        System.out.println("vous ne pouvez pas passez au précédent");
+                    }
+                    break;
+                case "0":
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                case "8":
+                case "9":
+                    try {
+                        query.commandeLivre(livres.get(ind).get(Integer.parseInt(splitRes[0])),
+                                Integer.parseInt(splitRes[1]));
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }catch(MauvaiseQuantiteException ex){
+                        ex.debug();
                     }
                     break;
                 default:

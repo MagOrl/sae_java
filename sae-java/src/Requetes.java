@@ -169,7 +169,7 @@ public class Requetes {
             }
         }
         rs.close();
-        taille = catalogue.size()-1;
+        taille = catalogue.size() - 1;
         while (taille >= 0) {
             if (catalogue.get(taille).isEmpty())
                 catalogue.remove(catalogue.get(taille));
@@ -178,6 +178,7 @@ public class Requetes {
         return catalogue;
 
     }
+
     public int nbLigneRequetes(ResultSet rs) throws SQLException {
         int res = 0;
         while (rs.next()) {
@@ -185,11 +186,16 @@ public class Requetes {
         }
         rs.first();
         return res;
+    }
 
+    public void commandeLivre(Livre livre, int qte) throws SQLException, MauvaiseQuantiteException {
+        if (livre.getQte() < qte) {
+            throw new MauvaiseQuantiteException(qte,livre);
+        } else if (qte <= 0) {
+            throw new MauvaiseQuantiteException(qte,livre);
+        }
+        
+        
     }
 
 }
-// SELECT LIVRE.*
-// FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN CLASSIFICATION NATURAL JOIN
-// POSSEDER NATURAL JOIN MAGASIN
-// WHERE (titre = " ", )
