@@ -188,14 +188,22 @@ public class Requetes {
         return res;
     }
 
-    public void commandeLivre(Livre livre, int qte) throws SQLException, MauvaiseQuantiteException {
+    public void commandeLivre(Livre livre, int qte, Client cli) throws SQLException, MauvaiseQuantiteException {
         if (livre.getQte() < qte) {
-            throw new MauvaiseQuantiteException(qte,livre);
+            throw new MauvaiseQuantiteException(qte, livre);
         } else if (qte <= 0) {
-            throw new MauvaiseQuantiteException(qte,livre);
+            throw new MauvaiseQuantiteException(qte, livre);
         }
-        
-        
-    }
+        PreparedStatement ps = this.laConnexion
+                .prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
+        ps.setInt(1, livre.getQte() - qte);
+        ps.setString(2, livre.getIsbn());
+        ps.executeUpdate();
+        ps = this.laConnexion
+                .prepareStatement("INSERT SET qte = ? WHERE isbn = ?");
+        ps.setInt(1, livre.getQte() - qte);
+        ps.setString(2, livre.getIsbn());
+        ps.executeUpdate();
 
+    }
 }

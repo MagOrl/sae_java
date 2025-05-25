@@ -159,6 +159,8 @@ public class Executable {
         System.out.println("│                                                                                    │");
         System.out.println("│ [3] Historique de commandes                                                        │");
         System.out.println("│                                                                                    │");
+        System.out.println("│ [4] mon panier                                                                     │");
+        System.out.println("│                                                                                    │");
         System.out.println("│ [0] Déconnecter                                                                    │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
@@ -463,14 +465,9 @@ public class Executable {
                 case "7":
                 case "8":
                 case "9":
-                    try {
-                        query.commandeLivre(livres.get(ind).get(Integer.parseInt(splitRes[0])),
-                                Integer.parseInt(splitRes[1]));
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }catch(MauvaiseQuantiteException ex){
-                        ex.debug();
-                    }
+                    Livre liv = livres.get(ind).get(Integer.parseInt(splitRes[0]));
+                    liv.setQte(Integer.parseInt(splitRes[1]));
+                    cli.addPanier(liv);
                     break;
                 default:
                     System.out.println("Mettre une séléction valide");
