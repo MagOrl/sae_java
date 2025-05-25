@@ -151,11 +151,11 @@ public class Requetes {
 
     }
 
-    public List<List<Livre>> rechercheTheme(int thm,Magasin mag) throws SQLException {
+    public List<List<Livre>> rechercheTheme(int thm, Magasin mag) throws SQLException {
         thm = thm * 100;
         this.st = laConnexion.createStatement();
         String query = "SELECT LIVRE.*,qte FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN POSSEDER WHERE iddewey>="
-                + thm + " and iddewey<=" + (thm + 90)+" and idmag ="+mag.getId();
+                + thm + " and iddewey<=" + (thm + 90) + " and idmag =" + mag.getId();
         ResultSet rs = this.st.executeQuery(query);
         List<List<Livre>> catalogue = new ArrayList<>();
         int taille = nbLigneRequetes(rs);
@@ -188,22 +188,17 @@ public class Requetes {
         return res;
     }
 
-    public void commandeLivre(Livre livre, int qte, Client cli) throws SQLException, MauvaiseQuantiteException {
-        if (livre.getQte() < qte) {
-            throw new MauvaiseQuantiteException(qte, livre);
-        } else if (qte <= 0) {
-            throw new MauvaiseQuantiteException(qte, livre);
+    public void commandeLivre(List<Livre> livres, Client cli, String envoie) throws SQLException {
+        PreparedStatement ps;
+        for (Livre liv : livres) {
+            ps = this.laConnexion
+                    .prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
+            ps.setInt(1, getQteLivre(liv) - liv.getQte());
+            ps.setString(2, liv.getIsbn());
+            ps.executeUpdate();
         }
-        PreparedStatement ps = this.laConnexion
-                .prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
-        ps.setInt(1, livre.getQte() - qte);
-        ps.setString(2, livre.getIsbn());
-        ps.executeUpdate();
-        ps = this.laConnexion
-                .prepareStatement("INSERT INTO DETAILCOMMANDE(?,?,?,?,?,?,?)");
-        ps.setInt(1, livre.getQte() - qte);
-        ps.setString(2, livre.getIsbn());
-        ps.executeUpdate();
+        int numcom = getMaxCommande() + 1;
+        
 
     }
 
@@ -218,6 +213,27 @@ public class Requetes {
         }
         rs.close();
         return res;
+    }
 
+    public int getQteLivre(Livre liv) throws SQLException {
+        int res = -1;
+        this.st = laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery("SELECT qte FROM POSSEDER WHERE isbn = " + liv.getIsbn());
+        while (rs.next()) {
+            res = rs.getInt("qte");
+        }
+        rs.close();
+        return res;
+    }
+
+    public int getMaxCommande() throws SQLException {
+        int res = -1;
+        this.st = laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery("SELECT max(numcom)max FROM COMMANDE");
+        while (rs.next()) {
+            res = rs.getInt("max");
+        }
+        rs.close();
+        return res;
     }
 }

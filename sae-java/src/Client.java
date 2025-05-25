@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,16 @@ public class Client extends Personne {
         return panier;
     }
 
-    public void addPanier(Livre liv) {
+    public void addPanier(Livre liv, int qte) throws TopDeLivreException, MauvaiseQuantiteException {
+        if (this.panier.size() >= 9) {
+            throw new TopDeLivreException();
+        }
+        if (liv.getQte() < qte) {
+            throw new MauvaiseQuantiteException(qte, liv);
+        } else if (qte <= 0) {
+            throw new MauvaiseQuantiteException(qte, liv);
+        }
+        liv.setQte(qte);
         this.panier.add(liv);
     }
 
@@ -34,16 +44,28 @@ public class Client extends Personne {
         return res;
     }
 
-    // public void affichePanier() {
-    //     String column1Format = "%-50.50s";
-    //     String column2Format = "%-8.8s";
-    //     String column3Format = "%8.8s";
-    //     String formatInfo = column1Format + " " + column2Format + " " + column3Format;
-    //     System.out.println("────────────────────────────────────────────────────────────────────────────────────");
-    //     for (int i = 1; i <= panier.size(); ++i) {
-    //         System.out.format(formatInfo, "[" + i + "] Titre : " + panier.get(i).getTitre(),
-    //                 "qte : " + panier.get(i).getQte(), panier.get(i).getPrix() + " €");
-    //         System.out.println();
-    //     System.out.println("────────────────────────────────────────────────────────────────────────────────────");
-    // }
+    public void affichePanier() {
+        if (panier.isEmpty()) {
+            System.out.println("Il n'y a rien dans votre panier");
+            System.out.println("[0] Quitter");
+            return;
+        }
+        int y = 1;
+        String column1Format = "%-50.50s";
+        String column2Format = "%-8.8s";
+        String column3Format = "%8.8s";
+        String formatInfo = column1Format + " " + column2Format + " " +
+                column3Format;
+        System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+        for (int i = 0; i < panier.size(); ++i) {
+            System.out.format(formatInfo, "[" + y + "] Titre : " +
+                    panier.get(i).getTitre(),
+                    "qte : " + panier.get(i).getQte(), panier.get(i).getPrix() + " €");
+            System.out.println();
+            System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+            ++y;
+        }
+        System.out.println("[0] Quitter");
+
+    }
 }

@@ -3,6 +3,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class Executable {
 
@@ -186,14 +187,68 @@ public class Executable {
                     afficheHistorique(cli, usr);
                     afficheMenuClient(cli);
                     break;
-                case"4":
-                break;
+                case "4":
+                    panier(cli, usr);
+                    afficheMenuClient(cli);
+                    break;
                 default:
                     System.out.println("Mettre une séléction valide");
             }
         }
     }
-    
+
+    private static void affichePanier(Client cli) {
+        cli.affichePanier();
+        System.out.println(
+                "Tappez le numéro du livre que vous voulez supprimer, faite 'COMMANDE' si tout est bon et que vous voulez commander ");
+    }
+
+    private static void panier(Client cli, Scanner usr) {
+        Requetes query = new Requetes(connexion);
+        affichePanier(cli);
+        while (usr.hasNext()) {
+            String res = usr.nextLine();
+            switch (res) {
+                case "0":
+                    return;
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                case "8":
+                case "9":
+                    cli.suppPanier(cli.getPanier().get(Integer.parseInt(res) - 1));
+                    affichePanier(cli);
+                    break;
+                case "COMMANDE":
+                    System.out.print("Voulez vous une réserver au [M]agasin ou directement [C]ommander ");
+                    String res2 = usr.nextLine();
+                    switch (res2.toUpperCase()) {
+                        case "M":
+                        case "C":
+                            try {
+                                query.commandeLivre(cli.getPanier(), cli, res2);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case "0":
+                            break;
+                        default:
+                            System.out.println("M pour magasin et L pour Ligne et 0 pour annulez ");
+                            break;
+                    }
+                    break;
+                default:
+                    System.out.println("Mettre une séléction valide");
+                    break;
+            }
+        }
+    }
+
     private static void afficheGestionCompte() {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ [1] Voir mes informations personelle                                               │");
@@ -460,8 +515,7 @@ public class Executable {
         System.out.println("Magasin de chez " + mag.getNom());
         System.out.println("────────────────────────────────────────────────────────────────────────────────────");
         int pageI = ind + 1;
-        int pageTaille = livres.size();
-        System.out.println("Page : " + pageI + "/" + pageTaille);
+        System.out.println("Page : " + pageI + "/" + livres.size());
         System.out.println("────────────────────────────────────────────────────────────────────────────────────");
         for (int i = 0; i < livres.get(ind).size(); ++i) {
             System.out.format(formatInfo, "[" + i + "] Titre : " + livres.get(ind).get(i).getTitre(),
@@ -469,7 +523,7 @@ public class Executable {
             System.out.println();
         }
         System.out.println("────────────────────────────────────────────────────────────────────────────────────");
-        if (ind < livres.size()-1) {
+        if (ind < livres.size() - 1) {
             System.out.println("[12] Suivant");
         }
         if (ind > 0) {
@@ -514,9 +568,15 @@ public class Executable {
                 case "7":
                 case "8":
                 case "9":
-                    Livre liv = livres.get(ind).get(Integer.parseInt(splitRes[0]));
-                    liv.setQte(Integer.parseInt(splitRes[1]));
-                    cli.addPanier(liv);
+                    try {
+                        Livre liv = livres.get(ind).get(Integer.parseInt(splitRes[0]));
+                        cli.addPanier(liv, Integer.parseInt(splitRes[1]));
+                        System.out.println("ajout au panier effectuer !");
+                    } catch (TopDeLivreException ex) {
+                        System.out.println("Vous avez mit trop de livre dans votre panier, alleger le.");
+                    } catch (MauvaiseQuantiteException ex) {
+                        ex.debug();
+                    }
                     break;
                 default:
                     System.out.println("Mettre une séléction valide");
