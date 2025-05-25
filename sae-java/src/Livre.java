@@ -1,12 +1,12 @@
 public class Livre {
 
-  private int isbn;
+  private String isbn;
   private String titre;
   private int nbPages;
   private int datePubli;
   private double prix;
 
-  public Livre(int isbn, String titre, int nbPages, int datePubli, double prix){
+  public Livre(String isbn, String titre, int nbPages, int datePubli, double prix){
     this.isbn = isbn;
     this.titre = titre;
     this.nbPages = nbPages;
@@ -14,7 +14,7 @@ public class Livre {
     this.prix = prix;
   };
 
-  public int getIsbn(){
+  public String getIsbn(){
     return this.isbn;
   };
 
@@ -34,7 +34,7 @@ public class Livre {
     return this.prix;
   };
 
-  public void setIsbn(int newIsbn){
+  public void setIsbn(String newIsbn){
     this.isbn = newIsbn;
   };
 

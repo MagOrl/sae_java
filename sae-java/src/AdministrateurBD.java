@@ -79,9 +79,9 @@ public class AdministrateurBD {
         return rs.next();
     }
     
-    public void ajouteNouvelleLibrairie(String idmag, String nommag, String villemag) throws SQLException{
+    public void ajouteNouvelleLibrairie(String nommag, String villemag) throws SQLException{
       try{
-        Magasin magasin = new Magasin(idmag, nommag, villemag);
+        Magasin magasin = new Magasin(idmagMax(), nommag, villemag);
         PreparedStatement ps = this.connexion.prepareStatement("insert into MAGASIN values(?,?,?)");
         ps.setString(1, magasin.getId());
         ps.setString(2, magasin.getNom());
@@ -91,6 +91,16 @@ public class AdministrateurBD {
         e.printStackTrace();
       }
         //System.out.println("Une erreur est survenue lors de l'ajout de la librairie au réseau");
+    }
+
+    public String idmagMax() throws SQLException{
+      Integer idMax = 0;
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select max(idmag) as idMax from MAGASIN");
+      while(rs.next()){
+        idMax = Integer.parseInt(rs.getString("idMax"))+1;
+      }
+      return idMax.toString();
     }
 
     public List<String> choixLibrairie() throws SQLException{
@@ -106,26 +116,48 @@ public class AdministrateurBD {
     public Magasin trouveLibrairie(String nommag) throws SQLException{
       Magasin mag = null;
       this.st = connexion.createStatement();
-      ResultSet rs = this.st.executeQuery("select idmag, villemag from MAGASIN where nommag ='" +nommag+"'");
-      mag = new Magasin(rs.getString("idmag"), nommag, rs.getString("villemag"));
+      ResultSet rs = this.st.executeQuery("select idmag, villemag from MAGASIN where nommag =" + '"' + nommag + '"');
+      while(rs.next()){
+        mag = new Magasin(rs.getString("idmag"), nommag, rs.getString("villemag"));
+      }
       return mag;
     }
 
-    public void AjouterLivre(Livre livre) throws SQLException{
-        PreparedStatement ps = this.connexion.prepareStatement("insert into LIVRE values(?,?,?,?,?)");
-        ps.setInt(1, livre.getIsbn());   
-        ps.setString(2, livre.getTitre()); 
-        ps.setInt(3, livre.getNbPages());   
-        ps.setInt(4, (livre.getDatePubli()));   
-        ps.setDouble(5, livre.getPrix());
-        ps.executeUpdate();   
+    public void AjouterLivre(String titre, String auteur, String editeur, String theme, String nbpages, String datepubli, String prix, String qte, Magasin mag) throws SQLException{
+        String isbn = isbnMax();
+        Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), Integer.parseInt(datepubli), Double.parseDouble(prix));
+
+        PreparedStatement psLivre = this.connexion.prepareStatement("insert into LIVRE values(?,?,?,?,?)");
+        psLivre.setString(1, livre.getIsbn());   
+        psLivre.setString(2, livre.getTitre()); 
+        psLivre.setInt(3, livre.getNbPages());   
+        psLivre.setInt(4, (livre.getDatePubli()));   
+        psLivre.setDouble(5, livre.getPrix());
+        psLivre.executeUpdate();
+        
+        PreparedStatement psPosseder = this.connexion.prepareStatement("insert into POSSEDER values(?,?,?)");
+        psPosseder.setString(1, mag.getId());
+        psPosseder.setString(2, isbn);
+        psPosseder.setInt(3, Integer.parseInt(qte));
+
+        //PreparedStatement ps
         //System.out.println("Une erreur est survenue lors de l'ajout du livre veuillez réessayer");
+    }
+
+    public String isbnMax() throws SQLException{
+      Integer isMAx = 0;
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select max(isbn) as isbnMax from LIVRE");
+      while(rs.next()){
+        isMAx = Integer.parseInt(rs.getString("isbnMax"))+1;
+      }
+      return isMAx.toString();
     }
 
 
     public void SupprimerLivre(Livre livre) throws SQLException{
         PreparedStatement ps = this.connexion.prepareStatement("DELETE FROM LIVRE WHERE isbn = ?");
-        ps.setInt(1, livre.getIsbn());
+        //ps.setInt(1, livre.getIsbn());
         ps.executeUpdate();
         //System.out.println("Une erreur est survenue lors de la suppression du livre veuillez réessayer");
     }
@@ -137,7 +169,7 @@ public class AdministrateurBD {
 
         PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSERDER SET qte = ? WHERE isbn = ?");
         ps.setInt(1, qte);
-        ps.setInt(2, livre.getIsbn());
+        ps.setString(2, livre.getIsbn());
         ps.executeUpdate();
         //System.out.println("Une erreur est survenue lors de la mise à jour de la quantité veuillez réessayer");
     }
@@ -146,7 +178,7 @@ public class AdministrateurBD {
         this.st = connexion.createStatement();
         ResultSet r = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix from LIVRE natural join POSSERDER natural join MAGASIN where idmag = "+ mag.getId());
         while(r.next()){
-          Livre livreActuel = new Livre(Integer.parseInt(r.getString("isbn")), r.getString("titre"), r.getInt("nbpages"), r.getInt("datepubli"), r.getDouble("prix"));
+          Livre livreActuel = new Livre(r.getString("isbn"), r.getString("titre"), r.getInt("nbpages"), r.getInt("datepubli"), r.getDouble("prix"));
           System.out.println(livreActuel + "/n");
         }
         //System.out.println("Une erreur est survenue lors de l'affichage du stock");

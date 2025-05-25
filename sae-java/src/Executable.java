@@ -450,7 +450,7 @@ public class Executable {
                     break;
 
                 case "3":
-                    menuGererStocksGlobaux(admin, usr);
+                    choixLibrairie(admin, usr);
                     break;
                 
                 case "4":
@@ -473,22 +473,31 @@ public class Executable {
             AdministrateurBD adminBD = new AdministrateurBD(connexion);
             System.out.println("Entrez l'identifiant du vendeur");
             String identifiant = usr.nextLine();
+
             System.out.println("Entrez le nom du vendeur");
             String nom = usr.nextLine();
+
             System.out.println("Entrez le prénom du vendeur");
             String prenom = usr.nextLine();
+
             System.out.println("Entrez l'adresse du vendeur");
             String adresse = usr.nextLine();
+
             System.out.println("Entrez le codePostal du vendeur");
             String codePostal = usr.nextLine();
+
             System.out.println("Entrez la ville du vendeur");
             String ville = usr.nextLine();
+
             System.out.println("Entrez l'email du vendeur");
             String email = usr.nextLine();
+
             System.out.println("Entrez le numéro de télephone du vendeur");
             String tel = usr.nextLine();
+
             System.out.println("Entrez le mot de passe du vendeur");
             String mdp = usr.nextLine();
+            
             System.out.println("Entrez le nom du magasin du vendeur");
             String magasin = usr.nextLine();
             adminBD.CreerCompteVendeur(nom, prenom, identifiant, adresse, tel, email, mdp, codePostal, ville, magasin);
@@ -504,13 +513,13 @@ public class Executable {
     private static void ajouterNouvelleLibrairie(Administrateur admin, Scanner usr){
         AdministrateurBD adminBD = new AdministrateurBD(connexion);
         try{
-            System.out.println("Entrez l'identifiant de la nouvelle librairie");
-            String idmag = usr.nextLine();
             System.out.println("Entrez le nom de la librairie");
             String nommag = usr.nextLine();
+
             System.out.println("Entrez la ville de la librairie");
             String villemag = usr.nextLine();
-            adminBD.ajouteNouvelleLibrairie(idmag, nommag, villemag);
+
+            adminBD.ajouteNouvelleLibrairie(nommag, villemag);
             System.out.println("La librairie a été ajoutée");
             menuAdmin(admin, usr);
         }catch(SQLException e){
@@ -519,33 +528,38 @@ public class Executable {
         }
     }
 
-    private static void afficheChoixLibrairie(Scanner usr){
+    private static void afficheChoixLibrairie(Administrateur admin, Scanner usr){
         try{
             AdministrateurBD adminBD = new AdministrateurBD(connexion);
-            int cpt = 1;
             List<String> lesLibrairies = adminBD.choixLibrairie();
             System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-            System.out.println("│ Choisissez une librairie                                                           │");
+            System.out.println("│ Les librairies                                                                     │");
             for(String librairie : lesLibrairies){
-                System.out.println("│"+"["+cpt+"]"+ " " + librairie + "                                     │");
-                cpt++;
+                System.out.println("│ "+"   ["+librairie+"]                                                 │");
             }
             System.out.println("│ [0] Retour                                                                         │");
             System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         }catch(SQLException e){
-            System.out.println("Une erreur est survenue lors du choix de la librairie");
+            System.out.println("Une erreur est survenue lors de l'affichage des librairie");
+            menuAdmin(admin, usr);
         }
     }
 
-    private static Magasin choixLibrairie(Administrateur admin, Scanner usr){
+    private static void choixLibrairie(Administrateur admin, Scanner usr){
+        AdministrateurBD adminBd = new AdministrateurBD(connexion);
         try{
-            afficheChoixLibrairie(usr);
+            afficheChoixLibrairie(admin, usr);
+            System.out.println("Entrez le nom de la librairie que vous voulez choisir");
+            String librairie = usr.nextLine();
+            menuGererStocksGlobaux(admin , usr, adminBd.trouveLibrairie(librairie));
         }catch(SQLException e){
+            e.printStackTrace();
             System.out.println("Une erreur est survenue lors du choix de la librairie");
+            menuAdmin(admin, usr);
         }
     }
 
-    private static void afficheMenuGererStocksGlobaux(Magasin mag){
+    private static void afficheMenuGererStocksGlobaux(Administrateur admin, Scanner usr, Magasin mag){
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Que souhaitez vous faire ?                  Librairie actuelle : " +mag.getNom()+" │");
         System.out.println("│                                                                                    │");
@@ -563,17 +577,21 @@ public class Executable {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
 
-    private static void menuGererStocksGlobaux(Administrateur admin, Magasin mag, Scanner usr){
-        afficheMenuGererStocksGlobaux(mag);
+    private static void menuGererStocksGlobaux(Administrateur admin, Scanner usr, Magasin mag){
+        afficheMenuGererStocksGlobaux(admin, usr, mag);
         boolean retour = false;
         while(!retour && usr.hasNext()){
             String res = usr.nextLine();
             switch(res){
               case "1":
+                infosAjouteLivre(admin, usr, mag);
+                break;
               case "2":
               case "3":
               case "4": //afficher le stock de la librairie concernée
-              case "5": //changer de librairie
+              case "5": 
+                choixLibrairie(admin, usr);
+                break;
               case "0":
                 menuAdmin(admin, usr);
                 break; //quitter
@@ -581,6 +599,45 @@ public class Executable {
 
             }
         }
+    }
+
+    private static void infosAjouteLivre(Administrateur admin, Scanner usr, Magasin mag){
+        AdministrateurBD adminBd = new AdministrateurBD(connexion);
+        try{
+            System.out.println("Entrez le titre du livre");
+            String titre = usr.nextLine();
+
+            System.out.println("Entrez l'auteur du livre");
+            String auteur = usr.nextLine();
+
+            System.out.println("Entrez l'éditeur du livre");
+            String editeur = usr.nextLine();
+
+            System.out.println("Entrez le thème du livre");
+            String theme = usr.nextLine();
+
+            System.out.println("Entrez la date de publication du livre");
+            String datepubli = usr.nextLine();
+
+            System.out.println("Entrez le nombre de pages du livre");
+            String nbpages = usr.nextLine();
+
+            System.out.println("Entrez le prix du livre");
+            String prix = usr.nextLine();
+
+            System.out.println("Entrez la quantité de livre à ajouter");
+            String qte = usr.nextLine();
+
+            adminBd.AjouterLivre(titre,auteur, editeur, theme, nbpages, datepubli, prix, qte, mag);
+            System.out.println("Le livre a bien été ajouté");
+            menuGererStocksGlobaux(admin, usr, mag);
+        }catch(NumberFormatException e){
+            System.out.println("Veuillez entrez uniquement des chiffres pour le nombre de pages et la date de publication");
+            infosAjouteLivre(admin, usr, mag);
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'ajout du livre");
+            menuGererStocksGlobaux(admin, usr, mag);
+        } 
     }
 }
 
