@@ -151,11 +151,11 @@ public class Requetes {
 
     }
 
-    public List<List<Livre>> rechercheTheme(int thm) throws SQLException {
+    public List<List<Livre>> rechercheTheme(int thm,Magasin mag) throws SQLException {
         thm = thm * 100;
         this.st = laConnexion.createStatement();
         String query = "SELECT LIVRE.*,qte FROM LIVRE NATURAL JOIN THEMES NATURAL JOIN POSSEDER WHERE iddewey>="
-                + thm + " and iddewey<=" + (thm + 90);
+                + thm + " and iddewey<=" + (thm + 90)+" and idmag ="+mag.getId();
         ResultSet rs = this.st.executeQuery(query);
         List<List<Livre>> catalogue = new ArrayList<>();
         int taille = nbLigneRequetes(rs);
@@ -200,10 +200,24 @@ public class Requetes {
         ps.setString(2, livre.getIsbn());
         ps.executeUpdate();
         ps = this.laConnexion
-                .prepareStatement("INSERT SET qte = ? WHERE isbn = ?");
+                .prepareStatement("INSERT INTO DETAILCOMMANDE(?,?,?,?,?,?,?)");
         ps.setInt(1, livre.getQte() - qte);
         ps.setString(2, livre.getIsbn());
         ps.executeUpdate();
+
+    }
+
+    public HashMap<Integer, Magasin> afficheMagasin() throws SQLException {
+        this.st = laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery("SELECT * FROM MAGASIN");
+        HashMap<Integer, Magasin> res = new HashMap<>();
+        int i = 0;
+        while (rs.next()) {
+            res.put(i, new Magasin(rs.getInt("idmag"), rs.getString("nommag"), rs.getString("villemag")));
+            i++;
+        }
+        rs.close();
+        return res;
 
     }
 }

@@ -34,16 +34,16 @@ public class Client extends Personne {
         return res;
     }
 
-    public void affichePanier() {
-        String column1Format = "%-50.50s";
-        String column2Format = "%-8.8s";
-        String column3Format = "%8.8s";
-        String formatInfo = column1Format + " " + column2Format + " " + column3Format;
-        System.out.println("────────────────────────────────────────────────────────────────────────────────────");
-        for (int i = 1; i <= panier.size(); ++i) {
-            System.out.format(formatInfo, "[" + i + "] Titre : " + panier.get(i).getTitre(),
-                    "qte : " + panier.get(i).getQte(), panier.get(i).getPrix() + " €");
-            System.out.println();
-        System.out.println("────────────────────────────────────────────────────────────────────────────────────");
-    }
+    // public void affichePanier() {
+    //     String column1Format = "%-50.50s";
+    //     String column2Format = "%-8.8s";
+    //     String column3Format = "%8.8s";
+    //     String formatInfo = column1Format + " " + column2Format + " " + column3Format;
+    //     System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+    //     for (int i = 1; i <= panier.size(); ++i) {
+    //         System.out.format(formatInfo, "[" + i + "] Titre : " + panier.get(i).getTitre(),
+    //                 "qte : " + panier.get(i).getQte(), panier.get(i).getPrix() + " €");
+    //         System.out.println();
+    //     System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+    // }
 }

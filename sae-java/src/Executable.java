@@ -159,7 +159,7 @@ public class Executable {
         System.out.println("│                                                                                    │");
         System.out.println("│ [3] Historique de commandes                                                        │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [4] mon panier                                                                     │");
+        System.out.println("│ [4] Mon panier                                                                     │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Déconnecter                                                                    │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -186,12 +186,14 @@ public class Executable {
                     afficheHistorique(cli, usr);
                     afficheMenuClient(cli);
                     break;
+                case"4":
+                break;
                 default:
                     System.out.println("Mettre une séléction valide");
             }
         }
     }
-
+    
     private static void afficheGestionCompte() {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ [1] Voir mes informations personelle                                               │");
@@ -348,7 +350,7 @@ public class Executable {
                 case "0":
                     return;
                 case "1":
-                    selonTheme(cli, usr);
+                    choisiMagasin(cli, usr);
                     afficheConsulteCatalogue();
                     break;
                 case "2":
@@ -356,6 +358,48 @@ public class Executable {
                     break;
                 default:
                     System.out.println("Mettre une valeur entre 0 et 2");
+                    break;
+            }
+        }
+    }
+
+    private static void afficheChoisisMagasin(HashMap<Integer, Magasin> lesmag) {
+        int y = 0;
+        for (Integer i : lesmag.keySet()) {
+            System.out
+                    .println("[" + ++y + "] Ville : " + lesmag.get(i).getVille() + " Nom : " + lesmag.get(i).getNom());
+        }
+        System.out.println("Entrez d'abord le magasin ou vous voulez commander");
+        System.out.println("[0] Quitter");
+
+    }
+
+    private static void choisiMagasin(Client cli, Scanner usr) {
+        Requetes query = new Requetes(connexion);
+        HashMap<Integer, Magasin> lesmag = new HashMap<>();
+        try {
+            lesmag = query.afficheMagasin();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        afficheChoisisMagasin(lesmag);
+        while (usr.hasNext()) {
+            String res = usr.next();
+            switch (res) {
+                case "0":
+                    return;
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                    selonTheme(cli, usr, lesmag.get(Integer.parseInt(res) - 1));
+                    afficheChoisisMagasin(lesmag);
+                    break;
+                default:
+                    System.out.println("Veuillez entrer une séléction valide");
                     break;
             }
         }
@@ -369,7 +413,7 @@ public class Executable {
         System.out.println("[10] Quitter");
     }
 
-    private static void selonTheme(Client cli, Scanner usr) {
+    private static void selonTheme(Client cli, Scanner usr, Magasin mag) {
         Requetes query = new Requetes(connexion);
         HashMap<Integer, String> themes = new HashMap<>();
         try {
@@ -394,7 +438,7 @@ public class Executable {
                 case "8":
                 case "9":
                     try {
-                        catalogue(query.rechercheTheme(Integer.parseInt(res)), usr, cli);
+                        catalogue(query.rechercheTheme(Integer.parseInt(res), mag), usr, cli, mag);
                         afficheSelonTheme(themes);
                     } catch (SQLException ex) {
                         ex.printStackTrace();
@@ -407,11 +451,17 @@ public class Executable {
         }
     }
 
-    private static void afficheCatalogue(List<List<Livre>> livres, int ind) {
+    private static void afficheCatalogue(List<List<Livre>> livres, int ind, Magasin mag) {
         String column1Format = "%-50.50s";
         String column2Format = "%-8.8s";
         String column3Format = "%8.8s";
         String formatInfo = column1Format + " " + column2Format + " " + column3Format;
+        System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+        System.out.println("Magasin de chez " + mag.getNom());
+        System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+        int pageI = ind + 1;
+        int pageTaille = livres.size();
+        System.out.println("Page : " + pageI + "/" + pageTaille);
         System.out.println("────────────────────────────────────────────────────────────────────────────────────");
         for (int i = 0; i < livres.get(ind).size(); ++i) {
             System.out.format(formatInfo, "[" + i + "] Titre : " + livres.get(ind).get(i).getTitre(),
@@ -419,7 +469,7 @@ public class Executable {
             System.out.println();
         }
         System.out.println("────────────────────────────────────────────────────────────────────────────────────");
-        if (ind < livres.size()) {
+        if (ind < livres.size()-1) {
             System.out.println("[12] Suivant");
         }
         if (ind > 0) {
@@ -429,10 +479,9 @@ public class Executable {
         System.out.println("[0->9] Commander le livre de votre choix et préciser la quantité avec un espace");
     }
 
-    private static void catalogue(List<List<Livre>> livres, Scanner usr, Client cli) {
+    private static void catalogue(List<List<Livre>> livres, Scanner usr, Client cli, Magasin mag) {
         int ind = 0;
-        afficheCatalogue(livres, ind);
-        Requetes query = new Requetes(connexion);
+        afficheCatalogue(livres, ind, mag);
         while (usr.hasNext()) {
             String res = usr.nextLine();
             String[] splitRes = res.split(" "); // 0 : ind livre 1: qte
@@ -441,18 +490,18 @@ public class Executable {
                     return;
                 case "11":
                     try {
-                        afficheCatalogue(livres, --ind);
+                        afficheCatalogue(livres, --ind, mag);
                     } catch (IndexOutOfBoundsException ex) {
-                        afficheCatalogue(livres, ++ind);
+                        afficheCatalogue(livres, ++ind, mag);
                         System.out.println("vous ne pouvez pas passez au précédent");
                     }
                     break;
                 case "12":
                     try {
-                        afficheCatalogue(livres, ++ind);
+                        afficheCatalogue(livres, ++ind, mag);
                     } catch (IndexOutOfBoundsException ex) {
-                        afficheCatalogue(livres, --ind);
-                        System.out.println("vous ne pouvez pas passez au précédent");
+                        afficheCatalogue(livres, --ind, mag);
+                        System.out.println("vous ne pouvez pas passez au suivant");
                     }
                     break;
                 case "0":
