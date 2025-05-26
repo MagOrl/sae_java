@@ -1,5 +1,7 @@
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,9 +104,6 @@ public class Requetes {
         ResultSet rs = this.st.executeQuery(
                 "select numcom,numlig,datecom, enligne, livraison,titre,qte,prixvente FROM COMMANDE NATURAL JOIN DETAILCOMMANDE NATURAL JOIN LIVRE WHERE idcli = "
                         + cli.getNumCompte() + " ORDER BY datecom");
-        // rs.first();
-        // numcomSave = rs.getInt("numcom");
-        // rs.beforeFirst();
         if (!rs.next()) {
             return "Aucune commande effectuer pour le moment";
         }
@@ -189,7 +188,10 @@ public class Requetes {
     }
 
     public void commandeLivre(List<Livre> livres, Client cli, String envoie) throws SQLException {
-        PreparedStatement ps;
+        PreparedStatement ps = null;
+        PreparedStatement ps2 = this.laConnexion
+                .prepareStatement("insert into DETAILCOMMANDE values (?,?,?,?,?)");
+        int numco = getMaxCommande();
         for (Livre liv : livres) {
             ps = this.laConnexion
                     .prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
@@ -197,9 +199,30 @@ public class Requetes {
             ps.setString(2, liv.getIsbn());
             ps.executeUpdate();
         }
-        int numcom = getMaxCommande() + 1;
-        
-
+        HashMap<Integer, List<Livre>> livreMag = classeLivreSelonMag(livres);
+        for (Integer idmag : livreMag.keySet()) {
+            numco++;
+            ps = this.laConnexion
+                    .prepareStatement("insert into COMMANDE values (?,?,?,?,?,?)");
+            ps.setInt(1, numco);
+            ps.setDate(2, new Date(System.currentTimeMillis()));
+            ps.setString(3, "O");
+            ps.setString(4, envoie);
+            ps.setInt(5, cli.getNumCompte());
+            ps.setInt(6, idmag);
+            ps.execute();
+            for (int i = 0; i < livreMag.get(idmag).size(); ++i) {
+                ps2.setInt(1, numco);
+                ps2.setInt(2, i + 1);
+                ps2.setInt(3, livreMag.get(livreMag).get(i).getQte());
+                ps2.setDouble(4, livreMag.get(livreMag).get(i).getPrix());
+                ps2.setString(5, livreMag.get(livreMag).get(i).getIsbn());
+                ps2.execute();
+                ps.executeUpdate();
+            }
+        }
+        ps2.executeUpdate();
+        livres.removeAll(livres);
     }
 
     public HashMap<Integer, Magasin> afficheMagasin() throws SQLException {
@@ -234,6 +257,30 @@ public class Requetes {
             res = rs.getInt("max");
         }
         rs.close();
+        return res;
+    }
+
+    public int trouveMagasin(Livre liv) throws SQLException {
+        int res = 0;
+        this.st = laConnexion.createStatement();
+        ResultSet rs = this.st.executeQuery("SELECT idmag FROM POSSEDER WHERE isbn = " + liv.getIsbn());
+        while (rs.next()) {
+            res = rs.getInt("idmag");
+        }
+        rs.close();
+        return res;
+    }
+
+    public HashMap<Integer, List<Livre>> classeLivreSelonMag(List<Livre> livres) throws SQLException {
+        if (livres.isEmpty())
+            return null;
+        HashMap<Integer, List<Livre>> res = new HashMap<>();
+        for (Livre liv : livres) {
+            if (res.containsKey(res))
+                res.get(trouveMagasin(liv)).add(liv);
+            else
+                res.put(trouveMagasin(liv), new ArrayList<>());
+        }
         return res;
     }
 }

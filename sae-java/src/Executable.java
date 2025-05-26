@@ -3,7 +3,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.time.LocalDate;
 
 public class Executable {
 
@@ -225,22 +224,30 @@ public class Executable {
                     break;
                 case "COMMANDE":
                     System.out.print("Voulez vous une réserver au [M]agasin ou directement [C]ommander ");
-                    String res2 = usr.nextLine();
-                    switch (res2.toUpperCase()) {
-                        case "M":
-                        case "C":
-                            try {
-                                query.commandeLivre(cli.getPanier(), cli, res2);
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        case "0":
-                            break;
-                        default:
-                            System.out.println("M pour magasin et L pour Ligne et 0 pour annulez ");
-                            break;
+                    boolean fini = false;
+                    while (!fini) {
+                        String res2 = usr.nextLine();
+                        switch (res2.toUpperCase()) {
+                            case "M":
+                            case "C":
+                                try {
+                                    query.commandeLivre(cli.getPanier(), cli, res2);
+                                    System.out.println("Commande effectuer !");
+                                    fini = true;
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                    fini = true;
+                                }
+                                break;
+                            case "0":
+                                break;
+                            default:
+                                System.out.println("M pour magasin et L pour Ligne et 0 pour annulez ");
+                                break;
+                        }
+
                     }
+
                     break;
                 default:
                     System.out.println("Mettre une séléction valide");
