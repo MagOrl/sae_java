@@ -188,40 +188,40 @@ public class Requetes {
     }
 
     public void commandeLivre(List<Livre> livres, Client cli, String envoie) throws SQLException {
-        PreparedStatement ps = null;
+        PreparedStatement ps1 = this.laConnexion
+                .prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
         PreparedStatement ps2 = this.laConnexion
+                .prepareStatement("insert into COMMANDE values (?,?,?,?,?,?)");
+        PreparedStatement ps3 = this.laConnexion
                 .prepareStatement("insert into DETAILCOMMANDE values (?,?,?,?,?)");
+        this.laConnexion.setAutoCommit(false);
         int numco = getMaxCommande();
         for (Livre liv : livres) {
-            ps = this.laConnexion
-                    .prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
-            ps.setInt(1, getQteLivre(liv) - liv.getQte());
-            ps.setString(2, liv.getIsbn());
-            ps.executeUpdate();
+            ps1.setInt(1, getQteLivre(liv) - liv.getQte());
+            ps1.setString(2, liv.getIsbn());
+            ps1.executeUpdate();
         }
         HashMap<Integer, List<Livre>> livreMag = classeLivreSelonMag(livres);
         for (Integer idmag : livreMag.keySet()) {
             numco++;
-            ps = this.laConnexion
-                    .prepareStatement("insert into COMMANDE values (?,?,?,?,?,?)");
-            ps.setInt(1, numco);
-            ps.setDate(2, new Date(System.currentTimeMillis()));
-            ps.setString(3, "O");
-            ps.setString(4, envoie);
-            ps.setInt(5, cli.getNumCompte());
-            ps.setInt(6, idmag);
-            ps.execute();
+            ps2.setInt(1, numco);
+            ps2.setDate(2, new Date(System.currentTimeMillis()));
+            ps2.setString(3, "O");
+            ps2.setString(4, envoie);
+            ps2.setInt(5, cli.getNumCompte());
+            ps2.setInt(6, idmag);
             for (int i = 0; i < livreMag.get(idmag).size(); ++i) {
-                ps2.setInt(1, numco);
-                ps2.setInt(2, i + 1);
-                ps2.setInt(3, livreMag.get(livreMag).get(i).getQte());
-                ps2.setDouble(4, livreMag.get(livreMag).get(i).getPrix());
-                ps2.setString(5, livreMag.get(livreMag).get(i).getIsbn());
-                ps2.execute();
-                ps.executeUpdate();
+                ps3.setInt(1, numco);
+                ps3.setInt(2, i + 1);
+                ps3.setInt(3, livreMag.get(idmag).get(i).getQte());
+                ps3.setDouble(4, livreMag.get(idmag).get(i).getPrix());
+                ps3.setString(5, livreMag.get(idmag).get(i).getIsbn());
+                ps3.addBatch();
             }
+            ps2.addBatch();
         }
-        ps2.executeUpdate();
+        ps2.executeBatch();
+        ps3.executeBatch();
         livres.removeAll(livres);
     }
 

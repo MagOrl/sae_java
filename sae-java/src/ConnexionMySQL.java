@@ -35,5 +35,8 @@ public class ConnexionMySQL {
 	public PreparedStatement prepareStatement(String requete) throws SQLException {
 		return this.mysql.prepareStatement(requete);
 	}
+	public void setAutoCommit(Boolean bol)throws SQLException{
+		this.mysql.setAutoCommit(bol);
+	}
 
 }
