@@ -225,7 +225,9 @@ public class Requetes {
 
             }
         }
-        // livreMag.remove();
+        for (Integer idmag : livreMag.keySet()) {
+            livreMag.remove(idmag);
+        }
     }
 
     public HashMap<Integer, Magasin> afficheMagasin() throws SQLException {
@@ -274,23 +276,10 @@ public class Requetes {
         return res;
     }
 
-    public HashMap<Integer, List<Livre>> classeLivreSelonMag(List<Livre> livres) throws SQLException {
-        if (livres.isEmpty())
-            return null;
-        HashMap<Integer, List<Livre>> res = new HashMap<>();
-        for (Livre liv : livres) {
-            if (res.containsKey(res))
-                res.get(trouveMagasin(liv)).add(liv);
-            else {
-                res.put(trouveMagasin(liv), new ArrayList<>());
-                res.get(trouveMagasin(liv)).add(liv);
-
-            }
-        }
-        return res;
-    }
-
     public void suppLivrePosseder(String isbn, int idmag) throws SQLException {
         int rs = this.st.executeUpdate("DELETE FROM POSSEDER where isbn = " + isbn + " and idmag = " + idmag);
+    }
+    public void onVousRecommande(Client cli){
+        
     }
 }

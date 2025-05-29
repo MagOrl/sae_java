@@ -89,6 +89,6 @@ public class Client extends Personne {
                     "Tappez l'id du magasin ainsi que le numéro du livre que vous voulez supprimer(les 2 valeurs doivent être séparer par un espace),\nfaite 'COMMANDE' si tout est bon et que vous voulez commander ");
             System.out.println("[0] Quitter");
         }
-
+        
     }
 }
