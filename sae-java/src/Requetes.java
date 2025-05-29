@@ -286,6 +286,7 @@ public class Requetes {
                 .executeQuery("select * FROM DETAILCOMMANDE natural join COMMANDE natural join LIVRE where idcli != "
                         + cli.getNumCompte());
         List<List<Livre>> catalogue = new ArrayList<>();
+        int taille = nbLigneRequetes(rs);
         for (int i = 0; i < taille; ++i) {
             catalogue.add(new ArrayList<>());
             for (int y = 0; y < 10; ++y) {
