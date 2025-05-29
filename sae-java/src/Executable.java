@@ -218,10 +218,8 @@ public class Executable {
                 case "5":
                 case "6":
                 case "7":
-                case "8":
-                case "9":
-                    // cli.suppPanier(cli.getPanier().get(Integer.parseInt(res) - 1));
-                    // affichePanier(cli);
+                    cli.suppPanier(cli.getPanier().get(Integer.parseInt(res) - 1));
+                    affichePanier(cli);
                     break;
                 case "COMMANDE":
                     System.out.print("Voulez vous une réserver au [M]agasin ou directement [C]ommander ");

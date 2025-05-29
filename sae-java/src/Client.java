@@ -68,6 +68,8 @@ public class Client extends Personne {
                 column3Format;
         System.out.println("────────────────────────────────────────────────────────────────────────────────────");
         for (int idmag : panier.keySet()) {
+            System.out.println("COMMANDE POUR ID MAGASIN : " + idmag);
+            System.out.println("********************************************************************************");
             for (int i = 0; i < panier.get(idmag).size(); ++i) {
                 System.out.format(formatInfo, "[" + y + "] Titre : " +
                         panier.get(idmag).get(i).getTitre(),
