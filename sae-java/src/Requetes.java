@@ -279,7 +279,30 @@ public class Requetes {
     public void suppLivrePosseder(String isbn, int idmag) throws SQLException {
         int rs = this.st.executeUpdate("DELETE FROM POSSEDER where isbn = " + isbn + " and idmag = " + idmag);
     }
-    public void onVousRecommande(Client cli){
-        
+
+    public List<List<Livre>> onVousRecommande(Client cli) throws SQLException {
+        this.st = laConnexion.createStatement();
+        ResultSet rs = this.st
+                .executeQuery("select * FROM DETAILCOMMANDE natural join COMMANDE natural join LIVRE where idcli != "
+                        + cli.getNumCompte());
+        List<List<Livre>> catalogue = new ArrayList<>();
+        for (int i = 0; i < taille; ++i) {
+            catalogue.add(new ArrayList<>());
+            for (int y = 0; y < 10; ++y) {
+                if (rs.next()) {
+                    catalogue.get(i).add(new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"),
+                            rs.getString("datepubli"), rs.getInt("prix"), rs.getInt("qte")));
+                }
+            }
+        }
+        rs.close();
+        taille = catalogue.size() - 1;
+        while (taille >= 0) {
+            if (catalogue.get(taille).isEmpty())
+                catalogue.remove(catalogue.get(taille));
+            --taille;
+        }
+        return catalogue;
+
     }
 }
