@@ -104,7 +104,8 @@ public class Executable {
                     demandeUtilisateur("numéro de téléphone", usr),
                     demandeUtilisateur("mot de passe", usr));
         } catch (NumberFormatException | SQLException e) {
-            e.printStackTrace();
+            System.out.print("Queleque chose de mal c'est passer, ré-essayer en mettant des informations les plus cohérente possible");
+            System.out.print("Par exemple ne mettez pas d'éspace en trop, et veillez à bien mettre exactement 5 character pour le code postale sans espace nulle part");
         } catch (QuitterExecption e) {
             bvn();
             afficheMenuConnex();
