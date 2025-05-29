@@ -40,8 +40,8 @@ public class Client extends Personne {
         this.panier.get(idmag).add(liv);
     }
 
-    public void suppPanier(Livre liv) {
-        this.panier.remove(liv);
+    public void suppPanier(int idmag, Livre liv) {
+        this.panier.get(idmag).remove(liv);
     }
 
     public double getValPanier() {
@@ -55,32 +55,40 @@ public class Client extends Personne {
     }
 
     public void affichePanier() {
-        if (panier.isEmpty()) {
+        if (getValPanier() == 0) {
             System.out.println("Il n'y a rien dans votre panier");
             System.out.println("[0] Quitter");
-            return;
-        }
-        int y = 1;
-        String column1Format = "%-50.50s";
-        String column2Format = "%-8.8s";
-        String column3Format = "%8.8s";
-        String formatInfo = column1Format + " " + column2Format + " " +
-                column3Format;
-        System.out.println("────────────────────────────────────────────────────────────────────────────────────");
-        for (int idmag : panier.keySet()) {
-            System.out.println("COMMANDE POUR ID MAGASIN : " + idmag);
-            System.out.println("********************************************************************************");
-            for (int i = 0; i < panier.get(idmag).size(); ++i) {
-                System.out.format(formatInfo, "[" + y + "] Titre : " +
-                        panier.get(idmag).get(i).getTitre(),
-                        "qte : " + panier.get(idmag).get(i).getQte(), panier.get(idmag).get(i).getPrix() + " €");
-                System.out.println();
-                System.out.println(
-                        "────────────────────────────────────────────────────────────────────────────────────");
-                ++y;
+        } else {
+            int y = 1;
+            String column1Format = "%-50.50s";
+            String column2Format = "%-8.8s";
+            String column3Format = "%8.8s";
+            String formatInfo = column1Format + " " + column2Format + " " +
+                    column3Format;
+            System.out.println("────────────────────────────────────────────────────────────────────────────────────");
+            for (int idmag : panier.keySet()) {
+                if (!panier.get(idmag).isEmpty()) {
+                    System.out.println("\nID MAGASIN : [" + idmag + "]");
+                    System.out
+                            .println(
+                                    "***********************************************************************************");
+                }
+                for (int i = 0; i < panier.get(idmag).size(); ++i) {
+                    System.out.format(formatInfo, "[" + y + "] Titre : " +
+                            panier.get(idmag).get(i).getTitre(),
+                            "qte : " + panier.get(idmag).get(i).getQte(), panier.get(idmag).get(i).getPrix() + " €");
+                    System.out.println();
+                    System.out.println(
+                            "────────────────────────────────────────────────────────────────────────────────────");
+                    ++y;
+                }
+                y = 1;
             }
+            System.out.println("Total : " + getValPanier() + " €");
+            System.out.println(
+                    "Tappez l'id du magasin ainsi que le numéro du livre que vous voulez supprimer(les 2 valeurs doivent être séparer par un espace),\nfaite 'COMMANDE' si tout est bon et que vous voulez commander ");
+            System.out.println("[0] Quitter");
         }
-        System.out.println("[0] Quitter");
 
     }
 }

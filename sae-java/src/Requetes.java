@@ -214,8 +214,6 @@ public class Requetes {
             ps2.setString(4, envoie);
             ps2.setInt(5, cli.getNumCompte());
             ps2.setInt(6, idmag);
-            System.out.println(livreMag);
-            System.out.println(livreMag.get(idmag));
             ps2.execute();
             for (int i = 0; i < livreMag.get(idmag).size(); ++i) {
                 ps3.setInt(1, numco);

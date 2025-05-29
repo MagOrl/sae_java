@@ -2,6 +2,7 @@
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Executable {
@@ -25,7 +26,7 @@ public class Executable {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    usr.close();
+                    return;
                 case "1":
                     menuConnecter(usr);
                     break;
@@ -104,8 +105,10 @@ public class Executable {
                     demandeUtilisateur("numéro de téléphone", usr),
                     demandeUtilisateur("mot de passe", usr));
         } catch (NumberFormatException | SQLException e) {
-            System.out.print("Queleque chose de mal c'est passer, ré-essayer en mettant des informations les plus cohérente possible");
-            System.out.print("Par exemple ne mettez pas d'éspace en trop, et veillez à bien mettre exactement 5 character pour le code postale sans espace nulle part");
+            System.out.print(
+                    "Queleque chose de mal c'est passer, ré-essayer en mettant des informations les plus cohérente possible");
+            System.out.print(
+                    "Par exemple ne mettez pas d'éspace en trop, et veillez à bien mettre exactement 5 character pour le code postale sans espace nulle part");
         } catch (QuitterExecption e) {
             bvn();
             afficheMenuConnex();
@@ -199,8 +202,7 @@ public class Executable {
 
     private static void affichePanier(Client cli) {
         cli.affichePanier();
-        System.out.println(
-                "Tappez le numéro du livre que vous voulez supprimer, faite 'COMMANDE' si tout est bon et que vous voulez commander ");
+
     }
 
     private static void panier(Client cli, Scanner usr) {
@@ -208,7 +210,8 @@ public class Executable {
         affichePanier(cli);
         while (usr.hasNext()) {
             String res = usr.nextLine();
-            switch (res) {
+            String[] splitres = res.split(" ");
+            switch (splitres[0]) {
                 case "0":
                     return;
                 case "1":
@@ -218,8 +221,13 @@ public class Executable {
                 case "5":
                 case "6":
                 case "7":
-                    cli.suppPanier(cli.getPanier().get(Integer.parseInt(res) - 1));
-                    affichePanier(cli);
+                    try {
+                        cli.suppPanier(Integer.parseInt(splitres[0]),
+                                cli.getPanier(Integer.parseInt(splitres[0])).get(Integer.parseInt(splitres[1]) - 1));
+                        affichePanier(cli);
+                    } catch (IndexOutOfBoundsException ex) {
+                        System.out.println("vous avez mit une mauvaise saisis");
+                    }
                     break;
                 case "COMMANDE":
                     System.out.print("Voulez vous une réserver au [M]agasin ou directement [C]ommander ");
@@ -244,9 +252,7 @@ public class Executable {
                                 System.out.println("M pour magasin et L pour Ligne et 0 pour annulez ");
                                 break;
                         }
-
                     }
-
                     break;
                 default:
                     System.out.println("Mettre une séléction valide");
