@@ -219,8 +219,8 @@ public class Executable {
                 case "7":
                 case "8":
                 case "9":
-                    cli.suppPanier(cli.getPanier().get(Integer.parseInt(res) - 1));
-                    affichePanier(cli);
+                    // cli.suppPanier(cli.getPanier().get(Integer.parseInt(res) - 1));
+                    // affichePanier(cli);
                     break;
                 case "COMMANDE":
                     System.out.print("Voulez vous une réserver au [M]agasin ou directement [C]ommander ");
@@ -429,7 +429,8 @@ public class Executable {
         int y = 0;
         for (Integer i : lesmag.keySet()) {
             System.out
-                    .println("[" + ++y + "] Ville : " + lesmag.get(i).getVille() + " Nom : " + lesmag.get(i).getNom());
+                    .println("[" + ++y + "] Ville : " + lesmag.get(i).getVille() + "|| Nom du magasin : "
+                            + lesmag.get(i).getNom());
         }
         System.out.println("Entrez d'abord le magasin ou vous voulez commander");
         System.out.println("[0] Quitter");
@@ -541,6 +542,10 @@ public class Executable {
     }
 
     private static void catalogue(List<List<Livre>> livres, Scanner usr, Client cli, Magasin mag) {
+        if (livres.isEmpty()) {
+            System.out.println("Aucun livres de cette catégorie dans le magasin " + mag.getNom());
+            return;
+        }
         int ind = 0;
         afficheCatalogue(livres, ind, mag);
         while (usr.hasNext()) {
@@ -577,14 +582,17 @@ public class Executable {
                 case "9":
                     try {
                         Livre liv = livres.get(ind).get(Integer.parseInt(splitRes[0]));
-                        cli.addPanier(liv, Integer.parseInt(splitRes[1]));
+                        cli.addPanier(mag.getId(), liv, Integer.parseInt(splitRes[1]));
                         System.out.println("ajout au panier effectuer !");
                     } catch (TopDeLivreException ex) {
                         System.out.println("Vous avez mit trop de livre dans votre panier, alleger le.");
                     } catch (MauvaiseQuantiteException ex) {
                         ex.debug();
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        System.out.println("Veuillez mettre une quantité.");
                     }
                     break;
+
                 default:
                     System.out.println("Mettre une séléction valide");
                     break;

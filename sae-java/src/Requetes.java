@@ -187,21 +187,25 @@ public class Requetes {
         return res;
     }
 
-    public void commandeLivre(List<Livre> livres, Client cli, String envoie) throws SQLException {
+    public void commandeLivre(HashMap<Integer, List<Livre>> livreMag, Client cli, String envoie) throws SQLException {
         PreparedStatement ps1 = this.laConnexion
                 .prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
+        for (int i : livreMag.keySet()) {
+            for (Livre liv : livreMag.get(i)) {
+                ps1.setInt(1, getQteLivre(liv) - liv.getQte());
+                ps1.setString(2, liv.getIsbn());
+                ps1.execute();
+                if (getQteLivre(liv) - liv.getQte() <= 0) {
+                    suppLivrePosseder(liv.getIsbn(), i);
+                }
+            }
+        }
+
+        int numco = getMaxCommande();
         PreparedStatement ps2 = this.laConnexion
                 .prepareStatement("insert into COMMANDE values (?,?,?,?,?,?)");
         PreparedStatement ps3 = this.laConnexion
                 .prepareStatement("insert into DETAILCOMMANDE values (?,?,?,?,?)");
-        this.laConnexion.setAutoCommit(false);
-        int numco = getMaxCommande();
-        for (Livre liv : livres) {
-            ps1.setInt(1, getQteLivre(liv) - liv.getQte());
-            ps1.setString(2, liv.getIsbn());
-            ps1.executeUpdate();
-        }
-        HashMap<Integer, List<Livre>> livreMag = classeLivreSelonMag(livres);
         for (Integer idmag : livreMag.keySet()) {
             numco++;
             ps2.setInt(1, numco);
@@ -210,19 +214,20 @@ public class Requetes {
             ps2.setString(4, envoie);
             ps2.setInt(5, cli.getNumCompte());
             ps2.setInt(6, idmag);
+            System.out.println(livreMag);
+            System.out.println(livreMag.get(idmag));
+            ps2.execute();
             for (int i = 0; i < livreMag.get(idmag).size(); ++i) {
                 ps3.setInt(1, numco);
                 ps3.setInt(2, i + 1);
                 ps3.setInt(3, livreMag.get(idmag).get(i).getQte());
                 ps3.setDouble(4, livreMag.get(idmag).get(i).getPrix());
                 ps3.setString(5, livreMag.get(idmag).get(i).getIsbn());
-                ps3.addBatch();
+                ps3.executeUpdate();
+
             }
-            ps2.addBatch();
         }
-        ps2.executeBatch();
-        ps3.executeBatch();
-        livres.removeAll(livres);
+        // livreMag.remove();
     }
 
     public HashMap<Integer, Magasin> afficheMagasin() throws SQLException {
@@ -278,9 +283,16 @@ public class Requetes {
         for (Livre liv : livres) {
             if (res.containsKey(res))
                 res.get(trouveMagasin(liv)).add(liv);
-            else
+            else {
                 res.put(trouveMagasin(liv), new ArrayList<>());
+                res.get(trouveMagasin(liv)).add(liv);
+
+            }
         }
         return res;
+    }
+
+    public void suppLivrePosseder(String isbn, int idmag) throws SQLException {
+        int rs = this.st.executeUpdate("DELETE FROM POSSEDER where isbn = " + isbn + " and idmag = " + idmag);
     }
 }
