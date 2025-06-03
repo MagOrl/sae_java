@@ -1,18 +1,18 @@
 import java.util.List;
 import java.util.ArrayList;
 
-public class Catalogue {
+public class Stock {
 
   /**
   * Attibuts de la classe Catalogue
   */
-  private List<Livre> livre;
+  private List<Livre> livres;
 
   /**
   * Constructeur de la classe Catalogue
   */
   public Catalogue() {
-    this.livre = new ArrayList<>();
+    this.livres = new ArrayList<>();
   }
 
   /**
@@ -24,7 +24,7 @@ public class Catalogue {
    * @return les livres du catalogue
    */
   public List<Livre> getLivre() {
-    return this.livre;
+    return this.livres;
   }
 
   /**
@@ -35,8 +35,8 @@ public class Catalogue {
   
   public List<Livre> rechercherLivreParTitre(String titre) {
     List<Livre> livresTrouves = new ArrayList<>();
-    for (Livre l : this.livre) {
-      if (l.getTitre().equals(titre)) {
+    for (Livre l : this.livres) {
+      if (l.getTitre().equalsIgnoreCase(titre)) {
         livresTrouves.add(l);
       }
     }
@@ -50,8 +50,8 @@ public class Catalogue {
    */
   public List<Livre> rechercherLivreParAuteur(String auteur) {
     List<Livre> livresTrouves = new ArrayList<>();
-    for (Livre l : this.livre) {
-      if (l.getAuteur().equals(auteur)) {
+    for (Livre l : this.livres) {
+     if (l.getAuteur().equalsIgnoreCase(auteur)) {
         livresTrouves.add(l);
       }
     }
@@ -63,7 +63,7 @@ public class Catalogue {
    * @return le nombre de livres
    */
   public int getNombreLivres() {
-    return this.livre.size();
+    return this.livres.size();
   }
 
   /**
@@ -71,8 +71,8 @@ public class Catalogue {
    * @return Liste des livres triés par titre
    */
   public List<Livre> trierLivresParTitre() {
-    this.livre.sort((l1, l2) -> l1.getTitre().compareTo(l2.getTitre()));
-    return this.livre;
+    this.livres.sort((l1, l2) -> l1.getTitre().compareTo(l2.getTitre()));
+    return this.livres;
   }
 
   /**
@@ -80,8 +80,8 @@ public class Catalogue {
    * @return Liste des livres triés par auteur
    */
   public List<Livre> trierLivresParAuteur() {
-    this.livre.sort((l1, l2) -> l1.getAuteur().compareTo(l2.getAuteur()));
-    return this.livre;
+    this.livres.sort((l1, l2) -> l1.getAuteur().compareTo(l2.getAuteur()));
+    return this.livres;
   }
 
   /**
@@ -89,8 +89,8 @@ public class Catalogue {
    * @return Liste des livres triés par date de publication
    */
   public List<Livre> trierLivresParDate() {
-    this.livre.sort((l1, l2) -> l1.getDatePublication().compareTo(l2.getDatePublication()));
-    return this.livre;
+    this.livres.sort((l1, l2) -> l1.getDatePublication().compareTo(l2.getDatePublication()));
+    return this.livres;
   }
 
 
