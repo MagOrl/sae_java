@@ -2,8 +2,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AdministrateurBD {
 
@@ -13,7 +13,9 @@ public class AdministrateurBD {
     public AdministrateurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
+            //laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

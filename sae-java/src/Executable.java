@@ -1,31 +1,41 @@
+
 import java.sql.SQLException;
-import java.util.Scanner;
 import java.util.List;
+import java.util.Scanner;
 
 public class Executable {
+
     private static ConnexionMySQL connexion;
 
     public static void main(String[] args) throws ClassNotFoundException {
         connexion = new ConnexionMySQL();
-        boolean quitte = false;
+        Scanner usr = new Scanner(System.in);
+        principal(usr);
+    }
+
+    public static void principal(Scanner usr) {
         bvn();
         menuConnex();
-        Scanner usr = new Scanner(System.in);
         String res = "";
-        while (!quitte && usr.hasNextLine()) {
+        while (usr.hasNextLine()) {
             res = usr.nextLine();
             switch (res) {
                 case "0":
-                    quitte = true;
-                    break;
+                    return;
                 case "1":
                     menuConnecter(usr);
+                    bvn();
+                    menuConnex();
                     break;
                 case "2":
                     menuCreaCompte(usr);
+                    bvn();
+                    menuConnex();
                     break;
-                case "3": 
+                case "3":
                     menuAdmin(connexionAdmin(usr), usr);
+                    bvn();
+                    menuConnex();
                 default:
                     System.out.println("Entrez un chiffre entre 0 et 2 svp.");
             }
@@ -35,11 +45,15 @@ public class Executable {
 
     private static void bvn() {
         System.out.println(
-                "                      _    _               ___                        \n" + //
-                        "                     | |  (_)_ ___ _ ___  | __|_ ___ __ _ _ ___ ______\n" + //
-                        "                     | |__| \\ V / '_/ -_) | _|\\ \\ / '_ \\ '_/ -_|_-<_-<\n" + //
-                        "                     |____|_|\\_/|_| \\___| |___/_\\_\\ .__/_| \\___/__/__/\n" + //
-                        "                                                  |_|                 ");
+                "                      _    _               ___                        \n"
+                + //
+                "                     | |  (_)_ ___ _ ___  | __|_ ___ __ _ _ ___ ______\n"
+                + //
+                "                     | |__| \\ V / '_/ -_) | _|\\ \\ / '_ \\ '_/ -_|_-<_-<\n"
+                + //
+                "                     |____|_|\\_/|_| \\___| |___/_\\_\\ .__/_| \\___/__/__/\n"
+                + //
+                "                                                  |_|                 ");
     }
 
     private static void menuConnex() {
@@ -111,9 +125,9 @@ public class Executable {
         System.out.println("Entrez votre " + demande);
         String res = usr.nextLine();
         try {
-            if (Integer.parseInt(res) == 0)
+            if (Integer.parseInt(res) == 0) {
                 throw new QuitterExecption();
-            else {
+            } else {
                 System.out.println("Votre " + demande + " " + res);
                 System.out.println("");
                 return res;
@@ -129,9 +143,9 @@ public class Executable {
         System.out.println("Entrez votre " + demande);
         String res = usr.nextLine();
         try {
-            if (Integer.parseInt(res) == 0)
+            if (Integer.parseInt(res) == 0) {
                 throw new QuitterExecption();
-            else {
+            } else {
                 System.out.println("Votre " + demande + " " + res);
                 System.out.println(" ");
             }
@@ -159,23 +173,22 @@ public class Executable {
 
     private static void menuClient(Client cli, Scanner usr) {
         afficheMenuClient(cli);
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    bvn();
-                    menuConnex();
-                    quitte = true;
-                    break;
+                    return;
                 case "1":
                     consulteCatalogue(cli, usr);
+                    afficheMenuClient(cli);
                     break;
                 case "2":
                     gestionCompte(cli, usr);
+                    afficheMenuClient(cli);
                     break;
                 case "3":
                     afficheHistorique(cli, usr);
+                    afficheMenuClient(cli);
                     break;
             }
         }
@@ -194,19 +207,18 @@ public class Executable {
 
     private static void gestionCompte(Client cli, Scanner usr) {
         afficheGestionCompte();
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    afficheMenuClient(cli);
-                    quitte = true;
-                    break;
+                    return;
                 case "1":
                     voirInfoperso(cli, usr);
+                    afficheGestionCompte();
                     break;
                 case "2":
                     changeInfoPerso(cli, usr);
+                    afficheGestionCompte();
                     break;
             }
 
@@ -219,14 +231,11 @@ public class Executable {
         System.out.println(cli);
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         System.out.println(" [0] Quitter");
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    afficheGestionCompte();
-                    quitte = true;
-                    break;
+                    return;
                 default:
                     System.out.println("C'est 0 pour quitter");
                     break;
@@ -256,13 +265,11 @@ public class Executable {
     private static void changeInfoPerso(Client cli, Scanner usr) {
         afficheChangeInfoPerso();
         Requetes query = new Requetes(connexion);
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
                     afficheGestionCompte();
-                    quitte = true;
                     break;
                 case "1":
                     System.out.println("Le nouveau identifiant :");
@@ -309,14 +316,11 @@ public class Executable {
         System.out.println(res);
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String rep = usr.nextLine();
             switch (rep) {
                 case "0":
-                    quitte = true;
-                    afficheMenuClient(cli);
-                    break;
+                    return;
                 default:
                     System.out.println("0 pour quitter");
                     break;
@@ -341,20 +345,18 @@ public class Executable {
 
     private static void consulteCatalogue(Client cli, Scanner usr) {
         afficheConsulteCatalogue();
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    afficheMenuClient(cli);
-                    quitte = true;
-                    break;
+                    return;
                 case "1":
                     rechercheLivre(cli, usr);
+                    afficheConsulteCatalogue();
                     break;
                 case "2":
                     System.out.println("to be built");
-                    break;
+                    afficheConsulteCatalogue();
                 default:
                     System.out.println("Mettre une valeur entre 0 et 2");
                     break;
@@ -384,7 +386,7 @@ public class Executable {
                     quitte = true;
                     afficheConsulteCatalogue();
                     break;
-                
+
                 default:
                     System.out.println("Veuillez enregistrer une séléction valide");
                     break;
@@ -393,50 +395,50 @@ public class Executable {
         }
     }
 
-    private static Administrateur connexionAdmin(Scanner usr){
+    private static Administrateur connexionAdmin(Scanner usr) {
         AdministrateurBD Aconnexion = new AdministrateurBD(connexion);
         Administrateur admin = null;
         String identifiant = null;
         String mdp = null;
-        try{
+        try {
             System.out.println("Entrez votre identifiant");
             identifiant = usr.nextLine();
             System.out.println("Entrez votre mot de passe");
             mdp = usr.nextLine();
             admin = Aconnexion.trouveAdmin(identifiant, mdp);
-        }catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Identifiant ou mot de passe incorect");
 
         }
         return admin;
-        
+
     }
 
-    private static void afficheMenuAdmin(Administrateur admin){
-        try{
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Bonjour " + admin.getPrenom() + " que souhaitez vous faire ?                       │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [1] Créer un compte vendeur                                                        │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Ajouter une nouvelle librairie au réseau                                       │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [3] Gerer les stocks gloaux                                                        │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [4] Consulter les statistiques de ventes                                           │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0] Quitter                                                                        │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        }catch(NullPointerException e){
+    private static void afficheMenuAdmin(Administrateur admin) {
+        try {
+            System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+            System.out.println("│ Bonjour " + admin.getPrenom() + " que souhaitez vous faire ?                       │");
+            System.out.println("│                                                                                    │");
+            System.out.println("│ [1] Créer un compte vendeur                                                        │");
+            System.out.println("│                                                                                    │");
+            System.out.println("│ [2] Ajouter une nouvelle librairie au réseau                                       │");
+            System.out.println("│                                                                                    │");
+            System.out.println("│ [3] Gerer les stocks gloaux                                                        │");
+            System.out.println("│                                                                                    │");
+            System.out.println("│ [4] Consulter les statistiques de ventes                                           │");
+            System.out.println("│                                                                                    │");
+            System.out.println("│ [0] Quitter                                                                        │");
+            System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+        } catch (NullPointerException e) {
             System.out.println("Identifiant ou mot de passe incorect");
 
         }
     }
 
-    private static void menuAdmin(Administrateur admin, Scanner usr){
+    private static void menuAdmin(Administrateur admin, Scanner usr) {
         afficheMenuAdmin(admin);
         boolean quitter = false;
-        while(!quitter && usr.hasNext()){
+        while (!quitter && usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
@@ -444,7 +446,7 @@ public class Executable {
                 case "1":
                     creerCompteVendeur(admin, usr);
                     break;
-                
+
                 case "2":
                     ajouterNouvelleLibrairie(admin, usr);
                     break;
@@ -452,7 +454,7 @@ public class Executable {
                 case "3":
                     choixLibrairie(admin, usr);
                     break;
-                
+
                 case "4":
 
                     break;
@@ -465,11 +467,11 @@ public class Executable {
                     break;
             }
         }
-        
+
     }
 
-    private static void creerCompteVendeur(Administrateur admin, Scanner usr){
-        try{
+    private static void creerCompteVendeur(Administrateur admin, Scanner usr) {
+        try {
             AdministrateurBD adminBD = new AdministrateurBD(connexion);
             System.out.println("Entrez l'identifiant du vendeur");
             String identifiant = usr.nextLine();
@@ -497,22 +499,22 @@ public class Executable {
 
             System.out.println("Entrez le mot de passe du vendeur");
             String mdp = usr.nextLine();
-            
+
             System.out.println("Entrez le nom du magasin du vendeur");
             String magasin = usr.nextLine();
             adminBD.CreerCompteVendeur(nom, prenom, identifiant, adresse, tel, email, mdp, codePostal, ville, magasin);
             System.out.println("Le compte à bien été crée");
             menuAdmin(admin, usr);
-        }catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Un problème est survenu lors de la création du compte");
             menuAdmin(admin, usr);
         }
 
     }
 
-    private static void ajouterNouvelleLibrairie(Administrateur admin, Scanner usr){
+    private static void ajouterNouvelleLibrairie(Administrateur admin, Scanner usr) {
         AdministrateurBD adminBD = new AdministrateurBD(connexion);
-        try{
+        try {
             System.out.println("Entrez le nom de la librairie");
             String nommag = usr.nextLine();
 
@@ -522,46 +524,46 @@ public class Executable {
             adminBD.ajouteNouvelleLibrairie(nommag, villemag);
             System.out.println("La librairie a été ajoutée");
             menuAdmin(admin, usr);
-        }catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Une erreur est survenue lors de l'ajout d'une nouvelle librairie");
             menuAdmin(admin, usr);
         }
     }
 
-    private static void afficheChoixLibrairie(Administrateur admin, Scanner usr){
-        try{
+    private static void afficheChoixLibrairie(Administrateur admin, Scanner usr) {
+        try {
             AdministrateurBD adminBD = new AdministrateurBD(connexion);
             List<String> lesLibrairies = adminBD.choixLibrairie();
             System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
             System.out.println("│ Les librairies                                                                     │");
-            for(String librairie : lesLibrairies){
-                System.out.println("│ "+"   ["+librairie+"]                                                 │");
+            for (String librairie : lesLibrairies) {
+                System.out.println("│ " + "   [" + librairie + "]                                                 │");
             }
             System.out.println("│ [0] Retour                                                                         │");
             System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        }catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Une erreur est survenue lors de l'affichage des librairie");
             menuAdmin(admin, usr);
         }
     }
 
-    private static void choixLibrairie(Administrateur admin, Scanner usr){
+    private static void choixLibrairie(Administrateur admin, Scanner usr) {
         AdministrateurBD adminBd = new AdministrateurBD(connexion);
-        try{
+        try {
             afficheChoixLibrairie(admin, usr);
             System.out.println("Entrez le nom de la librairie que vous voulez choisir");
             String librairie = usr.nextLine();
-            menuGererStocksGlobaux(admin , usr, adminBd.trouveLibrairie(librairie));
-        }catch(SQLException e){
+            menuGererStocksGlobaux(admin, usr, adminBd.trouveLibrairie(librairie));
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Une erreur est survenue lors du choix de la librairie");
             menuAdmin(admin, usr);
         }
     }
 
-    private static void afficheMenuGererStocksGlobaux(Administrateur admin, Scanner usr, Magasin mag){
+    private static void afficheMenuGererStocksGlobaux(Administrateur admin, Scanner usr, Magasin mag) {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Que souhaitez vous faire ?                  Librairie actuelle : " +mag.getNom()+" │");
+        System.out.println("│ Que souhaitez vous faire ?                  Librairie actuelle : " + mag.getNom() + " │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [1] Ajouter un livre a une librairie                                               │");
         System.out.println("│                                                                                    │");
@@ -577,33 +579,34 @@ public class Executable {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
 
-    private static void menuGererStocksGlobaux(Administrateur admin, Scanner usr, Magasin mag){
+    private static void menuGererStocksGlobaux(Administrateur admin, Scanner usr, Magasin mag) {
         afficheMenuGererStocksGlobaux(admin, usr, mag);
         boolean retour = false;
-        while(!retour && usr.hasNext()){
+        while (!retour && usr.hasNext()) {
             String res = usr.nextLine();
-            switch(res){
-              case "1":
-                infosAjouteLivre(admin, usr, mag);
-                break;
-              case "2":
-              case "3":
-              case "4": //afficher le stock de la librairie concernée
-              case "5": 
-                choixLibrairie(admin, usr);
-                break;
-              case "0":
-                menuAdmin(admin, usr);
-                break; //quitter
-              default: System.out.println("veuillez entrer un nombre entre 1 et 6");
+            switch (res) {
+                case "1":
+                    infosAjouteLivre(admin, usr, mag);
+                    break;
+                case "2":
+                case "3":
+                case "4": //afficher le stock de la librairie concernée
+                case "5":
+                    choixLibrairie(admin, usr);
+                    break;
+                case "0":
+                    menuAdmin(admin, usr);
+                    break; //quitter
+                default:
+                    System.out.println("veuillez entrer un nombre entre 1 et 6");
 
             }
         }
     }
 
-    private static void infosAjouteLivre(Administrateur admin, Scanner usr, Magasin mag){
+    private static void infosAjouteLivre(Administrateur admin, Scanner usr, Magasin mag) {
         AdministrateurBD adminBd = new AdministrateurBD(connexion);
-        try{
+        try {
             System.out.println("Entrez le titre du livre");
             String titre = usr.nextLine();
 
@@ -628,16 +631,16 @@ public class Executable {
             System.out.println("Entrez la quantité de livre à ajouter");
             String qte = usr.nextLine();
 
-            adminBd.AjouterLivre(titre,auteur, editeur, theme, nbpages, datepubli, prix, qte, mag);
+            adminBd.AjouterLivre(titre, auteur, editeur, theme, nbpages, datepubli, prix, qte, mag);
             System.out.println("Le livre a bien été ajouté");
             menuGererStocksGlobaux(admin, usr, mag);
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Veuillez entrez uniquement des chiffres pour le nombre de pages et la date de publication");
             infosAjouteLivre(admin, usr, mag);
-        }catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("Une erreur est survenue lors de l'ajout du livre");
             menuGererStocksGlobaux(admin, usr, mag);
-        } 
+        }
     }
 }
 
