@@ -5,7 +5,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdministrateurBD {
+public class AdministrateurBD{
 
     private ConnexionMySQL connexion;
     private Statement st;
@@ -13,8 +13,8 @@ public class AdministrateurBD {
     public AdministrateurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            //laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
+            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -158,10 +158,10 @@ public class AdministrateurBD {
 
     public void majQteLivre(Livre livre, Magasin mag, int qte) throws SQLException{
         this.st = connexion.createStatement();
-	  	  ResultSet r = this.st.executeQuery("select qte from LIVRE natural join POSSERDER natural join MAGASIN where isbn = "+ livre.getIsbn()+" and idmag = " + mag.getId() + "");
+	  	  ResultSet r = this.st.executeQuery("select qte from LIVRE natural join POSSEDER natural join MAGASIN where isbn = "+ livre.getIsbn()+" and idmag = " + mag.getId() + "");
         qte += r.getInt("qte");
 
-        PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSERDER SET qte = ? WHERE isbn = ?");
+        PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
         ps.setInt(1, qte);
         ps.setString(2, livre.getIsbn());
         ps.executeUpdate();
@@ -170,7 +170,7 @@ public class AdministrateurBD {
 
     public void afficherStockLibrairie(Magasin mag) throws SQLException{
         this.st = connexion.createStatement();
-        ResultSet r = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix from LIVRE natural join POSSERDER natural join MAGASIN where idmag = "+ mag.getId());
+        ResultSet r = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix from LIVRE natural join POSSEDER natural join MAGASIN where idmag = "+ mag.getId());
         while(r.next()){
           Livre livreActuel = new Livre(r.getString("isbn"), r.getString("titre"), r.getInt("nbpages"), r.getInt("datepubli"), r.getDouble("prix"));
           System.out.println(livreActuel + "/n");
