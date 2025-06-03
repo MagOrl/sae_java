@@ -1,7 +1,5 @@
 
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +12,9 @@ public class Requetes {
     public Requetes(ConnexionMySQL laConnexion) {
         this.laConnexion = laConnexion;
         try {
-            laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
-            // laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev",
-            // "arsamerzoev");
+            // laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
+            laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev",
+            "arsamerzoev");
         } catch (SQLException e) {
             e.printStackTrace();
         }
