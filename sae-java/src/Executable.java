@@ -23,19 +23,14 @@ public class Executable {
                 case "0":
                     return;
                 case "1":
-                    menuConnecter(usr);
+                    menuAdmin(connexionAdmin(usr), usr);
                     bvn();
                     menuConnex();
                     break;
                 case "2":
-                    menuCreaCompte(usr);
                     bvn();
                     menuConnex();
                     break;
-                case "3":
-                    menuAdmin(connexionAdmin(usr), usr);
-                    bvn();
-                    menuConnex();
                 default:
                     System.out.println("Entrez un chiffre entre 0 et 2 svp.");
             }
@@ -62,337 +57,9 @@ public class Executable {
         System.out.println("│                                                                                    │");
         System.out.println("│ [2] Créer un compte                                                                │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [3] Se connecter en tant qu'administrateur                                         │");
-        System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         System.out.println("entrez une séléction");
-    }
-
-    private static void menuConnecter(Scanner usr) {
-        Requetes query = new Requetes(connexion);
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ CONNEXION                                                                          │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0] Quitter                                                                        │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        try {
-            String identif = demandeConnexion("identifiant", usr);
-            String mdp = demandeConnexion("mot de passe", usr);
-            if (query.connectClient(identif, mdp)) {
-                bvn();
-                menuClient(query.trouveClient(identif, mdp), usr);
-            } else {
-                System.out.println("Mauvais mot de passe ou identifiant veuillez réesayer");
-                System.out.println("Si vous n'avez pas de compte, veuillez en crée un");
-                menuConnecter(usr);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (QuitterExecption e) {
-            menuConnex();
-            return;
-        }
-    }
-
-    private static void menuCreaCompte(Scanner usr) {
-        Requetes query = new Requetes(connexion);
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Pour créer le compte, veuillez entrer correctement les informations.               │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0]Quitter                                                                         │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        try {
-            query.creeClient(demandeUtilisateur("indentifiant", usr), demandeUtilisateur("nom", usr),
-                    demandeUtilisateur("prenom", usr),
-                    demandeUtilisateur("code postale", usr),
-                    demandeUtilisateur("adresse", usr), demandeUtilisateur("ville", usr),
-                    demandeUtilisateur("email", usr),
-                    demandeUtilisateur("numéro de téléphone", usr),
-                    demandeUtilisateur("mot de passe", usr));
-        } catch (NumberFormatException | SQLException e) {
-            e.printStackTrace();
-        } catch (QuitterExecption e) {
-            bvn();
-            menuConnex();
-            return;
-        }
-        menuConnex();
-    }
-
-    private static String demandeUtilisateur(String demande, Scanner usr) throws QuitterExecption {
-        System.out.println("Entrez votre " + demande);
-        String res = usr.nextLine();
-        try {
-            if (Integer.parseInt(res) == 0) {
-                throw new QuitterExecption();
-            } else {
-                System.out.println("Votre " + demande + " " + res);
-                System.out.println("");
-                return res;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Votre " + demande + " " + res);
-            System.out.println("");
-            return res;
-        }
-    }
-
-    private static String demandeConnexion(String demande, Scanner usr) throws QuitterExecption {
-        System.out.println("Entrez votre " + demande);
-        String res = usr.nextLine();
-        try {
-            if (Integer.parseInt(res) == 0) {
-                throw new QuitterExecption();
-            } else {
-                System.out.println("Votre " + demande + " " + res);
-                System.out.println(" ");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Votre " + demande + " " + res);
-            System.out.println(" ");
-        }
-        return res;
-    }
-
-    private static void afficheMenuClient(Client cli) {
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Bonjour " + cli.getIdentifiant()
-                + "                                                                       │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [1] Consulte les catalogues                                                        │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Gestion comptes                                                                │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [3] Historique de commandes                                                        │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0] Quitter                                                                        │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-    }
-
-    private static void menuClient(Client cli, Scanner usr) {
-        afficheMenuClient(cli);
-        while (usr.hasNext()) {
-            String res = usr.nextLine();
-            switch (res) {
-                case "0":
-                    return;
-                case "1":
-                    consulteCatalogue(cli, usr);
-                    afficheMenuClient(cli);
-                    break;
-                case "2":
-                    gestionCompte(cli, usr);
-                    afficheMenuClient(cli);
-                    break;
-                case "3":
-                    afficheHistorique(cli, usr);
-                    afficheMenuClient(cli);
-                    break;
-            }
-        }
-    }
-
-    private static void afficheGestionCompte() {
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ [1] Voir mes informations personelle                                               │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Changer mes informations personelle                                            │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0]Quitter                                                                         │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-
-    }
-
-    private static void gestionCompte(Client cli, Scanner usr) {
-        afficheGestionCompte();
-        while (usr.hasNext()) {
-            String res = usr.nextLine();
-            switch (res) {
-                case "0":
-                    return;
-                case "1":
-                    voirInfoperso(cli, usr);
-                    afficheGestionCompte();
-                    break;
-                case "2":
-                    changeInfoPerso(cli, usr);
-                    afficheGestionCompte();
-                    break;
-            }
-
-        }
-    }
-
-    private static void voirInfoperso(Client cli, Scanner usr) {
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Voici vos informations :                                                           │");
-        System.out.println(cli);
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        System.out.println(" [0] Quitter");
-        while (usr.hasNext()) {
-            String res = usr.nextLine();
-            switch (res) {
-                case "0":
-                    return;
-                default:
-                    System.out.println("C'est 0 pour quitter");
-                    break;
-            }
-
-        }
-    }
-
-    private static void afficheChangeInfoPerso() {
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Que voulez vous changer ?                                                          │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [1] Mon identifiant                                                                │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Mon mot de passe                                                               │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [3] Mon email                                                                      │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [4] Mon numéro de téléphone                                                        │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0] Quitter                                                                        │");
-        System.out.println("│                                                                                    │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-
-    }
-
-    private static void changeInfoPerso(Client cli, Scanner usr) {
-        afficheChangeInfoPerso();
-        Requetes query = new Requetes(connexion);
-        while (usr.hasNext()) {
-            String res = usr.nextLine();
-            switch (res) {
-                case "0":
-                    afficheGestionCompte();
-                    break;
-                case "1":
-                    System.out.println("Le nouveau identifiant :");
-                    cli.setIdentifiant(usr.nextLine());
-                    afficheChangeInfoPerso();
-                    break;
-                case "2":
-                    System.out.println("Le nouveau mot de passe :");
-                    cli.setMdp(usr.nextLine());
-                    afficheChangeInfoPerso();
-                    break;
-                case "3":
-                    System.out.println("Le nouveau email :");
-                    cli.setEmail(usr.nextLine());
-                    afficheChangeInfoPerso();
-                    break;
-                case "4":
-                    System.out.println("Le nouveau numéro de téléphone :");
-                    cli.setTel(Integer.parseInt(usr.nextLine()));
-                    afficheChangeInfoPerso();
-                    break;
-                default:
-                    System.out.println("les choix vont de 0 à 4");
-                    break;
-            }
-            try {
-                query.majClient(cli);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static void afficheHistorique(Client cli, Scanner usr) {
-        Requetes query = new Requetes(connexion);
-        String res = "";
-        try {
-            res = query.afficheHistoriqueCommande(cli);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ L'historique de vos commandes :                                                    │");
-        System.out.println(res);
-        System.out.println("│ [0] Quitter                                                                        │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        while (usr.hasNext()) {
-            String rep = usr.nextLine();
-            switch (rep) {
-                case "0":
-                    return;
-                default:
-                    System.out.println("0 pour quitter");
-                    break;
-            }
-
-        }
-
-    }
-
-    private static void afficheConsulteCatalogue() {
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Les catalogues :                                                                   │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [1] Rechercher selon critère                                                       │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Le catalogue                                                                   │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0] Quitter                                                                        │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-
-    }
-
-    private static void consulteCatalogue(Client cli, Scanner usr) {
-        afficheConsulteCatalogue();
-        while (usr.hasNext()) {
-            String res = usr.nextLine();
-            switch (res) {
-                case "0":
-                    return;
-                case "1":
-                    rechercheLivre(cli, usr);
-                    afficheConsulteCatalogue();
-                    break;
-                case "2":
-                    System.out.println("to be built");
-                    afficheConsulteCatalogue();
-                default:
-                    System.out.println("Mettre une valeur entre 0 et 2");
-                    break;
-            }
-        }
-    }
-
-    private static void afficheRechercheLivre() {
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Les catalogues :                                                                   │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [1] Livres selon une catégorie                                                     │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Le catalogue                                                                   │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0] Quitter                                                                        │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-    }
-
-    private static void rechercheLivre(Client cli, Scanner usr) {
-        afficheRechercheLivre();
-        boolean quitte = false;
-        while (!quitte && usr.hasNext()) {
-            String res = usr.nextLine();
-            switch (res) {
-                case "0":
-                    quitte = true;
-                    afficheConsulteCatalogue();
-                    break;
-
-                default:
-                    System.out.println("Veuillez enregistrer une séléction valide");
-                    break;
-            }
-
-        }
     }
 
     private static Administrateur connexionAdmin(Scanner usr) {
@@ -436,13 +103,13 @@ public class Executable {
     }
 
     private static void menuAdmin(Administrateur admin, Scanner usr) {
+        bvn();
         afficheMenuAdmin(admin);
-        boolean quitter = false;
-        while (!quitter && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
-                    quitter = true;
+                    return;
                 case "1":
                     creerCompteVendeur(admin, usr);
                     break;
@@ -457,10 +124,6 @@ public class Executable {
 
                 case "4":
 
-                    break;
-
-                case "5":
-                    quitter = true;
                     break;
                 default:
                     System.out.println("Veuillez entrer un chiffre parmis la liste d'options du menu");
@@ -580,23 +243,23 @@ public class Executable {
     }
 
     private static void menuGererStocksGlobaux(Administrateur admin, Scanner usr, Magasin mag) {
+        AdministrateurBD adminBd = new AdministrateurBD(connexion);
         afficheMenuGererStocksGlobaux(admin, usr, mag);
-        boolean retour = false;
-        while (!retour && usr.hasNext()) {
+        while (usr.hasNext()) {
             String res = usr.nextLine();
             switch (res) {
                 case "1":
                     infosAjouteLivre(admin, usr, mag);
                     break;
                 case "2":
+                    getIsbnSupprLivre(admin, usr, mag);
                 case "3":
                 case "4": //afficher le stock de la librairie concernée
                 case "5":
                     choixLibrairie(admin, usr);
                     break;
                 case "0":
-                    menuAdmin(admin, usr);
-                    break; //quitter
+                    return; //quitter
                 default:
                     System.out.println("veuillez entrer un nombre entre 1 et 6");
 
@@ -607,6 +270,9 @@ public class Executable {
     private static void infosAjouteLivre(Administrateur admin, Scanner usr, Magasin mag) {
         AdministrateurBD adminBd = new AdministrateurBD(connexion);
         try {
+            System.out.println("Entrez l'isbn du livre");
+            String isbn = usr.nextLine();
+
             System.out.println("Entrez le titre du livre");
             String titre = usr.nextLine();
 
@@ -631,15 +297,25 @@ public class Executable {
             System.out.println("Entrez la quantité de livre à ajouter");
             String qte = usr.nextLine();
 
-            adminBd.AjouterLivre(titre, auteur, editeur, theme, nbpages, datepubli, prix, qte, mag);
+            adminBd.AjouterLivre(isbn, titre, auteur, editeur, theme, nbpages, datepubli, prix, qte, mag);
             System.out.println("Le livre a bien été ajouté");
-            menuGererStocksGlobaux(admin, usr, mag);
+            //menuGererStocksGlobaux(admin, usr, mag);
         } catch (NumberFormatException e) {
             System.out.println("Veuillez entrez uniquement des chiffres pour le nombre de pages et la date de publication");
-            infosAjouteLivre(admin, usr, mag);
         } catch (SQLException e) {
             System.out.println("Une erreur est survenue lors de l'ajout du livre");
             menuGererStocksGlobaux(admin, usr, mag);
+        }
+    }
+
+    private static void getIsbnSupprLivre(Administrateur admin, Scanner usr, Magasin mag){
+        AdministrateurBD adminBd = new AdministrateurBD(connexion);
+        try{
+            System.out.println("Entrez l'isbn du livre à supprimer");
+            String res = usr.nextLine();
+            adminBd.SupprimerLivre(res, mag);
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de la supprssion du livre");
         }
     }
 }

@@ -125,8 +125,7 @@ public class AdministrateurBD {
       return mag;
     }
 
-    public void AjouterLivre(String titre, String auteur, String editeur, String theme, String nbpages, String datepubli, String prix, String qte, Magasin mag) throws SQLException{
-        String isbn = isbnMax();
+    public void AjouterLivre(String isbn, String titre, String auteur, String editeur, String theme, String nbpages, String datepubli, String prix, String qte, Magasin mag) throws SQLException{
         Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), Integer.parseInt(datepubli), Double.parseDouble(prix));
 
         PreparedStatement psLivre = this.connexion.prepareStatement("insert into LIVRE values(?,?,?,?,?)");
@@ -146,21 +145,14 @@ public class AdministrateurBD {
         //System.out.println("Une erreur est survenue lors de l'ajout du livre veuillez réessayer");
     }
 
-    public String isbnMax() throws SQLException{
-      Integer isMAx = 0;
-      this.st = connexion.createStatement();
-      ResultSet rs = this.st.executeQuery("select max(isbn) as isbnMax from LIVRE");
-      while(rs.next()){
-        isMAx = Integer.parseInt(rs.getString("isbnMax"))+1;
-      }
-      return isMAx.toString();
-    }
-
-
-    public void SupprimerLivre(Livre livre) throws SQLException{
+    public void SupprimerLivre(String isbn, Magasin mag) throws SQLException{
         PreparedStatement ps = this.connexion.prepareStatement("DELETE FROM LIVRE WHERE isbn = ?");
-        //ps.setInt(1, livre.getIsbn());
+        ps.setString(1, isbn);
         ps.executeUpdate();
+        PreparedStatement ps2 = this.connexion.prepareStatement(("DELETE FROM POSSEDER where isbn = ? and idmag = ?"));
+        ps2.setString(1, isbn);
+        ps2.setString(2, mag.getId());
+        ps2.executeUpdate();
         //System.out.println("Une erreur est survenue lors de la suppression du livre veuillez réessayer");
     }
 
