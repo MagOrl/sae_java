@@ -67,13 +67,13 @@ public class Executable {
         Administrateur admin = null;
         String identifiant = null;
         String mdp = null;
-        try {
+        try{
             System.out.println("Entrez votre identifiant");
             identifiant = usr.nextLine();
             System.out.println("Entrez votre mot de passe");
             mdp = usr.nextLine();
             admin = Aconnexion.trouveAdmin(identifiant, mdp);
-        } catch (SQLException e) {
+        }catch (SQLException e) {
             System.out.println("Identifiant ou mot de passe incorect");
 
         }
@@ -123,7 +123,7 @@ public class Executable {
                     break;
 
                 case "4":
-
+                
                     break;
                 default:
                     System.out.println("Veuillez entrer un chiffre parmis la liste d'options du menu");
@@ -172,6 +172,8 @@ public class Executable {
             System.out.println("Un problème est survenu lors de la création du compte");
             menuAdmin(admin, usr);
         }
+        bvn();
+        afficheMenuAdmin(admin);
 
     }
 
@@ -189,8 +191,9 @@ public class Executable {
             menuAdmin(admin, usr);
         } catch (SQLException e) {
             System.out.println("Une erreur est survenue lors de l'ajout d'une nouvelle librairie");
-            menuAdmin(admin, usr);
         }
+        bvn();
+        afficheMenuAdmin(admin);
     }
 
     private static void afficheChoixLibrairie(Administrateur admin, Scanner usr) {
@@ -206,7 +209,6 @@ public class Executable {
             System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         } catch (SQLException e) {
             System.out.println("Une erreur est survenue lors de l'affichage des librairie");
-            menuAdmin(admin, usr);
         }
     }
 
@@ -220,8 +222,9 @@ public class Executable {
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Une erreur est survenue lors du choix de la librairie");
-            menuAdmin(admin, usr);
         }
+        bvn();
+        menuAdmin(admin, usr);
     }
 
     private static void afficheMenuGererStocksGlobaux(Administrateur admin, Scanner usr, Magasin mag) {
@@ -303,9 +306,12 @@ public class Executable {
         } catch (NumberFormatException e) {
             System.out.println("Veuillez entrez uniquement des chiffres pour le nombre de pages et la date de publication");
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println("Une erreur est survenue lors de l'ajout du livre");
-            menuGererStocksGlobaux(admin, usr, mag);
         }
+        bvn();
+        afficheMenuGererStocksGlobaux(admin, usr, mag);
+         
     }
 
     private static void getIsbnSupprLivre(Administrateur admin, Scanner usr, Magasin mag){
@@ -314,9 +320,12 @@ public class Executable {
             System.out.println("Entrez l'isbn du livre à supprimer");
             String res = usr.nextLine();
             adminBd.SupprimerLivre(res, mag);
+            System.out.println("Le livre a été supprimé avec succès");
         }catch(SQLException e){
-            System.out.println("Une erreur est survenue lors de la supprssion du livre");
+            System.out.println("Une erreur est survenue lors de la suppression du livre");
         }
+        bvn();
+        afficheMenuGererStocksGlobaux(admin, usr, mag);
     }
 }
 

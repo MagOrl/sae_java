@@ -59,6 +59,7 @@ public class AdministrateurBD{
         ps.setString(10, mdp);
         ps.executeUpdate();
       Integer telToInt = Integer.valueOf(tel);
+      rs.close();
       return new Vendeur(numVendeur, nom, prenom, identifiant, adresse, telToInt, email, mdp, codePostal, ville, mag);
     }
 
@@ -71,14 +72,6 @@ public class AdministrateurBD{
         }
         rs.close();
         return max;
-    }
-
-    public boolean connectAdmin(String identif, String mdp) throws SQLException{
-        this.st = this.connexion.createStatement();
-        ResultSet rs = this.st
-                .executeQuery(
-                        "SELECT * FROM CLIENT WHERE identifiant = '" + identif + "'and motdepasse ='" + mdp + "'");
-        return rs.next();
     }
     
     public void ajouteNouvelleLibrairie(String nommag, String villemag) throws SQLException{
@@ -102,6 +95,7 @@ public class AdministrateurBD{
       while(rs.next()){
         idMax = Integer.parseInt(rs.getString("idMax"))+1;
       }
+      rs.close();
       return idMax.toString();
     }
 
@@ -112,6 +106,7 @@ public class AdministrateurBD{
       while(rs.next()){
         lesLibrairies.add(rs.getString("nommag"));
       }
+      rs.close();
       return lesLibrairies;
     }
 
@@ -146,14 +141,10 @@ public class AdministrateurBD{
     }
 
     public void SupprimerLivre(String isbn, Magasin mag) throws SQLException{
-        PreparedStatement ps = this.connexion.prepareStatement("DELETE FROM LIVRE WHERE isbn = ?");
+        PreparedStatement ps = this.connexion.prepareStatement(("UPDATE POSSEDER SET qte = 0 where isbn = ? and idmag = ?"));
         ps.setString(1, isbn);
+        ps.setString(2, mag.getId());
         ps.executeUpdate();
-        PreparedStatement ps2 = this.connexion.prepareStatement(("DELETE FROM POSSEDER where isbn = ? and idmag = ?"));
-        ps2.setString(1, isbn);
-        ps2.setString(2, mag.getId());
-        ps2.executeUpdate();
-        //System.out.println("Une erreur est survenue lors de la suppression du livre veuillez réessayer");
     }
 
     public void majQteLivre(Livre livre, Magasin mag, int qte) throws SQLException{
