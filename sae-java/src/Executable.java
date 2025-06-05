@@ -156,6 +156,7 @@ public class Executable {
             String res = usr.nextLine();
             switch (res) {
                 case "0":
+                    menuConnex();
                     return;
                 case "1":
                     creerCompteVendeur(admin, usr);
@@ -268,7 +269,7 @@ public class Executable {
             afficheChoixLibrairie(admin, usr);
             List<String> lesLibrairies = adminBD.choixLibrairie();
 
-            System.out.println("Entrez le nom de la librairie que vous voulez choisir");
+            System.out.println("Entrez le nom de la librairie dont vous voulez gérer les stocks");
             String librairie = usr.nextLine();
 
             if(lesLibrairies.contains(librairie)){
@@ -323,9 +324,11 @@ public class Executable {
                     afficheMenuGererStocksGlobaux(admin, usr, mag);
                     break;
                 case "3":
+                    majQteLivre(usr, mag);
                     afficheMenuGererStocksGlobaux(admin, usr, mag);
                     break;
                 case "4":
+                    afficherStockLibrairie(mag);
                     afficheMenuGererStocksGlobaux(admin, usr, mag);
                     break;
                  //afficher le stock de la librairie concernée
@@ -343,8 +346,6 @@ public class Executable {
     }
 
     private static void infosAjouteLivre(Administrateur admin, Scanner usr, Magasin mag) {
-        AdministrateurBD adminBd = new AdministrateurBD(connexion);
-        try {
             System.out.println("Entrez l'isbn du livre");
             String isbn = usr.nextLine();
 
@@ -371,8 +372,8 @@ public class Executable {
 
             System.out.println("Entrez la quantité de livre à ajouter");
             String qte = usr.nextLine();
-
-            adminBd.AjouterLivre(isbn, titre, auteur, editeur, theme, nbpages, datepubli, prix, qte, mag);
+        try{
+            adminBD.AjouterLivre(isbn, titre, auteur, editeur, theme, nbpages, datepubli, prix, qte, mag);
             System.out.println("Le livre a bien été ajouté");
             //menuGererStocksGlobaux(admin, usr, mag);
         } catch (NumberFormatException e) {
@@ -386,11 +387,10 @@ public class Executable {
     }
 
     private static void getIsbnSupprLivre(Administrateur admin, Scanner usr, Magasin mag){
-        AdministrateurBD adminBd = new AdministrateurBD(connexion);
         try{
             System.out.println("Entrez l'isbn du livre à supprimer");
             String res = usr.nextLine();
-            if(adminBd.SupprimerLivre(res, mag)){
+            if(adminBD.SupprimerLivre(res, mag)){
                 System.out.println("Le livre a été supprimé avec succès");
             }else{
                 System.out.println("Le livre que vous essayez de supprimer n'existe pas dans la librairie actuelle");
@@ -400,6 +400,37 @@ public class Executable {
         }catch(SQLException e){
             //System.out.println(e.getMessage());
             System.out.println("Une erreur est survenue lors de la suppression du livre");
+        }
+    }
+
+    private static void majQteLivre(Scanner usr, Magasin mag){
+        System.out.println("Entrez l'isbn du livre dont vous voulez mettre à jour la quandtité");
+        String isbn = usr.nextLine();
+
+        System.out.println("Entrez la nouvelle quantité");
+        System.out.println("Attention, ceci ne va pas ajouter ou enlever en quantité mais mettre le chiffre que vous allez rentrer en nouvelle quantité !");
+        String qte = usr.nextLine();
+
+
+        try{
+            if(adminBD.majQteLivre(isbn, mag, qte)){
+                System.out.println("La quantité a bien été mise à jour");
+            }else{
+                System.out.println("Le livre dont vous essayer d'ajouter la quantité n'existe pas dans la libraire actulle (" + mag.getNom() + ")");
+            }
+        }catch(NumberFormatException e){
+            System.out.println("Veuillez entrez uniquement des chiffres pour la quantité");
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+            System.out.println("Une erreur est survenue lors de la mise à jour de la quantité");
+        }
+    }
+
+    public static void afficherStockLibrairie(Magasin mag){
+        try{
+            adminBD.afficherStockLibrairie(mag);
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'affichage du stock de la librairie");
         }
     }
 }

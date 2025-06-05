@@ -13,8 +13,8 @@ public class AdministrateurBD{
     public AdministrateurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            //laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
+            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -148,7 +148,7 @@ public class AdministrateurBD{
     public void AjouterLivre(String isbn, String titre, String auteur, String editeur, String theme, String nbpages, String datepubli, String prix, String qte, Magasin mag) throws SQLException{
         Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), Integer.parseInt(datepubli), Double.parseDouble(prix));
 
-        PreparedStatement psLivre = this.connexion.prepareStatement("insert into LIVRE values(?,?,?,?,?) where NOT EXISTS()");
+        PreparedStatement psLivre = this.connexion.prepareStatement("insert ignore into LIVRE values(?,?,?,?,?)");
         psLivre.setString(1, livre.getIsbn());   
         psLivre.setString(2, livre.getTitre()); 
         psLivre.setInt(3, livre.getNbPages());   
@@ -178,24 +178,34 @@ public class AdministrateurBD{
         return true;
     }
 
-    public void majQteLivre(Livre livre, Magasin mag, int qte) throws SQLException, NumberFormatException{
+    public boolean majQteLivre(String isbn, Magasin mag, String qte) throws SQLException, NumberFormatException{
         this.st = connexion.createStatement();
-	  	  ResultSet r = this.st.executeQuery("select qte from LIVRE natural join POSSEDER natural join MAGASIN where isbn = "+ livre.getIsbn()+" and idmag = " + mag.getId() + "");
-        qte += r.getInt("qte");
+	  	  ResultSet rs = this.st.executeQuery("select qte from POSSEDER where isbn = '"+ isbn + "'" + " and idmag = '" + mag.getId() + "'");
+        if(!rs.next()){
+          return false;
+        }
 
-        PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
-        ps.setInt(1, qte);
-        ps.setString(2, livre.getIsbn());
+        PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ? and idmag = ?");
+        ps.setInt(1, Integer.parseInt(qte));
+        ps.setString(2, isbn);
+        ps.setString(3, mag.getId());
         ps.executeUpdate();
-        //System.out.println("Une erreur est survenue lors de la mise à jour de la quantité veuillez réessayer");
+        return true;
     }
 
     public void afficherStockLibrairie(Magasin mag) throws SQLException{
         this.st = connexion.createStatement();
-        ResultSet r = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix from LIVRE natural join POSSEDER natural join MAGASIN where idmag = "+ mag.getId());
-        while(r.next()){
-          Livre livreActuel = new Livre(r.getString("isbn"), r.getString("titre"), r.getInt("nbpages"), r.getInt("datepubli"), r.getDouble("prix"));
-          System.out.println(livreActuel + "/n");
+        ResultSet rs = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix from LIVRE natural join POSSEDER natural join MAGASIN where idmag = "+ mag.getId());
+        if(!rs.next()){
+          System.out.println("------------------------------------------------------------");
+          System.out.println("La libraire actuelle (" + mag.getNom() + ") ne contient aucun livre");
+          System.out.println("------------------------------------------------------------");
+        }
+        while(rs.next()){
+          Livre livreActuel = new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"), rs.getInt("datepubli"), rs.getDouble("prix"));
+          System.out.println("------------------------------------------------------------");
+          System.out.println(livreActuel);
+          System.out.println("------------------------------------------------------------");
         }
         //System.out.println("Une erreur est survenue lors de l'affichage du stock");
       
