@@ -13,17 +13,25 @@ public class AdministrateurBD{
     public AdministrateurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
+            //laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+    
+    public boolean connectAdmin(String identifiant, String mdp) throws SQLException{
+      this.st = this.connexion.createStatement();
+        ResultSet rs = this.st
+                .executeQuery(
+                        "SELECT * FROM CLIENT WHERE identifiant = '" + identifiant + "'and motdepasse ='" + mdp + "'");
+      return rs.next();
+    }
 
     public Administrateur trouveAdmin(String identifiant, String mdp) throws SQLException{
       Administrateur admin = null;
-      try{
+      
         this.st = this.connexion.createStatement();
         ResultSet rs = this.st
                   .executeQuery(
@@ -32,13 +40,30 @@ public class AdministrateurBD{
           admin = new Administrateur(clientMax(), rs.getString("nomcli"), rs.getString("prenomcli"), identifiant,rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), mdp, rs.getString("codepostal"), rs.getString("villecli"));
         }
         rs.close();
-      }catch(SQLException e){
-        System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte créez en un");
-      }
+      
       return admin;
     }
 
-    public Vendeur CreerCompteVendeur(String nom, String prenom, String identifiant, String adresse, String tel, String email, String mdp, String codePostal, String ville, String nommag) throws SQLException{
+     public int creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville,
+            String email, String tel, String mdp) throws SQLException {
+        int numCli = clientMax() + 1;
+        this.st = this.connexion.createStatement();
+        PreparedStatement ps = this.connexion.prepareStatement("insert into CLIENT values (?,?,?,?,?,?,?,?,?,?)");
+        ps.setInt(1, numCli);
+        ps.setString(2, identif);
+        ps.setString(3, nom);
+        ps.setString(4, prenom);
+        ps.setString(5, adresse);
+        ps.setString(6, codepostal);
+        ps.setString(7, ville);
+        ps.setString(8, email);
+        ps.setInt(9, Integer.parseInt(tel));
+        ps.setString(10, mdp);
+        ps.executeUpdate();
+        return numCli;
+    }
+
+    public Vendeur CreerCompteVendeur(String nom, String prenom, String identifiant, String adresse, String tel, String email, String mdp, String codePostal, String ville, String nommag) throws SQLException, NumberFormatException{
       int numVendeur = clientMax() + 1;
       Magasin mag = null;
       this.st = this.connexion.createStatement();
@@ -123,7 +148,7 @@ public class AdministrateurBD{
     public void AjouterLivre(String isbn, String titre, String auteur, String editeur, String theme, String nbpages, String datepubli, String prix, String qte, Magasin mag) throws SQLException{
         Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), Integer.parseInt(datepubli), Double.parseDouble(prix));
 
-        PreparedStatement psLivre = this.connexion.prepareStatement("insert into LIVRE values(?,?,?,?,?)");
+        PreparedStatement psLivre = this.connexion.prepareStatement("insert into LIVRE values(?,?,?,?,?) where NOT EXISTS()");
         psLivre.setString(1, livre.getIsbn());   
         psLivre.setString(2, livre.getTitre()); 
         psLivre.setInt(3, livre.getNbPages());   
@@ -140,14 +165,20 @@ public class AdministrateurBD{
         //System.out.println("Une erreur est survenue lors de l'ajout du livre veuillez réessayer");
     }
 
-    public void SupprimerLivre(String isbn, Magasin mag) throws SQLException{
+    public boolean SupprimerLivre(String isbn, Magasin mag) throws SQLException{
+        this.st = connexion.createStatement();
+        ResultSet rs = this.st.executeQuery("select * from POSSEDER where isbn = '" + isbn + "'" + " and idmag = '" + mag.getId() + "'");
+        if(!rs.next()){
+          return false;
+        } 
         PreparedStatement ps = this.connexion.prepareStatement(("UPDATE POSSEDER SET qte = 0 where isbn = ? and idmag = ?"));
         ps.setString(1, isbn);
         ps.setString(2, mag.getId());
         ps.executeUpdate();
+        return true;
     }
 
-    public void majQteLivre(Livre livre, Magasin mag, int qte) throws SQLException{
+    public void majQteLivre(Livre livre, Magasin mag, int qte) throws SQLException, NumberFormatException{
         this.st = connexion.createStatement();
 	  	  ResultSet r = this.st.executeQuery("select qte from LIVRE natural join POSSEDER natural join MAGASIN where isbn = "+ livre.getIsbn()+" and idmag = " + mag.getId() + "");
         qte += r.getInt("qte");
