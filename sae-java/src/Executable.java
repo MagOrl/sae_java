@@ -417,11 +417,11 @@ public class Executable {
                 case "0":
                     return;
                 case "1":
-                    choisiMagasin(cli, usr);
+                    choisiMagasinTheme(cli, usr);
                     afficheConsulteCatalogue();
                     break;
                 case "2":
-                    System.out.println("to be built");
+                    choisiMagasinOnVousRecommande(cli, usr);
                     break;
                 default:
                     System.out.println("Mettre une valeur entre 0 et 2");
@@ -442,7 +442,7 @@ public class Executable {
 
     }
 
-    private static void choisiMagasin(Client cli, Scanner usr) {
+    private static void choisiMagasinTheme(Client cli, Scanner usr) {
         Requetes query = new Requetes(connexion);
         HashMap<Integer, Magasin> lesmag = new HashMap<>();
         try {
@@ -464,6 +464,42 @@ public class Executable {
                 case "6":
                 case "7":
                     selonTheme(cli, usr, lesmag.get(Integer.parseInt(res) - 1));
+                    afficheChoisisMagasin(lesmag);
+                    break;
+                default:
+                    System.out.println("Veuillez entrer une séléction valide");
+                    break;
+            }
+        }
+    }
+
+    private static void choisiMagasinOnVousRecommande(Client cli, Scanner usr) {
+        Requetes query = new Requetes(connexion);
+        HashMap<Integer, Magasin> lesmag = new HashMap<>();
+        try {
+            lesmag = query.afficheMagasin();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        afficheChoisisMagasin(lesmag);
+        while (usr.hasNext()) {
+            String res = usr.next();
+            switch (res) {
+                case "0":
+                    return;
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                    try {
+                        catalogue(query.onVousRecommande(cli, lesmag.get(Integer.parseInt(res) - 1)), usr, cli,
+                                lesmag.get(Integer.parseInt(res) - 1));
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     afficheChoisisMagasin(lesmag);
                     break;
                 default:

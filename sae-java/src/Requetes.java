@@ -277,16 +277,19 @@ public class Requetes {
     }
 
     public void suppLivrePosseder(String isbn, int idmag) throws SQLException {
-        int rs = this.st.executeUpdate("DELETE FROM POSSEDER where isbn = " + isbn + " and idmag = " + idmag);
+        this.st.executeUpdate("DELETE FROM POSSEDER where isbn = " + isbn + " and idmag = " + idmag);
     }
 
-    public List<List<Livre>> onVousRecommande(Client cli) throws SQLException {
+    public List<List<Livre>> onVousRecommande(Client cli, Magasin mag) throws SQLException {
         this.st = laConnexion.createStatement();
         ResultSet rs = this.st
-                .executeQuery("select * FROM DETAILCOMMANDE natural join COMMANDE natural join LIVRE where idcli != "
-                        + cli.getNumCompte());
+                .executeQuery(
+                        "select LIVRE.*,count(isbn) nbLiv,POSSEDER.qte from LIVRE natural join DETAILCOMMANDE natural join COMMANDE natural join POSSEDER where idcli !="
+                                + cli.getNumCompte() + " and idmag = " + mag.getId()
+                                + " group by isbn order by nbLiv DESC");
         List<List<Livre>> catalogue = new ArrayList<>();
         int taille = nbLigneRequetes(rs);
+        System.out.println(taille);
         for (int i = 0; i < taille; ++i) {
             catalogue.add(new ArrayList<>());
             for (int y = 0; y < 10; ++y) {
