@@ -3,7 +3,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
-public class Executable {
+public class ExecutableAdmin {
 
     private static ConnexionMySQL connexion;
     private static AdministrateurBD adminBD;
@@ -67,7 +67,6 @@ public class Executable {
     }
 
     private static Administrateur connexionAdmin(Scanner usr) {
-        AdministrateurBD Aconnexion = new AdministrateurBD(connexion);
         Administrateur admin = null;
         String identifiant = null;
         String mdp = null;
@@ -77,14 +76,13 @@ public class Executable {
         System.out.println("Entrez votre mot de passe");
         mdp = usr.nextLine();
         try{
-        if(Aconnexion.connectAdmin(identifiant, mdp)){
-            menuAdmin(Aconnexion.trouveAdmin(identifiant, mdp), usr);
+        if(adminBD.connectAdmin(identifiant, mdp)){
+            menuAdmin(adminBD.trouveAdmin(identifiant, mdp), usr);
         }else{
             System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte créez en un");
             principal(usr);
         }
-        admin = Aconnexion.trouveAdmin(identifiant, mdp);
-        System.out.println(admin.getPrenom());
+        admin = adminBD.trouveAdmin(identifiant, mdp);
         }catch(SQLException e){
             System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte créez en un");
         }
@@ -426,13 +424,34 @@ public class Executable {
         }
     }
 
-    public static void afficherStockLibrairie(Magasin mag){
+    private static void afficherStockLibrairie(Magasin mag){
         try{
             adminBD.afficherStockLibrairie(mag);
         }catch(SQLException e){
             System.out.println("Une erreur est survenue lors de l'affichage du stock de la librairie");
         }
     }
+
+    private static void afficheMenuStatsVentes(){
+        bvn();
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println("│ Que souhaitez vous faire ?                                                         │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [1] Nombre de livres vendus par magasin par année                                  │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [2] Les livres les plus vendus du mois                                             │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [3] Comparaison ventes en ligne et en magasin                                      │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [4] Valeur du stock par magasins                                                   │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [5] Chiffre d'affaire par librairie par année                                      │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [0] Retour                                                                         │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+    }
+
+    
 }
 
 // SELECT LIVRE.*
