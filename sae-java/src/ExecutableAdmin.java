@@ -16,7 +16,7 @@ public class ExecutableAdmin {
         principal(usr);
         }    
         catch(ClassNotFoundException e){
-            System.out.println("Nous n'avons pas vu connecter l'application à la base de données");
+            System.out.println("Nous n'avons pas pu connecter l'application à la base de données");
         }
     }
 
@@ -85,6 +85,7 @@ public class ExecutableAdmin {
         admin = adminBD.trouveAdmin(identifiant, mdp);
         }catch(SQLException e){
             System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte créez en un");
+            principal(usr);
         }
         return admin; 
 
@@ -157,12 +158,12 @@ public class ExecutableAdmin {
                     menuConnex();
                     return;
                 case "1":
-                    creerCompteVendeur(admin, usr);
+                    creerCompteVendeur(usr);
                     afficheMenuAdmin(admin);
                     break;
 
                 case "2":
-                    ajouterNouvelleLibrairie(admin, usr);
+                    ajouterNouvelleLibrairie(usr);
                     afficheMenuAdmin(admin);
                     break;
 
@@ -182,7 +183,7 @@ public class ExecutableAdmin {
 
     }
 
-    private static void creerCompteVendeur(Administrateur admin, Scanner usr) {
+    private static void creerCompteVendeur(Scanner usr) {
             System.out.println("Entrez l'identifiant du vendeur");
             String identifiant = usr.nextLine();
 
@@ -215,13 +216,10 @@ public class ExecutableAdmin {
         try{
             adminBD.CreerCompteVendeur(nom, prenom, identifiant, adresse, tel, email, mdp, codePostal, ville, magasin);
             System.out.println("Le compte à bien été crée");
-            afficheMenuAdmin(admin);
         }catch(NumberFormatException e){
             System.out.println("Veuillez entrer uniquement des nombres pour le numéro de téléphone");
-            afficheMenuAdmin(admin);
         }catch(SQLException e){
             System.out.println("Une erreur est survenue lors de la création du compte");
-            afficheMenuAdmin(admin);
             
         }
 
@@ -229,7 +227,7 @@ public class ExecutableAdmin {
 
     }
 
-    private static void ajouterNouvelleLibrairie(Administrateur admin, Scanner usr) {
+    private static void ajouterNouvelleLibrairie(Scanner usr) {
         try {
             System.out.println("Entrez le nom de la librairie");
             String nommag = usr.nextLine();
@@ -239,14 +237,12 @@ public class ExecutableAdmin {
 
             adminBD.ajouteNouvelleLibrairie(nommag, villemag);
             System.out.println("La librairie a été ajoutée");
-            afficheMenuAdmin(admin);
         } catch (SQLException e) {
             System.out.println("Une erreur est survenue lors de l'ajout d'une nouvelle librairie");
         }
-        afficheMenuAdmin(admin);
     }
 
-    private static void afficheChoixLibrairie(Administrateur admin, Scanner usr) {
+    private static void afficheChoixLibrairie(Scanner usr) {
         try {
             bvn();
             List<String> lesLibrairies = adminBD.choixLibrairie();
@@ -264,7 +260,7 @@ public class ExecutableAdmin {
 
     private static Magasin choixLibrairie(Administrateur admin, Scanner usr) {
         try {
-            afficheChoixLibrairie(admin, usr);
+            afficheChoixLibrairie(usr);
             List<String> lesLibrairies = adminBD.choixLibrairie();
 
             System.out.println("Entrez le nom de la librairie dont vous voulez gérer les stocks");
@@ -375,7 +371,7 @@ public class ExecutableAdmin {
             System.out.println("Le livre a bien été ajouté");
             //menuGererStocksGlobaux(admin, usr, mag);
         } catch (NumberFormatException e) {
-            System.out.println("Veuillez entrez uniquement des chiffres pour le nombre de pages et la date de publication");
+            System.out.println("Veuillez entrez uniquement des chiffres pour le nombre de pages, la date de publication et la quantité");
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Une erreur est survenue lors de l'ajout du livre");
@@ -414,7 +410,7 @@ public class ExecutableAdmin {
             if(adminBD.majQteLivre(isbn, mag, qte)){
                 System.out.println("La quantité a bien été mise à jour");
             }else{
-                System.out.println("Le livre dont vous essayer d'ajouter la quantité n'existe pas dans la libraire actulle (" + mag.getNom() + ")");
+                System.out.println("Le livre dont vous essayez de modifier la quantité n'existe pas dans la libraire actulle (" + mag.getNom() + ")");
             }
         }catch(NumberFormatException e){
             System.out.println("Veuillez entrez uniquement des chiffres pour la quantité");

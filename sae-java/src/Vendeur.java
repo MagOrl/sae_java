@@ -7,5 +7,9 @@ public class Vendeur extends Personne{
         this.magasinVendeur = magasin;
     }
 
+    public Magasin getMag(){
+        return this.magasinVendeur;
+    }
+
 }
 
