@@ -37,7 +37,9 @@ public class VendeurBD{
                   .executeQuery(
                           "SELECT * FROM CLIENT WHERE identifiant ='" + identifiant + "'" + "and motdepasse ='"+mdp+"'" );
         while(rs.next()){
-          vendeur = new Vendeur(idClientMax(), rs.getString("nomcli"), rs.getString("prenomcli"), identifiant,rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), mdp, rs.getString("codepostal"), rs.getString("villecli"), trouveLibrairie(mag));
+          vendeur = new Vendeur(idClientMax(), rs.getString("nomcli"), 
+          rs.getString("prenomcli"), identifiant,rs.getString("adressecli"), 
+          rs.getInt("tel"), rs.getString("email"), mdp, rs.getString("codepostal"), rs.getString("villecli"), trouveLibrairie(mag));
         }
         rs.close();
       
@@ -108,7 +110,7 @@ public class VendeurBD{
         psPosseder.setInt(3, Integer.parseInt(qte));
     }
 
-    public boolean majQteLivre(String isbn, Magasin mag, String qte) throws SQLException, NumberFormatException{
+    public boolean majQteLivre(String isbn, Magasin mag, int qte) throws SQLException, NumberFormatException{
         this.st = connexion.createStatement();
 	  	  ResultSet rs = this.st.executeQuery("select qte from POSSEDER where isbn = '"+ isbn + "'" + " and idmag = '" + mag.getId() + "'");
         if(!rs.next()){
@@ -116,8 +118,8 @@ public class VendeurBD{
           return false;
         }
 
-        PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ? and idmag = ?");
-        ps.setInt(1, Integer.parseInt(qte));
+        PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER SET qte = qte + ? WHERE isbn = ? and idmag = ?");
+        ps.setInt(1, qte);
         ps.setString(2, isbn);
         ps.setString(3, mag.getId());
         ps.executeUpdate();
@@ -156,11 +158,21 @@ public class VendeurBD{
       rs.close();
       
       ResultSet rs2 = this.st.executeQuery("select qte from POSSEDER where isbn = " + livre.getIsbn() + " and idmag = "+ mag.getId());
-      
+      nouvQteLivrePara = rs2.getInt("qte") + Integer.parseInt(qteAtransferer);
+
+      qteAutreLivre -= Integer.parseInt(qteAtransferer);  
        
-      PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER set qte = ? where isbn = ? and idmag = ?");
+      PreparedStatement psLivrePara = this.connexion.prepareStatement("UPDATE POSSEDER set qte = ? where isbn = ? and idmag = ?");
+      psLivrePara.setInt(1, nouvQteLivrePara);
+      psLivrePara.setString(2, livre.getIsbn());
+      psLivrePara.setString(3, mag.getId());
+      psLivrePara.executeUpdate();
 
-
+      PreparedStatement psautreLivre = this.connexion.prepareStatement("UPDATE POSSEDER set qte = ? where isbn = ? and idmag = ?")
+      psautreLivre.setInt(1, qteAutreLivre);
+      psautreLivre.setString(2, livreAutreLibrairie.getIsbn());
+      psautreLivre.setString(3, idmagAutreLibrairie);
+      psautreLivre.executeUpdate();
     }
 
     public void passerCommandeClient(){}
