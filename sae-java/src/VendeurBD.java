@@ -2,6 +2,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,11 +141,11 @@ public class VendeurBD{
         return true;
     }
 
-    public boolean verifDispoLivre(Livre livre, String qte, Magasin mag) throws SQLException{
+    public boolean verifDispoLivre(Livre livre, int qte, Magasin mag) throws SQLException, NumberFormatException{
         this.st = connexion.createStatement();
         ResultSet rs = this.st.executeQuery("select qte from POSSEDER where isbn = " + livre.getIsbn() + " and idmag = " + mag.getId());
         while(rs.next()){
-          if(rs.getInt("qte") >= Integer.parseInt(qte)){
+          if(rs.getInt("qte") >= qte){
             rs.close();
             return true;
           }
@@ -157,25 +159,125 @@ public class VendeurBD{
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select isbn, idmag, qte from POSSEDER where isbn = " + livre.getIsbn());
       while (rs.next()){
-        if(rs.getString("idmag") != mag.getId())
-          if(rs.getInt("qte") >= qteAtransferer){
+        if(!rs.getString("idmag").equals(mag.getId())){
+          System.out.println(rs.getString("idmag"));
+          if(verifDispoLivre(livre, qteAtransferer, trouveLibrairie("null", rs.getString("idmag")))){
               idmagAutreLibrairie = rs.getString("idmag");
               break;
-          }      
+          }  
+        }    
       }
       rs.close();
-      
-      majQteLivre(livre.getIsbn(), mag, qteAtransferer);
-      majQteLivre(livre.getIsbn(), trouveLibrairie("null", idmagAutreLibrairie), -qteAtransferer);
+
+      if(idmagAutreLibrairie == null){
+        return false;
+      }
+      if(majQteLivre(livre.getIsbn(), mag, qteAtransferer) == false){
+        PreparedStatement ps = this.connexion.prepareStatement("insert into POSSEDER values (?,?,?)");
+        ps.setString(1, mag.getId());
+        ps.setString(2, livre.getIsbn());
+        ps.setInt(3, qteAtransferer);
+        ps.executeUpdate();
+      }else{
+        majQteLivre(livre.getIsbn(), mag, qteAtransferer);
+      }
       return true;
        
       
     }
 
-    public void passerCommandeClient(){}
+    public int numcomMax() throws SQLException {
+        int max = 0;
+        this.st = this.connexion.createStatement();
+        ResultSet rs = this.st.executeQuery("select max(numcom) numcomMaw from COMMANDER");
+        while (rs.next()) {
+            max = rs.getInt("numcomMax");
+        }
+        rs.close();
+        return max;
+    }
+
+    public boolean passerCommandeClient(Client cli, Map<Livre, Integer> commande, Magasin mag, String livraison) throws SQLException{
+      boolean res = false;
+      int numlig = 0;
+      int numcom = numcomMax();
+      PreparedStatement psCommande = this.connexion.prepareStatement("insert ignore into COMMANDE values(?,CURDATE(),?,?,?,?)");
+      PreparedStatement psDetailCommande = this.connexion.prepareStatement("insert into DETAILCOMMANDE values(?,?,?,?,?)");
+      PreparedStatement psDeleteCommande = this.connexion.prepareStatement("DELETE from COMMANDE where numcom = ?");
+      PreparedStatement psDeleteDetailCommande = this.connexion.prepareStatement("DELETE from DETAILCOMMANDE where numcom = ?");
+      for(Livre livre : commande.keySet()){
+        if(verifDispoLivre(livre, commande.get(livre), mag)){
+            numlig += 1;
+
+            psCommande.setInt(1, numcom);
+            psCommande.setString(2, "N");
+            psCommande.setString(3, livraison);
+            psCommande.setString(4, cli.getIdentifiant());
+            psCommande.setString(5, mag.getId());
+            psCommande.executeUpdate();
+
+            psDetailCommande.setInt(1, numcom);
+            psDetailCommande.setInt(2, numlig);
+            psDetailCommande.setInt(3, commande.get(livre));
+            psDetailCommande.setDouble(4, livre.getPrix());
+            psDetailCommande.setString(5, livre.getIsbn());
+            psDetailCommande.executeUpdate();
+            res = true;
+
+        }else if(transfererLivreCommande(livre, numlig, mag)){
+            numlig += 1;
+
+            psCommande.setInt(1, numcom);
+            psCommande.setString(2, "N");
+            psCommande.setString(3, livraison);
+            psCommande.setString(4, cli.getIdentifiant());
+            psCommande.setString(5, mag.getId());
+            psCommande.executeUpdate();
+
+            psDetailCommande.setInt(1, numcom);
+            psDetailCommande.setInt(2, numlig);
+            psDetailCommande.setInt(3, commande.get(livre));
+            psDetailCommande.setDouble(4, livre.getPrix());
+            psDetailCommande.setString(5, livre.getIsbn());
+            psDetailCommande.executeUpdate();
+
+            res = true;
+        
+        }else{
+            psDeleteCommande.setInt(1, numcom);
+            psDeleteDetailCommande.setInt(1, numcom);
+          
+            psDeleteCommande.executeUpdate();
+            psDeleteDetailCommande.executeUpdate();
+            
+            System.out.println("Le livre: " + livre.getTitre() + " n'est pas disponible, commande impossible");
+            return false;
+        }
+      }
+      return res;
+    }
 }
 
+//CREATE TABLE COMMANDE (
+//  PRIMARY KEY (numcom),
+//  numcom  int NOT NULL,
+//  datecom date,
+//  enligne char(1),
+//  livraison char(1),
+//  idcli   int NOT NULL,
+//  idmag   VARCHAR(42) NOT NULL
+//);
+//
+//CREATE TABLE DETAILCOMMANDE (
+//  PRIMARY KEY (numcom, numlig),
+//  numcom    int NOT NULL,
+//  numlig    int NOT NULL,
+//  qte       int,
+//  prixvente decimal(6,2),
+//  isbn      varchar(13) NOT NULL
+//);
 
+// liste de livre en para que je créer dans l'exec en demandant à chaque fois si ya un autre livre à commander ou non heheheheheh
  
  
  

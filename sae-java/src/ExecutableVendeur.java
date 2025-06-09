@@ -130,11 +130,11 @@ public class ExecutableVendeur{
                     afficheMenuVendeur(vendeur, usr);
                     break;
                 case "5":
-                transfererLivre(vendeur, usr);
+                    transfererLivre(vendeur, usr);
                     afficheMenuVendeur(vendeur, usr);
                     break;
                 default:
-                    System.out.println("Veuillez entrer uniquement des chiffres (0-4)");
+                    System.out.println("Veuillez entrer uniquement des chiffres (0-5)");
                     break;
             }
         }
@@ -215,7 +215,7 @@ public class ExecutableVendeur{
             livre = vendeurBD.trouveLivre(titre, datepubli, auteur);
             return livre;
         }catch(NumberFormatException e){
-            System.out.println("Veuillez entrer uniquement des chiffres pour le nombre de pageset la date de publication");
+            System.out.println("Veuillez entrer uniquement des chiffres pour le nombre de pages et la date de publication");
         }catch(SQLException e){
             System.out.println("Une erreur est survenue lors de la recherche du livre");
         }
@@ -226,12 +226,12 @@ public class ExecutableVendeur{
         try {
             System.out.println("Entrez la quantité de livre dont vous voulez vérifier la disponibilité");
             String qte = usr.nextLine();
-            bvn();
             List<String> lesLibrairies = vendeurBD.choixLibrairie();
+            livre.getTitre();
             System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
             System.out.println("│ Disponibilité du livre " + livre.getTitre() + "                                                │");
             for (String librairie : lesLibrairies) {
-                if(vendeurBD.verifDispoLivre(livre, qte, vendeurBD.trouveLibrairie(librairie, "null"))){
+                if(vendeurBD.verifDispoLivre(livre, Integer.parseInt(qte), vendeurBD.trouveLibrairie(librairie, "null"))){
                     System.out.println("│ " + "   [" + librairie + "] -> disponible                                                │");
                 }else{
                     System.out.println("│ " + "   [" + librairie + "] -> indisponible                                                │");
@@ -239,18 +239,24 @@ public class ExecutableVendeur{
             }
             System.out.println("│ [0] Retour                                                                         │");
             System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-        } catch (SQLException e) {
+        }catch(NumberFormatException e){
+            System.out.println("Veuillez entrez uniquement des chiffres pour la quantité");
+        }catch(SQLException e) {
             System.out.println(e.getMessage());
             System.out.println("Une erreur est survenue lors de l'affichage des disponibilités");
         }
     }
 
     private static void dispoLivre(Scanner usr, Livre livre) {
+        try{
             afficheLivreDispo(livre, usr);
             String retour = usr.nextLine();
             if(retour.equals("0")){
                 return;
             }
+        }catch(NullPointerException e){
+            System.out.println("Nous n'avons pas pu trouver le livre dont vous voulez vérifier la disponibilité");
+        }
         return;
     }
 
@@ -299,11 +305,17 @@ public class ExecutableVendeur{
         String qte = usr.nextLine();
 
         try{
-            vendeurBD.transfererLivreCommande(livreAtransferer, Integer.parseInt(qte), vendeur.getMag());
+            if(vendeurBD.transfererLivreCommande(livreAtransferer, Integer.parseInt(qte), vendeur.getMag())){
+                System.out.println("Le livre a bien été transféré");
+            }else{
+                System.out.println("Le livre n'est disponible dans aucune autre librairie pour cette quantité");
+            }
         }catch(QteInfAZeroException e){
             System.out.println("Une erreur est survenue lors du transfert du livre");
         }catch(NumberFormatException e){
             System.out.println("Veuillez entrez uniquement des chiffres pour la quantitié");
+        }catch(NullPointerException e){
+            System.out.println("Veuillez entrer correctement les informations du livre");
         }catch(SQLException e){
             System.out.println("Une erreur est survenue lors du transfert du livre");
         }
