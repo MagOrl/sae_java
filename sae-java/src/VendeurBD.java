@@ -15,8 +15,8 @@ public class VendeurBD{
     public VendeurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            //laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
+            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -49,7 +49,7 @@ public class VendeurBD{
     }
 
     public Client trouveClient(String identif, String mdp) throws SQLException {
-        Client cli = new Client();
+        Client cli = null;
         this.st = this.connexion.createStatement();
         ResultSet rs = this.st.executeQuery(
                 "SELECT * FROM CLIENT WHERE identifiant ='" + identif + "'" + "and motdepasse ='" + mdp + "'");
@@ -195,7 +195,8 @@ public class VendeurBD{
         ps.setInt(3, qteAtransferer);
         ps.executeUpdate();
       }else{
-        majQteLivre(livre.getIsbn(), mag, qteAtransferer);
+        trouveLibrairie("null", idmagAutreLibrairie);
+        majQteLivre(livre.getIsbn(), trouveLibrairie("null", idmagAutreLibrairie), -qteAtransferer);
       }
       return true;
        
@@ -205,77 +206,86 @@ public class VendeurBD{
     public int numcomMax() throws SQLException {
         int max = 0;
         this.st = this.connexion.createStatement();
-        ResultSet rs = this.st.executeQuery("select max(numcom) numcomMaw from COMMANDER");
+        ResultSet rs = this.st.executeQuery("select max(numcom) numcomMax from COMMANDE");
         while (rs.next()) {
             max = rs.getInt("numcomMax");
         }
         rs.close();
-        return max;
+        return max+1;
     }
 
-    public boolean passerCommandeClient(Client cli, Map<Livre, Integer> commande, Magasin mag, String livraison) throws SQLException, NumberFormatException{
+    public boolean passerCommandeClient(Client cli, Map<Livre, Integer> commande, Magasin mag) throws SQLException, NumberFormatException{
       boolean res = false;
       int numlig = 0;
       int numcom = numcomMax();
+      Livre livreActuel = null;
 
-      if(livraison.equals("D")){
-        livraison = "N";
-      }else{
-        livraison = "O";
-      }
       PreparedStatement psCommande = this.connexion.prepareStatement("insert ignore into COMMANDE values(?,CURDATE(),?,?,?,?)");
       PreparedStatement psDetailCommande = this.connexion.prepareStatement("insert into DETAILCOMMANDE values(?,?,?,?,?)");
       PreparedStatement psDeleteCommande = this.connexion.prepareStatement("DELETE from COMMANDE where numcom = ?");
       PreparedStatement psDeleteDetailCommande = this.connexion.prepareStatement("DELETE from DETAILCOMMANDE where numcom = ?");
-      for(Livre livre : commande.keySet()){
-        if(verifDispoLivre(livre, commande.get(livre), mag)){
-            numlig += 1;
+      try{
+        for(Livre livre : commande.keySet()){
+          livreActuel = livre;
+          if(verifDispoLivre(livre, commande.get(livre), mag)){
+              numlig += 1;
 
-            psCommande.setInt(1, numcom);
-            psCommande.setString(2, "N");
-            psCommande.setString(3, livraison);
-            psCommande.setString(4, cli.getIdentifiant());
-            psCommande.setString(5, mag.getId());
-            psCommande.executeUpdate();
+              psCommande.setInt(1, numcom);
+              psCommande.setString(2, "N");
+              psCommande.setString(3, "M");
+              psCommande.setString(4, cli.getIdentifiant());
+              psCommande.setString(5, mag.getId());
+              psCommande.executeUpdate();
 
-            psDetailCommande.setInt(1, numcom);
-            psDetailCommande.setInt(2, numlig);
-            psDetailCommande.setInt(3, commande.get(livre));
-            psDetailCommande.setDouble(4, livre.getPrix());
-            psDetailCommande.setString(5, livre.getIsbn());
-            psDetailCommande.executeUpdate();
-            res = true;
+              System.out.println("check1");
 
-        }else if(transfererLivreCommande(livre, numlig, mag)){
-            numlig += 1;
+              psDetailCommande.setInt(1, numcom);
+              psDetailCommande.setInt(2, numlig);
+              psDetailCommande.setInt(3, commande.get(livre));
+              psDetailCommande.setDouble(4, livre.getPrix());
+              psDetailCommande.setString(5, livre.getIsbn());
+              psDetailCommande.executeUpdate();
+              System.out.println("check2");
 
-            psCommande.setInt(1, numcom);
-            psCommande.setString(2, "N");
-            psCommande.setString(3, livraison);
-            psCommande.setString(4, cli.getIdentifiant());
-            psCommande.setString(5, mag.getId());
-            psCommande.executeUpdate();
+              majQteLivre(livre.getIsbn(), mag, -commande.get(livre));
+              res = true;
 
-            psDetailCommande.setInt(1, numcom);
-            psDetailCommande.setInt(2, numlig);
-            psDetailCommande.setInt(3, commande.get(livre));
-            psDetailCommande.setDouble(4, livre.getPrix());
-            psDetailCommande.setString(5, livre.getIsbn());
-            psDetailCommande.executeUpdate();
+          }else if(transfererLivreCommande(livre, commande.get(livre), mag)){
+              numlig += 1;
 
-            res = true;
-        
-        }else{
-            psDeleteCommande.setInt(1, numcom);
-            psDeleteDetailCommande.setInt(1, numcom);
+              psCommande.setInt(1, numcom);
+              psCommande.setString(2, "N");
+              psCommande.setString(3, "M");
+              psCommande.setString(4, cli.getIdentifiant());
+              psCommande.setString(5, mag.getId());
+              psCommande.executeUpdate();
+
+              System.out.println("check3");
+
+              psDetailCommande.setInt(1, numcom);
+              psDetailCommande.setInt(2, numlig);
+              psDetailCommande.setInt(3, commande.get(livre));
+              psDetailCommande.setDouble(4, livre.getPrix());
+              psDetailCommande.setString(5, livre.getIsbn());
+              psDetailCommande.executeUpdate();
+              System.out.println("check4");
+              
+              majQteLivre(livre.getIsbn(), mag, -commande.get(livre));
+              res = true;
           
-            psDeleteCommande.executeUpdate();
-            psDeleteDetailCommande.executeUpdate();
-            
-            System.out.println("Le livre: " + livre.getTitre() + " n'est pas disponible, commande impossible");
-            return false;
-        }
-      }
+          }else{
+              psDeleteCommande.setInt(1, numcom);
+              psDeleteDetailCommande.setInt(1, numcom);
+
+              psDeleteDetailCommande.executeUpdate();
+              psDeleteCommande.executeUpdate();
+
+              return false;
+          }
+       }
+    }catch(QteInfAZeroException e){
+      System.out.println("Le livre: " + livreActuel.getTitre() + " n'est pas disponible, commande impossible");
+    }
       return res;
     }
 }

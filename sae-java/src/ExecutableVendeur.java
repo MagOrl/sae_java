@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,7 @@ public class ExecutableVendeur{
         String identifiant = null;
         String mdp = null;
         String mag = null;
-        
+        List<String> lesLibrairies = new ArrayList<>();
         System.out.println("Entrez votre identifiant");
         identifiant = usr.nextLine();
         System.out.println("Entrez votre mot de passe");
@@ -74,15 +75,18 @@ public class ExecutableVendeur{
         System.out.println("Entrez le nom de votre magasin");
         mag = usr.nextLine();
         try{
-        if(vendeurBD.connectVendeur(identifiant, mdp)){
-            menuVendeur(vendeurBD.trouveVendeur(identifiant, mdp, mag), usr);
-        }else{
-            System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte veuillez demander à un administrateur de vous en créer un");
-            principal(usr);
-        }
-        vendeur = vendeurBD.trouveVendeur(identifiant, mdp, mag);
+            lesLibrairies = vendeurBD.choixLibrairie();
+            if(vendeurBD.connectVendeur(identifiant, mdp) && lesLibrairies.contains(mag)){
+                menuVendeur(vendeurBD.trouveVendeur(identifiant, mdp, mag), usr);
+            }else{
+                System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte veuillez demander à un administrateur de vous en créer un");
+                System.out.println("Veillez à entrer le nom exact de la votre librairie");
+                principal(usr);
+            }
+            vendeur = vendeurBD.trouveVendeur(identifiant, mdp, mag);
         }catch(SQLException e){
             System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte veuillez demander à un administrateur de vous en créer un");
+            System.out.println("Veillez à entrer le nom exact de la votre librairie");
             principal(usr);
         }
         return vendeur; 
@@ -129,6 +133,7 @@ public class ExecutableVendeur{
                     afficheMenuVendeur(vendeur, usr);
                     break;
                 case "4":
+                    passerCommandeClient(vendeur, usr);
                     afficheMenuVendeur(vendeur, usr);
                     break;
                 case "5":
@@ -262,40 +267,6 @@ public class ExecutableVendeur{
         return;
     }
 
-    public static void afficheMenuCommande(Scanner usr){
-        bvn();
-        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-        System.out.println("│ Veuillez choisir une option                                                        │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [1] Commander un livre seul                                                        │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Commander plusieurs livres                                                     │");
-        System.out.println("│                                                                                    │");
-        System.out.println("│ [0] Quitter                                                                        │");
-        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
-    }
-
-    public static void menuCommande(Vendeur vendeur, Scanner usr){
-        while (usr.hasNext()){
-            String res = usr.nextLine();
-            switch (res) {
-                case "0":
-                    return;
-                
-                case "1":
-                    afficheMenuVendeur(vendeur, usr);
-                    break;
-                
-                case "2":
-                    afficheMenuVendeur(vendeur, usr);
-                    break;
-                default:
-                    System.out.println("Veuillez entrer uniquement des chiffres (0-2)");
-                    break;
-            }
-        }
-    }
-
 
     public static void passerCommandeClient(Vendeur vendeur, Scanner usr){
         boolean commander = true;
@@ -306,13 +277,23 @@ public class ExecutableVendeur{
         String idcli = usr.nextLine();
         System.out.println("Entrez le mot de passe du client");
         String mdp = usr.nextLine();
-        System.out.println("Voulez vous une Livraison à [D]omicile ou en [M]agasin ?");
-        String livraison = usr.nextLine();
+           
         try{
             Client cli = vendeurBD.trouveClient(idcli, mdp);
+            if(cli == null){
+                System.out.println("Nous n'avons pas trouvé de compte client pour ces informations, veuillez vérifer les informations.");
+                System.out.println("Si vous n'avez pas de compte veuillez en créer un");
+                passerCommandeClient(vendeur, usr);
+                return;
+            }
 
             while(commander){
                 livreACommander = trouverLivre(usr);
+                if(livreACommander == null){
+                    System.out.println("Ce livre n'existe pas dans la librairie");
+                    passerCommandeClient(vendeur, usr);
+                    return;
+                }
                 System.out.println("Entrez la quantité de livre à commander");
                 String qte = usr.nextLine();
                 livreQte.put(livreACommander, Integer.parseInt(qte));
@@ -325,10 +306,15 @@ public class ExecutableVendeur{
                     commander = false;
                 }
             }
-            vendeurBD.passerCommandeClient(cli, livreQte, vendeur.getMag(), livraison);
+            if(vendeurBD.passerCommandeClient(cli, livreQte, vendeur.getMag())){
+                System.out.println("Commande passée avec succès");
+            }else{
+                return;
+            }
         }catch(NumberFormatException e){
             System.out.println("Veuillez entrer uniquement des chiffres pour la quantitié");
         }catch (SQLException e){
+            System.out.println(e.getMessage());
             System.out.println("Une erreur est survenue lors de la commande");
         }
     }
