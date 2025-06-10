@@ -15,8 +15,8 @@ public class VendeurBD{
     public VendeurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
+            //laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -47,6 +47,22 @@ public class VendeurBD{
       
       return vendeur;
     }
+
+    public Client trouveClient(String identif, String mdp) throws SQLException {
+        Client cli = new Client();
+        this.st = this.connexion.createStatement();
+        ResultSet rs = this.st.executeQuery(
+                "SELECT * FROM CLIENT WHERE identifiant ='" + identif + "'" + "and motdepasse ='" + mdp + "'");
+        while (rs.next()) {
+            cli = new Client(rs.getInt("idcli"), rs.getString("nomcli"), rs.getString("prenomcli"),
+                    rs.getString("identifiant"),
+                    rs.getString("adressecli"), rs.getInt("tel"), rs.getString("email"), rs.getString("motdepasse"),
+                    rs.getString("codepostal"), rs.getString("villecli"));
+        }
+        rs.close();
+        return cli;
+    }
+
 
     public int idClientMax() throws SQLException {
         int max = 0;
@@ -197,10 +213,16 @@ public class VendeurBD{
         return max;
     }
 
-    public boolean passerCommandeClient(Client cli, Map<Livre, Integer> commande, Magasin mag, String livraison) throws SQLException{
+    public boolean passerCommandeClient(Client cli, Map<Livre, Integer> commande, Magasin mag, String livraison) throws SQLException, NumberFormatException{
       boolean res = false;
       int numlig = 0;
       int numcom = numcomMax();
+
+      if(livraison.equals("D")){
+        livraison = "N";
+      }else{
+        livraison = "O";
+      }
       PreparedStatement psCommande = this.connexion.prepareStatement("insert ignore into COMMANDE values(?,CURDATE(),?,?,?,?)");
       PreparedStatement psDetailCommande = this.connexion.prepareStatement("insert into DETAILCOMMANDE values(?,?,?,?,?)");
       PreparedStatement psDeleteCommande = this.connexion.prepareStatement("DELETE from COMMANDE where numcom = ?");

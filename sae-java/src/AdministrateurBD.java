@@ -44,6 +44,8 @@ public class AdministrateurBD{
       return admin;
     }
 
+    
+
      public int creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville,
             String email, String tel, String mdp) throws SQLException {
         int numCli = clientMax() + 1;
