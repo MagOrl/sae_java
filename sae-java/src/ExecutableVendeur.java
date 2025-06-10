@@ -1,5 +1,7 @@
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ExecutableVendeur{
@@ -295,7 +297,27 @@ public class ExecutableVendeur{
     }
 
     public static void passerCommandeClient(Vendeur vendeur, Scanner usr){
-        
+        boolean commander = true;
+        Livre livreACommander = null;
+        Map<Livre, Integer> livreQte = new HashMap<Livre, Integer>(); 
+        while(commander){
+            livreACommander = trouverLivre(usr);
+            System.out.println("Entrez la quantité de livre à commander");
+            String qte = usr.nextLine();
+            livreQte.put(livreACommander, Integer.parseInt(qte));
+
+            System.out.prinln("Avez vous d'autres livres à commander ? [O]/[N]");
+            String encoreDesLivresACommander = usr.nextLine();
+            if(encoreDesLivresACommander.equals("O") || encoreDesLivresACommander.equals("o")){
+                commander = true;
+            }else{
+                commander = false;
+            }
+        }
+        try {
+            vendeurBD.passerCommandeClient(cli, livreQte, mag, livraison)
+        }catch (SQLException e) {
+        }
     }
 
     public static void transfererLivre(Vendeur vendeur, Scanner usr){
