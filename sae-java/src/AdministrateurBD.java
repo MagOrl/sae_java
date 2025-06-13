@@ -13,8 +13,8 @@ public class AdministrateurBD{
     public AdministrateurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
+            //laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -102,17 +102,13 @@ public class AdministrateurBD{
     }
     
     public void ajouteNouvelleLibrairie(String nommag, String villemag) throws SQLException{
-      try{
         Magasin magasin = new Magasin(idmagMax(), nommag, villemag);
-        PreparedStatement ps = this.connexion.prepareStatement("insert into MAGASIN values(?,?,?)");
+        PreparedStatement ps = this.connexion.prepareStatement
+        ("insert into MAGASIN values(?,?,?)");
         ps.setString(1, magasin.getId());
         ps.setString(2, magasin.getNom());
         ps.setString(3, magasin.getVille());
         ps.executeUpdate();
-      }catch(SQLException e){
-        e.printStackTrace();
-      }
-        //System.out.println("Une erreur est survenue lors de l'ajout de la librairie au réseau");
     }
 
     public String idmagMax() throws SQLException{

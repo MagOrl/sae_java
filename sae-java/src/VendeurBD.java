@@ -2,10 +2,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class VendeurBD{
 
@@ -15,8 +14,8 @@ public class VendeurBD{
     public VendeurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
+            //laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
 
         } catch (SQLException e) {
             e.printStackTrace();
