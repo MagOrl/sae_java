@@ -14,8 +14,8 @@ public class VendeurBD{
     public VendeurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            //laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
+            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
 
         } catch (SQLException e) {
             e.printStackTrace();

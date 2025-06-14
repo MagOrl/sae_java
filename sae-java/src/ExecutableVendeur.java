@@ -31,7 +31,7 @@ public class ExecutableVendeur{
                 case "0":
                     return;
                 case "1":
-                    menuVendeur(connexionVendeur(usr), usr);
+                    connexionVendeur(usr);
                     break;
                 default:
                     System.out.println("Entrez un chiffre entre 0 et 2 svp.");
@@ -95,21 +95,26 @@ public class ExecutableVendeur{
 
     public static void afficheMenuVendeur(Vendeur vendeur, Scanner usr){
         bvn();
-            System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
-            System.out.println("│ Bonjour " + vendeur.getPrenom() + " que souhaitez vous faire ?                     │");
-            System.out.println("│                                                                                    │");
-            System.out.println("│ [1] Ajouter un livre au stock de la librairie                                      │");
-            System.out.println("│                                                                                    │");
-            System.out.println("│ [2] Mettre à jour la quantité disponible d'un livre                                │");
-            System.out.println("│                                                                                    │");
-            System.out.println("│ [3] Vérifier la disponibilité d'un livre dans une librairie                        │");
-            System.out.println("│                                                                                    │");
-            System.out.println("│ [4] Passer une commande pour un client                                             │");
-            System.out.println("│                                                                                    │");
-            System.out.println("│ [5] Transférer un livre d'une autre librairie                                      │");
-            System.out.println("│                                                                                    │");
-            System.out.println("│ [0] Quitter                                                                        │");
-            System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
+        String prenomvendeur = "│ Bonjour " + vendeur.getPrenom() + " que souhaitez vous faire ?";
+        int longueurTotale = prenomvendeur.length();
+        int nbEspaces = 86 - longueurTotale; // -1 pour le dernier │
+        String espaces = " ".repeat(Math.max(0, nbEspaces));
+
+        System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
+        System.out.println(prenomvendeur + espaces + "│");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [1] Ajouter un livre au stock de la librairie                                      │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [2] Mettre à jour la quantité disponible d'un livre                                │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [3] Vérifier la disponibilité d'un livre dans une librairie                        │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [4] Passer une commande pour un client                                             │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [5] Transférer un livre d'une autre librairie                                      │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [0] Se déconnecter                                                                 │");
+        System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
 
     public static void menuVendeur(Vendeur vendeur, Scanner usr){
@@ -238,11 +243,16 @@ public class ExecutableVendeur{
             System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
             System.out.println("│ Disponibilité du livre " + livre.getTitre() + "                                                │");
             for (String librairie : lesLibrairies) {
-                if(vendeurBD.verifDispoLivre(livre, Integer.parseInt(qte), vendeurBD.trouveLibrairie(librairie, "null"))){
-                    System.out.println("│ " + "   [" + librairie + "] -> disponible                                                │");
-                }else{
-                    System.out.println("│ " + "   [" + librairie + "] -> indisponible                                                │");
-                }
+                String dispo = vendeurBD.verifDispoLivre(livre, Integer.parseInt(qte), vendeurBD.trouveLibrairie(librairie, "null")) 
+                    ? "disponible" 
+                    : "indisponible";
+                String s = String.format("│    [%s] -> %s", librairie, dispo);
+
+                int longueurTotale = s.length();
+                int nbEspaces = 88 - 3 - longueurTotale; 
+                String espaces = " ".repeat(Math.max(0, nbEspaces));
+                    
+                System.out.println(s + espaces + "│");
             }
             System.out.println("│ [0] Retour                                                                         │");
             System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -308,8 +318,13 @@ public class ExecutableVendeur{
             }
             if(vendeurBD.passerCommandeClient(cli, livreQte, vendeur.getMag())){
                 System.out.println("Commande passée avec succès");
-            }else{
-                return;
+                System.out.println("Voulez vous la facture de la commande ? [O]/[N]");
+                String facture = usr.nextLine();
+                if(facture.equals("O") || facture.equals("o")){
+                    editerFacture();
+                }else{
+                    return;
+                }
             }
         }catch(NumberFormatException e){
             System.out.println("Veuillez entrer uniquement des chiffres pour la quantitié");
@@ -340,6 +355,10 @@ public class ExecutableVendeur{
         }catch(SQLException e){
             System.out.println("Une erreur est survenue lors du transfert du livre");
         }
+    }
+
+    public static void editerFacture(){
+        
     }
 
     

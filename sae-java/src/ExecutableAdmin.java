@@ -29,7 +29,7 @@ public class ExecutableAdmin {
                 case "0":
                     return;
                 case "1":
-                    menuAdmin(connexionAdmin(usr), usr);
+                    connexionAdmin(usr);
                     break;
                 case "2":
                     menuCreerCompte(usr);
