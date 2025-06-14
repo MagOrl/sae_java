@@ -107,6 +107,16 @@ public class VendeurBD{
       return livre;
     }
 
+    public Livre trouveLivreIsbn(String isbn) throws SQLException{
+      Livre livre = null;
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select * from LIVRE where isbn = " + isbn);
+      while(rs.next()){
+          livre = new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"), rs.getInt("datepubli"), rs.getInt("prix"));
+      }
+      return livre;
+    }
+
     public List<String> choixLibrairie() throws SQLException{
       List<String> lesLibrairies = new ArrayList<>();
       this.st = connexion.createStatement();
@@ -175,7 +185,6 @@ public class VendeurBD{
       ResultSet rs = this.st.executeQuery("select isbn, idmag, qte from POSSEDER where isbn = " + livre.getIsbn());
       while (rs.next()){
         if(!rs.getString("idmag").equals(mag.getId())){
-          System.out.println(rs.getString("idmag"));
           if(verifDispoLivre(livre, qteAtransferer, trouveLibrairie("null", rs.getString("idmag")))){
               idmagAutreLibrairie = rs.getString("idmag");
               break;
@@ -228,7 +237,6 @@ public class VendeurBD{
           livreActuel = livre;
           if(verifDispoLivre(livre, commande.get(livre), mag)){
               numlig += 1;
-
               psCommande.setInt(1, numcom);
               psCommande.setString(2, "N");
               psCommande.setString(3, "M");
@@ -236,7 +244,6 @@ public class VendeurBD{
               psCommande.setString(5, mag.getId());
               psCommande.executeUpdate();
 
-              System.out.println("check1");
 
               psDetailCommande.setInt(1, numcom);
               psDetailCommande.setInt(2, numlig);
@@ -244,14 +251,12 @@ public class VendeurBD{
               psDetailCommande.setDouble(4, livre.getPrix());
               psDetailCommande.setString(5, livre.getIsbn());
               psDetailCommande.executeUpdate();
-              System.out.println("check2");
 
               majQteLivre(livre.getIsbn(), mag, -commande.get(livre));
               res = true;
 
           }else if(transfererLivreCommande(livre, commande.get(livre), mag)){
               numlig += 1;
-
               psCommande.setInt(1, numcom);
               psCommande.setString(2, "N");
               psCommande.setString(3, "M");
@@ -259,7 +264,6 @@ public class VendeurBD{
               psCommande.setString(5, mag.getId());
               psCommande.executeUpdate();
 
-              System.out.println("check3");
 
               psDetailCommande.setInt(1, numcom);
               psDetailCommande.setInt(2, numlig);
@@ -267,7 +271,6 @@ public class VendeurBD{
               psDetailCommande.setDouble(4, livre.getPrix());
               psDetailCommande.setString(5, livre.getIsbn());
               psDetailCommande.executeUpdate();
-              System.out.println("check4");
               
               majQteLivre(livre.getIsbn(), mag, -commande.get(livre));
               res = true;
@@ -279,6 +282,7 @@ public class VendeurBD{
               psDeleteDetailCommande.executeUpdate();
               psDeleteCommande.executeUpdate();
 
+              System.out.println("Le livre: " + livreActuel.getTitre() + " n'est pas disponible, commande impossible");
               return false;
           }
        }
@@ -287,7 +291,48 @@ public class VendeurBD{
     }
       return res;
     }
+
+    public int trouverDerniereCommande() throws SQLException{
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select max(numcom) as numComMax from COMMANDE");
+      if(rs.next()){
+        return rs.getInt("numComMax");
+      }
+      return 0;
+    }
+
+    public boolean editerFacture(Client cli, int numCom) throws SQLException{
+      int totalQteLivre = 0;
+      double prixTotal = 0.;
+      boolean fisrtLigne = false;
+      System.out.println("Facture n°" + numCom);
+      System.out.println(cli.getNom() + " " + cli.getPrenom());
+      this.st = connexion.createStatement();
+      ResultSet rsDateCom = this.st.executeQuery("select datecom from COMMANDE natural join DETAILCOMMANDE where numcom = " + numCom);
+      if(rsDateCom.next()){
+        System.out.println("Date " + rsDateCom.getString("datecom"));
+      }else{
+        return false;
+      }
+      ResultSet rsCommande = this.st.executeQuery("select numcom, idcli, numlig, qte, prixvente, isbn from COMMANDE natural join DETAILCOMMANDE where numcom = " + numCom);
+      while(rsCommande.next()){
+        Livre livreCourant = trouveLivreIsbn(rsCommande.getString("isbn"));
+        totalQteLivre += rsCommande.getInt("qte");
+        prixTotal += rsCommande.getDouble("prixvente");
+        if(!fisrtLigne){
+          System.out.println("---------------------------------------------------------------------------------------------");
+          System.out.printf("%5s  %-15s  %-30s  %5s  %8s  %10s\n", "", "ISBN", "Titre", "Qte", "Prix", "Total");
+          fisrtLigne = true;
+        }
+        System.out.printf("%5d  %-15s  %-30s  %5d  %8.2f  %10.2f\n", rsCommande.getInt("numlig"),  livreCourant.getIsbn(), livreCourant.getTitre(), rsCommande.getInt("qte"), rsCommande.getDouble("prixvente"), rsCommande.getInt("qte") * rsCommande.getDouble("prixvente"));
+      }
+      System.out.println("---------------------------------------------------------------------------------------------");
+      System.out.println("Nombres de livres commandés " + totalQteLivre);
+      System.out.print("Montant de la facture " + prixTotal);
+      return true;
+    }
 }
+
 
 //CREATE TABLE COMMANDE (
 //  PRIMARY KEY (numcom),

@@ -106,7 +106,7 @@ public class ExecutableAdmin {
         System.out.println("Entrez votre prénom");
         String prenom = usr.nextLine();
 
-        System.out.println("Entrez votre addresse");
+        System.out.println("Entrez votre adresse");
         String addresse = usr.nextLine();
 
         System.out.println("Entrez la ville ou vous habitez");

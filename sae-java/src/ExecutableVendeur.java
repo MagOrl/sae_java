@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.sql.SQLTransactionRollbackException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +98,7 @@ public class ExecutableVendeur{
         bvn();
         String prenomvendeur = "│ Bonjour " + vendeur.getPrenom() + " que souhaitez vous faire ?";
         int longueurTotale = prenomvendeur.length();
-        int nbEspaces = 86 - longueurTotale; // -1 pour le dernier │
+        int nbEspaces = 85 - longueurTotale; // -1 pour le dernier │
         String espaces = " ".repeat(Math.max(0, nbEspaces));
 
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
@@ -321,7 +322,9 @@ public class ExecutableVendeur{
                 System.out.println("Voulez vous la facture de la commande ? [O]/[N]");
                 String facture = usr.nextLine();
                 if(facture.equals("O") || facture.equals("o")){
-                    editerFacture();
+                    System.out.println("\n");
+                    editerFacture(cli, vendeurBD.trouverDerniereCommande());
+                    System.out.println("\n");
                 }else{
                     return;
                 }
@@ -357,8 +360,14 @@ public class ExecutableVendeur{
         }
     }
 
-    public static void editerFacture(){
-        
+    public static void editerFacture(Client cli, int numCom){
+        try{
+            vendeurBD.editerFacture(cli, numCom);
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+            System.out.println("Une erreur est survenue lors de l'édition de la facture");
+        }
+
     }
 
     
