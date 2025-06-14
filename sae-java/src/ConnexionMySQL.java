@@ -39,4 +39,8 @@ public class ConnexionMySQL {
 		this.mysql.setAutoCommit(bol);
 	}
 
+    public void deconnecter() throws SQLException {
+       this.mysql.close();
+    }
+
 }
