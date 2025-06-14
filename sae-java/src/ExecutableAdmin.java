@@ -250,7 +250,14 @@ public class ExecutableAdmin {
             System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
             System.out.println("│ Les librairies                                                                     │");
             for (String librairie : lesLibrairies) {
-                System.out.println("│ " + "   [" + librairie + "]                                                 │");
+                String s = String.format("│    [%s]", librairie);
+
+                int longueurTotale = s.length();
+                int nbEspaces = 88 - 3 - longueurTotale; 
+                String espaces = " ".repeat(Math.max(0, nbEspaces));
+                    
+                System.out.println(s + espaces + "│");
+
             }
             System.out.println("│ [0] Retour                                                                         │");
             System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -402,19 +409,20 @@ public class ExecutableAdmin {
         System.out.println("Entrez l'isbn du livre dont vous voulez mettre à jour la quandtité");
         String isbn = usr.nextLine();
 
-        System.out.println("Entrez la nouvelle quantité");
-        System.out.println("Attention, ceci ne va pas ajouter ou enlever en quantité mais mettre le chiffre que vous allez rentrer en nouvelle quantité !");
+        System.out.println("Entrez la quantité à ajouter ou à enlever (pour enlever mettez un - devant le nombre)");
         String qte = usr.nextLine();
 
 
         try{
-            if(adminBD.majQteLivre(isbn, mag, qte)){
+            if(adminBD.majQteLivre(isbn, mag, Integer.parseInt(qte))){
                 System.out.println("La quantité a bien été mise à jour");
             }else{
                 System.out.println("Le livre dont vous essayez de modifier la quantité n'existe pas dans la libraire actulle (" + mag.getNom() + ")");
             }
         }catch(NumberFormatException e){
             System.out.println("Veuillez entrez uniquement des chiffres pour la quantité");
+        }catch(QteInfAZeroException e){
+            System.out.println("La nouvelle quantité est inférieure à zéro, veuillez enlever moins de quantitié");
         }catch(SQLException e){
             System.out.println(e.getMessage());
             System.out.println("Une erreur est survenue lors de la mise à jour de la quantité");

@@ -179,18 +179,23 @@ public class AdministrateurBD{
         return true;
     }
 
-    public boolean majQteLivre(String isbn, Magasin mag, String qte) throws SQLException, NumberFormatException{
+    public boolean majQteLivre(String isbn, Magasin mag, int qte) throws SQLException, NumberFormatException, QteInfAZeroException{
         this.st = connexion.createStatement();
 	  	  ResultSet rs = this.st.executeQuery("select qte from POSSEDER where isbn = '"+ isbn + "'" + " and idmag = '" + mag.getId() + "'");
         if(!rs.next()){
+          rs.close();
           return false;
         }
+        if(rs.getInt("qte") + qte < 0){
+          throw new QteInfAZeroException();
+        }
 
-        PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ? and idmag = ?");
-        ps.setInt(1, Integer.parseInt(qte));
+        PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER SET qte = qte + ? WHERE isbn = ? and idmag = ?");
+        ps.setInt(1, qte);
         ps.setString(2, isbn);
         ps.setString(3, mag.getId());
         ps.executeUpdate();
+        rs.close();
         return true;
     }
 
