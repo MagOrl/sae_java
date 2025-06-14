@@ -22,6 +22,21 @@ public class Requetes {
         }
     }
 
+    /**
+     * permet de créée un compte client
+     * 
+     * @param identif    sont intiutle de compte
+     * @param nom        sont nom
+     * @param prenom     sont prénom
+     * @param adresse
+     * @param codepostal
+     * @param ville
+     * @param email
+     * @param tel
+     * @param mdp
+     * @return l'id du client
+     * @throws SQLException
+     */
     public int creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville,
             String email, String tel, String mdp) throws SQLException {
         int numCli = clientMax() + 1;
@@ -41,6 +56,13 @@ public class Requetes {
         return numCli;
     }
 
+    /**
+     * permet de trouver un client dans la base de données selon numcli
+     * 
+     * @param numcli
+     * @return le client
+     * @throws SQLException
+     */
     public Client trouveClient(int numcli) throws SQLException {
         Client cli = new Client();
         this.st = this.laConnexion.createStatement();
@@ -54,6 +76,14 @@ public class Requetes {
         return cli;
     }
 
+    /**
+     * permet de trouver un client selon sont indentifiant et sont mot de passe
+     * 
+     * @param identif
+     * @param mdp
+     * @return
+     * @throws SQLException
+     */
     public Client trouveClient(String identif, String mdp) throws SQLException {
         Client cli = new Client();
         this.st = this.laConnexion.createStatement();
@@ -69,6 +99,14 @@ public class Requetes {
         return cli;
     }
 
+    /**
+     * permet de verifier que le client c'est bien connecter
+     * 
+     * @param identif
+     * @param mdp
+     * @return
+     * @throws SQLException
+     */
     public boolean connectClient(String identif, String mdp) throws SQLException {
         this.st = this.laConnexion.createStatement();
         ResultSet rs = this.st
@@ -77,6 +115,13 @@ public class Requetes {
         return rs.next();
     }
 
+    /**
+     * permet de savoir combien il y a de client dans la base de données
+     * c'est pratique pour pouvoir attribuer un ID
+     * 
+     * @return nombre de client dans la base de donnée
+     * @throws SQLException
+     */
     public int clientMax() throws SQLException {
         int max = 0;
         this.st = this.laConnexion.createStatement();
@@ -88,6 +133,12 @@ public class Requetes {
         return max;
     }
 
+    /**
+     * met à jour les information du client
+     * 
+     * @param cli
+     * @throws SQLException
+     */
     public void majClient(Client cli) throws SQLException {
         PreparedStatement ps = this.laConnexion
                 .prepareStatement("UPDATE CLIENT SET identifiant = ?, motdepasse= ?, email = ?,tel =? WHERE idcli = ?");
@@ -99,6 +150,14 @@ public class Requetes {
         ps.executeUpdate();
     }
 
+    /**
+     * pertmet d'afficher l'historique des commandes effectuée par la client
+     * 
+     * @param cli
+     * @return l'historique des commandes ou "Aucune commande effectuer pour le
+     *         moment" si l'utilisateur n'a toujours pas fait de commandes
+     * @throws SQLException
+     */
     public String afficheHistoriqueCommande(Client cli) throws SQLException {
         this.st = laConnexion.createStatement();
         ResultSet rs = this.st.executeQuery(
@@ -136,6 +195,12 @@ public class Requetes {
         return res;
     }
 
+    /**
+     * permet d'afficher les themes des livres
+     * 
+     * @return
+     * @throws SQLException
+     */
     public HashMap<Integer, String> afficheThemes() throws SQLException {
         this.st = laConnexion.createStatement();
         ResultSet rs = this.st.executeQuery("SELECT * FROM CLASSIFICATION GROUP BY FLOOR(iddewey/100)");
@@ -150,6 +215,15 @@ public class Requetes {
 
     }
 
+    /**
+     * permet d'avoir une liste de catalogue de livres (catalogue ayant une capacité
+     * de 10) selon le thème et un magasin donnée
+     * 
+     * @param thm
+     * @param mag
+     * @return
+     * @throws SQLException
+     */
     public List<List<Livre>> rechercheTheme(int thm, Magasin mag) throws SQLException {
         thm = thm * 100;
         this.st = laConnexion.createStatement();
@@ -178,6 +252,13 @@ public class Requetes {
 
     }
 
+    /**
+     * permet d'avoir le nombre de ligne que fait une requète
+     * 
+     * @param rs
+     * @return le nombre de lignes
+     * @throws SQLException
+     */
     public int nbLigneRequetes(ResultSet rs) throws SQLException {
         int res = 0;
         while (rs.next()) {
@@ -187,6 +268,14 @@ public class Requetes {
         return res;
     }
 
+    /**
+     * permet de commander l'integralité du panier du client
+     * 
+     * @param livreMag
+     * @param cli
+     * @param envoie
+     * @throws SQLException
+     */
     public void commandeLivre(HashMap<Integer, List<Livre>> livreMag, Client cli, String envoie) throws SQLException {
         PreparedStatement ps1 = this.laConnexion
                 .prepareStatement("UPDATE POSSEDER SET qte = ? WHERE isbn = ?");
@@ -230,6 +319,13 @@ public class Requetes {
         }
     }
 
+    /**
+     * fonction qui permet d'avoir les informations sur les magasin enregister dans
+     * la base de données
+     * 
+     * @return
+     * @throws SQLException
+     */
     public HashMap<Integer, Magasin> afficheMagasin() throws SQLException {
         this.st = laConnexion.createStatement();
         ResultSet rs = this.st.executeQuery("SELECT * FROM MAGASIN");
@@ -243,6 +339,13 @@ public class Requetes {
         return res;
     }
 
+    /**
+     * permet d'avoir la quantité de livre dans un magasin
+     * 
+     * @param liv
+     * @return
+     * @throws SQLException
+     */
     public int getQteLivre(Livre liv) throws SQLException {
         int res = -1;
         this.st = laConnexion.createStatement();
@@ -254,6 +357,13 @@ public class Requetes {
         return res;
     }
 
+    /**
+     * permet d'avoir le nombre maximal de commande (utiliser pour l'attribution
+     * d'ID)
+     * 
+     * @return
+     * @throws SQLException
+     */
     public int getMaxCommande() throws SQLException {
         int res = -1;
         this.st = laConnexion.createStatement();
@@ -265,6 +375,13 @@ public class Requetes {
         return res;
     }
 
+    /**
+     * permet de trouver un magasin selon un livre
+     * 
+     * @param liv
+     * @return l'id du magasin
+     * @throws SQLException
+     */
     public int trouveMagasin(Livre liv) throws SQLException {
         int res = 0;
         this.st = laConnexion.createStatement();
@@ -276,10 +393,27 @@ public class Requetes {
         return res;
     }
 
+    /**
+     * supprime un livre de la table posseder
+     * 
+     * @param isbn
+     * @param idmag
+     * @throws SQLException
+     */
     public void suppLivrePosseder(String isbn, int idmag) throws SQLException {
         this.st.executeUpdate("DELETE FROM POSSEDER where isbn = " + isbn + " and idmag = " + idmag);
     }
 
+    /**
+     * fonction qui regarde les commandes qu'ont plusieurs client et qui ne sagit
+     * pas du client mit en paramètre
+     * et retourne les livres les plus commander
+     * 
+     * @param cli
+     * @param mag
+     * @return
+     * @throws SQLException
+     */
     public List<List<Livre>> onVousRecommande(Client cli, Magasin mag) throws SQLException {
         this.st = laConnexion.createStatement();
         ResultSet rs = this.st
