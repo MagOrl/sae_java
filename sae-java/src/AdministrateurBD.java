@@ -3,6 +3,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 public class AdministrateurBD{
@@ -209,8 +212,164 @@ public class AdministrateurBD{
       
     }
 
-    public void consulteStats(){
+    public void requeteNbLivresMagAnnee() throws SQLException{
+      String anneePrec = null;
+      this.st= connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select distinct nommag as Magasin, YEAR(datecom) as annee, sum(qte) as qte from MAGASIN natural join COMMANDE natural join DETAILCOMMANDE group by Magasin, annee order by annee");
+      
+      System.out.println("\n");
+      System.out.println("Nombre de livres vendus par magasins par anneé");
+      while(rs.next()){
+        if(anneePrec == null || !anneePrec.equals(rs.getString("annee"))){
+          System.out.println("---------------------------------------------------------------------");
+          System.out.println("Année  " + rs.getString("annee"));
+          
+        }
+        System.out.println("-----------------------------------------");
+        System.out.println("Magasin " + rs.getString("Magasin"));
+        System.out.println(rs.getString("qte") + " livres vendus");
 
+        
+        anneePrec = rs.getString("annee");
+      }
+      System.out.println("-----------------------------------------");
+      System.out.println("---------------------------------------------------------------------");
+    }
+
+    public void requeteCAThemeAnnee(int annee) throws SQLException{
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("with CA2024 as (select sum(qte*prixvente) as total from DETAILCOMMANDE natural join COMMANDE  where YEAR(datecom) = " + annee+ ") select nomclass as Theme, ROUND((sum(qte*prixvente)/Total)*100) as total from CA2024 natural join DETAILCOMMANDE natural join COMMANDE natural join LIVRE natural join THEMES natural join CLASSIFICATION where YEAR(datecom) = " + annee + " group by LEFT(LPAD(iddewey,3,'0'),1) order by nomclass");
+
+      System.out.println("\n");
+      System.out.println("Pourcentage du chiffre d'affaire par thème en " + annee);
+      while(rs.next()){
+        System.out.println("-----------------------------------");
+        System.out.println(rs.getString("Theme") + " " + rs.getString("total") + "%");
+      }
+      System.out.println("-----------------------------------");
     }
     
+    public void requeteEvoCAMag(int annee) throws SQLException{
+      int cptMois = 0;
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select MONTH(datecom) as mois, nommag as Magasin, sum(qte*prix) as CA from MAGASIN natural join COMMANDE natural join DETAILCOMMANDE natural join LIVRE where YEAR(datecom) = " + annee + " group by nommag, MONTH(datecom)");
+      List<String> mois = Arrays.asList("Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Décembre");
+      System.out.println("\n");
+      System.out.println("Evolution des chiffres d'affaire par magasin et par mois pour l'année " + annee);
+      while(rs.next()){
+        if(cptMois == 12){
+          cptMois = 0;
+        }
+        if(cptMois == 0){
+          System.out.println("-----------------------------------------");
+          System.out.println("Magasin " + rs.getString("Magasin"));
+        }
+        System.out.println("-----------");
+        System.out.println("Mois de " + mois.get(cptMois) + " chiffre d'affaire : " + rs.getInt("CA") + " euros");
+        
+
+        cptMois ++;
+      }
+      System.out.println("-----------------------------------------");
+      System.out.println("---------------------------------------------------------------------");
+    
+    }
+
+    public void requeteCompVenteLMAnnee() throws SQLException{
+      String anneePrec = null;
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select YEAR(datecom) as annee, enligne as typevente, sum(qte*prix) as montant from COMMANDE natural join DETAILCOMMANDE natural join LIVRE where YEAR(datecom)<>2025 group by annee, typevente");
+      System.out.println("\n");
+      System.out.println("Comparaison chiffre d'affaire entre ventes en ligne et ventes en magasin");
+      System.out.println("------------------------------------------------------------");
+      while(rs.next()){
+        if(anneePrec == null || !anneePrec.equals(rs.getString("annee"))){
+          System.out.println("----------------------------------------------");
+          System.out.println("Année  " + rs.getString("annee"));
+          System.out.println("-----------------------------");
+          
+        }
+        if(rs.getString("typevente").equals("O")){
+          System.out.println("Ventes en ligne : " + rs.getInt("montant") + " euros");
+        }else{
+          System.out.println("Ventes en Magasin : " + rs.getInt("montant") + " euros");
+        }
+        System.out.println("--------------------------------");
+        anneePrec = rs.getString("annee");
+
+      }
+      System.out.println("------------------------------------------------------------");
+    }
+
+    public void requeteDixeditPlusImportants() throws SQLException{
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select nomedit as Editeur, count(idauteur) as nbauteurs from EDITEUR natural join EDITER natural join LIVRE natural join ECRIRE natural join AUTEUR group by nomedit order by nbauteurs desc limit 10");
+      int cpt = 1;
+      System.out.println("\n");
+      System.out.println("Les Dix éditeurs les plus importants en nombre d'auteur");
+      while (rs.next()) {
+        System.out.println("----------------------------------");
+        System.out.println(cpt + ". " + rs.getString("Editeur") + " " + rs.getInt("nbauteurs") + " auteurs");
+        cpt++;
+      }
+      System.out.println("----------------------------------");
+    }
+
+    public void requeteOrigineClientAuteur(String auteur) throws SQLException{
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select villecli as ville, sum(qte) as qte from CLIENT natural join COMMANDE natural join DETAILCOMMANDE natural join LIVRE natural join ECRIRE natural join AUTEUR where nomauteur = '" + auteur + "' group by villecli");
+
+      System.out.println("\n");
+      System.out.println("Origine des clients ayant acheté des livres de " + auteur);
+      while (rs.next()) {
+        System.out.println("--------------------");
+        if(rs.getInt("qte") > 1){
+          System.out.println(rs.getString("ville") + ": " + rs.getString("qte") + " clients");
+        }else{
+          System.out.println(rs.getString("ville") + ": " + rs.getString("qte") + " client");
+        }
+      }
+      System.out.println("--------------------");
+    }
+
+    public void requeteValeurStockMag() throws SQLException{
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("select nommag as Magasin, sum(qte*prix) as total from MAGASIN natural join POSSEDER natural join LIVRE group by nommag");
+
+      System.out.println("\n");
+      System.out.println("Valeur du stock par magasin");
+      System.out.println("--------------------------------");
+      while (rs.next()) {
+         System.out.println("------------");
+         System.out.println("Magasin " + rs.getString("Magasin") + " possède " + rs.getInt("total") + " livres"); 
+      }
+      System.out.println("------------");
+      System.out.println("--------------------------------");
+    }
+
+    public void requeteEvoCAClient() throws SQLException{
+      this.st = connexion.createStatement();
+      ResultSet rs = this.st.executeQuery("with MaxCAParClient as (select idcli, YEAR(datecom) as annee, sum(qte*prixvente) as CA from CLIENT natural join COMMANDE natural join DETAILCOMMANDE natural join LIVRE group by YEAR(datecom), idcli) select annee, max(CA) as maximum, min(CA) as minimum, avg(CA) as moyenne from MaxCAParClient group by annee");
+
+      System.out.println("\n");
+      System.out.println("Evolution du chiffre d'affaire par client par année");
+      System.out.println("--------------------------------------------------");
+      while (rs.next()) {
+        System.out.println("--------------");
+        System.out.println("Annee " + rs.getString("annee"));
+        System.out.println("-------------");
+        System.out.println("Chiffre d'affaire maximum : " + rs.getDouble("maximum") + " euros");
+        System.out.println("Chiffre d'affaire moyen : " + rs.getDouble("moyenne") + " euros");
+        System.out.println("Chiffre d'affaire minimum : " + rs.getDouble("minimum") + " euros");
+      }
+      System.out.println("--------------");
+      System.out.println("--------------------------------------------------");
+    }
+
 }
+
+
+    
+    
+
+ 

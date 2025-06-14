@@ -145,7 +145,7 @@ public class ExecutableAdmin {
             System.out.println("│                                                                                    │");
             System.out.println("│ [4] Consulter les statistiques de ventes                                           │");
             System.out.println("│                                                                                    │");
-            System.out.println("│ [0] Quitter                                                                        │");
+            System.out.println("│ [0] Se déconnecter                                                                 │");
             System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
 
@@ -173,7 +173,8 @@ public class ExecutableAdmin {
                     break;
 
                 case "4":
-                
+                    choixStats(admin, usr);
+                    afficheMenuAdmin(admin);
                     break;
                 default:
                     System.out.println("Veuillez entrer un chiffre parmis la liste d'options du menu");
@@ -435,19 +436,156 @@ public class ExecutableAdmin {
         System.out.println("│                                                                                    │");
         System.out.println("│ [1] Nombre de livres vendus par magasin par année                                  │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Les livres les plus vendus du mois                                             │");
+        System.out.println("│ [2] Chiffre d'affaire par thème pour une annee                                     │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [3] Comparaison ventes en ligne et en magasin                                      │");
+        System.out.println("│ [3] Evolution des chiffres d'affaire des magasins par mois pour une année          │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [4] Valeur du stock par magasins                                                   │");
+        System.out.println("│ [4] Comparaison vente en ligne et en magasin                                       │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [5] Chiffre d'affaire par librairie par année                                      │");
+        System.out.println("│ [5] Les dix éditeurs les plus importants en nombre d'auteur                        │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [6] Origine des clients ayant acheté des livres d'un auteur                        │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [7] Valeur du stock par magasin                                                    │");
+        System.out.println("│                                                                                    │");
+        System.out.println("│ [8] Evolution du chiffre d'affaire total par client                                │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Retour                                                                         │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
 
+    private static void choixStats(Administrateur admin , Scanner usr){
+        afficheMenuStatsVentes();
+        while(usr.hasNext()){
+            String res = usr.nextLine();
+            switch (res) {
+                case "0":
+                    afficheMenuAdmin(admin);
+                    return;
+
+                case "1":
+                    afficherequeteNbLivresMagAnnee();
+                    afficheMenuStatsVentes();
+                    break;
+
+                case "2":
+                    afficherequeteCAThemeAnnee(usr);
+                    afficheMenuStatsVentes();
+                    break;
+
+                case "3":
+                    afficherequeteEvoCaMag(usr);
+                    afficheMenuStatsVentes();
+                    break;
+                
+                case "4":
+                    afficherequeteCompVenteLMAnnee();
+                    afficheMenuStatsVentes();
+                    break;
+
+                case "5":
+                    afficherequeteDixeditPlusImportants();
+                    afficheMenuStatsVentes();
+                    break;
+
+                case "6":
+                    afficherequeteOrigineClientAuteur(usr);
+                    afficheMenuStatsVentes();
+                    break;
+
+                case "7":
+                    afficherequeteValeurStockMag();
+                    afficheMenuStatsVentes();
+                    break;
+
+                case "8":
+                    afficherequeteEvoCAClient();
+                    afficheMenuStatsVentes();
+                    break;
+                    
+                default:
+                    System.out.println("veuillez entrer un nombre entre 1 et 8");
+                    break;
+            }
+        }
+    }
+
+    private static void afficherequeteNbLivresMagAnnee(){
+        try{
+            adminBD.requeteNbLivresMagAnnee();
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'affichage");
+        }
+    }
+
+    private static void afficherequeteCAThemeAnnee(Scanner usr){
+        System.out.println("Entrez l'annee à consulter");
+        String annee = usr.nextLine();
+        try{
+            adminBD.requeteCAThemeAnnee(Integer.parseInt(annee));
+        }catch(NumberFormatException e){
+            System.out.println("Veuillez entrer uniquement des chiffres pour l'annee");
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'affichage");
+        }
+    }
+
+    private static void afficherequeteEvoCaMag(Scanner usr){
+        System.out.println("Entrez l'annee à consulter");
+        String annee = usr.nextLine();
+        try{
+            adminBD.requeteEvoCAMag(Integer.parseInt(annee));
+        }catch(NumberFormatException e){
+            System.out.println("Veuillez entrer uniquement des chiffres pour l'annee");
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'affichage");
+        }
+    }
+
+    private static void afficherequeteCompVenteLMAnnee(){
+        try{
+            adminBD.requeteCompVenteLMAnnee();
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'affichage");
+        }
+    }
+
+    private static void afficherequeteDixeditPlusImportants(){
+        try{
+            adminBD.requeteDixeditPlusImportants();
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'affichage");
+        }
+    }
+
+    private static void afficherequeteOrigineClientAuteur(Scanner usr){
+        System.out.println("Entrez un auteur");
+        String auteur = usr.nextLine();
+        try{
+            adminBD.requeteOrigineClientAuteur(auteur);
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'affichage");
+        }
+    }
+
+    private static void afficherequeteValeurStockMag(){
+        try{
+            adminBD.requeteValeurStockMag();
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'affichage");
+        }
+    } 
+
+    private static void afficherequeteEvoCAClient(){
+        try{
+            adminBD.requeteEvoCAClient();
+        }catch(SQLException e){
+            System.out.println("Une erreur est survenue lors de l'affichage");    
+        }
+    }
+
+
+
     
 }
 
-// SELECT LIVRE.*
