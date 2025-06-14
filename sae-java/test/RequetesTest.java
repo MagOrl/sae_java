@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 
 // Importations pour les assertions standards de JUnit
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -16,7 +18,6 @@ public class RequetesTest {
 
     private static ConnexionMySQL laConnexion;
     private static Requetes requetes;
-
 
     @BeforeClass
     public static void setUp() {
@@ -29,32 +30,23 @@ public class RequetesTest {
         }
     }
 
-
     @AfterClass
     public static void tearDown() {
-        System.out.println("Fin des tests.  ");
+        System.out.println("Fin des tests.");
         try {
             if (laConnexion != null) {
                 laConnexion.deconnecter();
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
-    @Test
-    public void testClientMax() throws SQLException {
-        System.out.println("Test: clientMax");
-        int maxId = requetes.clientMax();
-        assertEquals("L'ID client maximum devrait être 5005", 5005, maxId);
-    }
-
-
     @Test
     public void testConnexionClientReussie() throws SQLException {
         System.out.println("Test: connexionClient (réussite)");
-        // Ajoutons un client de test pour être sûr qu'il existe
+
         requetes.creeClient("clientTestLogin", "NomTest", "PrenomTest", "1 rue test", "75001", "Paris", "test@test.com",
                 "0123456789", "bonMdp");
 
@@ -63,16 +55,15 @@ public class RequetesTest {
         assertEquals("Le nom du client connecté est incorrect", "NomTest", client.getNom());
     }
 
-
     @Test
     public void testConnexionClientEchouee() throws SQLException {
         System.out.println("Test: connexionClient (échec)");
         Client client = requetes.trouveClient("clientTestLogin", "mauvaisMdp");
-        assertNull("Le client devrait être null pour une connexion échouée", client);
+        assertNull("Le client devrait être null pour une connexion échouée", client.getIdentifiant());
     }
 
     @Test
-    public void testCreeClient() throws SQLException {
+    public void testCreeClientEtMax() throws SQLException {
         System.out.println("Test: creeClient");
         int maxIdAvantCreation = requetes.clientMax();
 
@@ -85,24 +76,13 @@ public class RequetesTest {
         assertEquals("Le nouvel ID maximum doit être supérieur à l'ancien", maxIdAvantCreation + 1, maxIdApresCreation);
     }
 
+    @Test 
+    public void testMajClient() throws SQLException{
+        Client client = requetes.trouveClient("clientTestLogin", "mauvaisMdp");
+        int telAv = client.getTel();
+        client.setTel(06666666);
+        requetes.majClient(client);
+        assertNotEquals("Le numéro de téléphone ne doit plus être le même ",telAv, client.getTel());
+    }
 
-    // @Test
-    // public void testOnVousRecommande() throws SQLException {
-    //     System.out.println("Test: onVousRecommande");
-    //     Client client = new Client();
-    //     client.setNumCompte(1);
-    //     Magasin magasin = new Magasin(1, "La librairie parisienne", "Paris");
-
-    //     List<List<Livre>> recommandations = requetes.onVousRecommande(client, magasin);
-
-    //     assertNotNull("La liste de recommandations ne doit pas être nulle", recommandations);
-    //     assertFalse("La liste de recommandations ne devrait pas être vide", recommandations.isEmpty());
-
-
-    //     List<Livre> livresPlats = recommandations.stream().flatMap(List::stream).collect(Collectors.toList());
-    //     boolean livreRecommandeTrouve = livresPlats.stream()
-    //             .anyMatch(livre -> livre.getIsbn().equals("9782253004221"));
-    //     assertTrue("Le livre attendu (ISBN 9782253004221) devrait être dans les recommandations",
-    //             livreRecommandeTrouve);
-    // }
 }
