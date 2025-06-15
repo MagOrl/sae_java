@@ -1,8 +1,11 @@
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 public class Requetes {
 
@@ -12,10 +15,19 @@ public class Requetes {
     public Requetes(ConnexionMySQL laConnexion) {
         this.laConnexion = laConnexion;
         try {
-            laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
+            List<String> data = new ArrayList<>();
+            // laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
             // laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev",
             // "arsamerzoev");
+            File cache = new File("cachePourBaseDeDonne");
+            Scanner reader = new Scanner(cache);
+            while (reader.hasNextLine()) {
+                data.add(reader.nextLine());
+            }
+            laConnexion.connecter(data.get(0), data.get(1), data.get(2), data.get(3));
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }

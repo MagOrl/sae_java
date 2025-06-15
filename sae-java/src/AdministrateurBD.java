@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.List;
 
 public class AdministrateurBD{
@@ -16,11 +19,19 @@ public class AdministrateurBD{
     public AdministrateurBD(ConnexionMySQL laConnexion) {
         this.connexion = laConnexion;
         try {
-            //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            // laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
-            laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
-
+            List<String> data = new ArrayList<>();
+            // laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
+            // laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev",
+            // "arsamerzoev");
+            File cache = new File("cachePourBaseDeDonne");
+            Scanner reader = new Scanner(cache);
+            while (reader.hasNextLine()) {
+                data.add(reader.nextLine());
+            }
+            laConnexion.connecter(data.get(0), data.get(1), data.get(2), data.get(3));
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
