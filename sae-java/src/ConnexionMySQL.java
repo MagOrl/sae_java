@@ -9,12 +9,8 @@ public class ConnexionMySQL {
 	}
 
 	public void connecter(String nomServeur, String nomBase, String nomLogin, String motDePasse) throws SQLException {
-		//si tout s'est bien passé la connexion n'est plus nulle
-		
-		//this.mysql = DriverManager.getConnection("jdbc:mariadb://servinfo-maria:3306/DBfoucher", nomLogin,
-		//		motDePasse); // localhost --> nom du serv
-				this.mysql = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Librairie", nomLogin,
-		motDePasse); // localhost --> nom du serv
+		this.mysql = DriverManager.getConnection("jdbc:mariadb://" + nomServeur + ":3306/" + nomBase, nomLogin,
+				motDePasse);
 		this.connecte = this.mysql != null;
 	}
 
@@ -35,6 +31,14 @@ public class ConnexionMySQL {
 
 	public PreparedStatement prepareStatement(String requete) throws SQLException {
 		return this.mysql.prepareStatement(requete);
+	}
+
+	public void setAutoCommit(Boolean bol) throws SQLException {
+		this.mysql.setAutoCommit(bol);
+	}
+
+	public void deconnecter() throws SQLException {
+		this.mysql.close();
 	}
 
 }

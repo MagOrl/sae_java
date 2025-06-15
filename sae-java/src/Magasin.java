@@ -36,17 +36,23 @@ public class Magasin {
 
   @Override
   public String toString() {
-    return this.nomMag+" (Id: "+this.idMag+" Ville: "+this.villeMag+")";
+    return this.nomMag + " (Id: " + this.idMag + " Ville: " + this.villeMag + ")";
   }
 
   @Override
-  public boolean equals(Object o){
-    if (o == null){return false;}
-    if (o == this){return true;}
-    if (!(o instanceof Magasin)){return false;}
+  public boolean equals(Object o) {
+    if (o == null) {
+      return false;
+    }
+    if (o == this) {
+      return true;
+    }
+    if (!(o instanceof Magasin)) {
+      return false;
+    }
     Magasin tmp = (Magasin) o;
     return this.getId().equals(tmp.getId())
-    && this.getNom().equals(tmp.getNom())
-    && this.getVille().equals(tmp.getVille());
+        && this.getNom().equals(tmp.getNom())
+        && this.getVille().equals(tmp.getVille());
   }
 }
