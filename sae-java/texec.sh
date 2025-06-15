@@ -1,2 +1,2 @@
 javac -d bin/ -cp lib/junit-4.13.2.jar::lib/hamcrest-2.2.jar:bin:src test/*.java
-java -cp bin/:lib/junit-4.13.2.jar:lib/hamcrest-2.2.jar:/usr/share/java/mariadb-jdbc/mariadb-java-client.jar org.junit.runner.JUnitCore RequetesTest
+java -cp bin/:lib/junit-4.13.2.jar:lib/hamcrest-2.2.jar:/usr/share/java/mariadb-java-client.jar org.junit.runner.JUnitCore RequetesTest
