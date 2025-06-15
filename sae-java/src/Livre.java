@@ -3,15 +3,17 @@ public class Livre {
   private String isbn;
   private String titre;
   private int nbPages;
-  private int datePubli;
+  private String datePubli;
   private double prix;
+  private int qte;
 
-  public Livre(String isbn, String titre, int nbPages, int datePubli, double prix) {
+  public Livre(String isbn, String titre, int nbPages, String datePubli, double prix, int qte) {
     this.isbn = isbn;
     this.titre = titre;
     this.nbPages = nbPages;
     this.datePubli = datePubli;
     this.prix = prix;
+    this.qte = qte;
   };
 
   public String getIsbn() {
@@ -26,7 +28,7 @@ public class Livre {
     return this.nbPages;
   };
 
-  public int getDatePubli() {
+  public String getDatePubli() {
     return this.datePubli;
   };
 
@@ -46,13 +48,21 @@ public class Livre {
     this.nbPages = newNbPages;
   };
 
-  public void setDatePubli(int newDatePubli) {
+  public void setDatePubli(String newDatePubli) {
     this.datePubli = newDatePubli;
   };
 
   public void setPrix(double newPrix) {
     this.prix = newPrix;
   };
+
+  public int getQte() {
+    return this.qte;
+  }
+
+  public void setQte(int qte) {
+    this.qte = qte;
+  }
 
   @Override
   public String toString() {
@@ -78,7 +88,7 @@ public class Livre {
     return this.getIsbn() == tmp.getIsbn()
         && this.getTitre().equals(tmp.getTitre())
         && this.getNbPages() == tmp.getNbPages()
-        && this.getDatePubli() == (tmp.getDatePubli())
+        && this.getDatePubli().equals(tmp.getDatePubli())
         && this.getPrix() == tmp.getPrix();
   }
 }

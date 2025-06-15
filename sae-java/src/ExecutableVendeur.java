@@ -244,7 +244,7 @@ public class ExecutableVendeur{
             System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
             System.out.println("│ Disponibilité du livre " + livre.getTitre() + "                                                │");
             for (String librairie : lesLibrairies) {
-                String dispo = vendeurBD.verifDispoLivre(livre, Integer.parseInt(qte), vendeurBD.trouveLibrairie(librairie, "null")) 
+                String dispo = vendeurBD.verifDispoLivre(livre, Integer.parseInt(qte), vendeurBD.trouveLibrairie(librairie, -1)) 
                     ? "disponible" 
                     : "indisponible";
                 String s = String.format("│    [%s] -> %s", librairie, dispo);

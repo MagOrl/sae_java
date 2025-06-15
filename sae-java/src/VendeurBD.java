@@ -40,7 +40,7 @@ public class VendeurBD{
         while(rs.next()){
           vendeur = new Vendeur(idClientMax(), rs.getString("nomcli"), 
           rs.getString("prenomcli"), identifiant,rs.getString("adressecli"), 
-          rs.getInt("tel"), rs.getString("email"), mdp, rs.getString("codepostal"), rs.getString("villecli"), trouveLibrairie(nommag, "null"));
+          rs.getInt("tel"), rs.getString("email"), mdp, rs.getString("codepostal"), rs.getString("villecli"), trouveLibrairie(nommag, -1));
         }
         rs.close();
       
@@ -74,18 +74,18 @@ public class VendeurBD{
         return max;
     }
 
-    public Magasin trouveLibrairie(String nommag, String idmag) throws SQLException{
+    public Magasin trouveLibrairie(String nommag, int idmag) throws SQLException{
       Magasin mag = null;
       this.st = connexion.createStatement();
       if(nommag != "null"){
         ResultSet rs = this.st.executeQuery("select idmag, villemag from MAGASIN where nommag =" + '"' + nommag + '"');
         while(rs.next()){
-          mag = new Magasin(rs.getString("idmag"), nommag, rs.getString("villemag"));
+          mag = new Magasin(rs.getInt("idmag"), nommag, rs.getString("villemag"));
         }
         rs.close();
       }
 
-      if(idmag != "null"){
+      if(idmag != -1){
         ResultSet rs = this.st.executeQuery("select nommag, villemag from MAGASIN where idmag =" + '"' + idmag + '"');
         while(rs.next()){
           mag = new Magasin(idmag, rs.getString("nommag"), rs.getString("villemag"));
@@ -101,7 +101,7 @@ public class VendeurBD{
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select isbn, nbpages, prix from LIVRE natural join ECRIRE natural join AUTEUR where titre = '" + titre + "' and datepubli = " + datepubli + " and nomauteur = '" + auteur +"'");
       while (rs.next()){
-        livre = new Livre(rs.getString("isbn"), titre, rs.getInt("nbpages"), intDatepubli, rs.getInt("prix"));
+        livre = new Livre(rs.getString("isbn"), titre, rs.getInt("nbpages"), rs.getString("Datepubli"), rs.getInt("prix"),rs.getInt("qte"));
       }
       rs.close();
       return livre;
@@ -110,9 +110,9 @@ public class VendeurBD{
     public Livre trouveLivreIsbn(String isbn) throws SQLException{
       Livre livre = null;
       this.st = connexion.createStatement();
-      ResultSet rs = this.st.executeQuery("select * from LIVRE where isbn = " + isbn);
+      ResultSet rs = this.st.executeQuery("select * from LIVRE natural join POSSEDER where isbn = " + isbn);
       while(rs.next()){
-          livre = new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"), rs.getInt("datepubli"), rs.getInt("prix"));
+          livre = new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"), rs.getString("datepubli"), rs.getInt("prix"),rs.getInt("qte"));
       }
       return livre;
     }
@@ -130,18 +130,18 @@ public class VendeurBD{
 
     //a réparer
     public void AjouterLivre(String isbn, String titre, String auteur, String editeur, String theme, String nbpages, String datepubli, String prix, String qte, Magasin mag) throws SQLException{
-        Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), Integer.parseInt(datepubli), Double.parseDouble(prix));
+        Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), datepubli, Double.parseDouble(prix),Integer.parseInt(qte));
 
         PreparedStatement psLivre = this.connexion.prepareStatement("insert ignore into LIVRE values(?,?,?,?,?)");
         psLivre.setString(1, livre.getIsbn());   
         psLivre.setString(2, livre.getTitre()); 
         psLivre.setInt(3, livre.getNbPages());   
-        psLivre.setInt(4, (livre.getDatePubli()));   
+        psLivre.setString(4, (livre.getDatePubli()));   
         psLivre.setDouble(5, livre.getPrix());
         psLivre.executeUpdate();
         
         PreparedStatement psPosseder = this.connexion.prepareStatement("insert into POSSEDER values(?,?,?)");
-        psPosseder.setString(1, mag.getId());
+        psPosseder.setString(1, mag.getId()+"");
         psPosseder.setString(2, isbn);
         psPosseder.setInt(3, Integer.parseInt(qte));
     }
@@ -160,7 +160,7 @@ public class VendeurBD{
         PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER SET qte = qte + ? WHERE isbn = ? and idmag = ?");
         ps.setInt(1, qte);
         ps.setString(2, isbn);
-        ps.setString(3, mag.getId());
+        ps.setString(3, mag.getId()+"");
         ps.executeUpdate();
         rs.close();
         return true;
@@ -180,25 +180,25 @@ public class VendeurBD{
     }
 
     public boolean transfererLivreCommande(Livre livre, int qteAtransferer, Magasin mag) throws SQLException, NumberFormatException, QteInfAZeroException{
-      String idmagAutreLibrairie = null;
+      int idmagAutreLibrairie = -1;
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select isbn, idmag, qte from POSSEDER where isbn = " + livre.getIsbn());
       while (rs.next()){
         if(!rs.getString("idmag").equals(mag.getId())){
-          if(verifDispoLivre(livre, qteAtransferer, trouveLibrairie("null", rs.getString("idmag")))){
-              idmagAutreLibrairie = rs.getString("idmag");
+          if(verifDispoLivre(livre, qteAtransferer, trouveLibrairie("null", rs.getInt("idmag")))){
+              idmagAutreLibrairie = rs.getInt("idmag");
               break;
           }  
         }    
       }
       rs.close();
 
-      if(idmagAutreLibrairie == null){
+      if(idmagAutreLibrairie == -1){
         return false;
       }
       if(majQteLivre(livre.getIsbn(), mag, qteAtransferer) == false){
         PreparedStatement ps = this.connexion.prepareStatement("insert into POSSEDER values (?,?,?)");
-        ps.setString(1, mag.getId());
+        ps.setString(1, mag.getId()+"");
         ps.setString(2, livre.getIsbn());
         ps.setInt(3, qteAtransferer);
         ps.executeUpdate();
@@ -241,7 +241,7 @@ public class VendeurBD{
               psCommande.setString(2, "N");
               psCommande.setString(3, "M");
               psCommande.setString(4, cli.getIdentifiant());
-              psCommande.setString(5, mag.getId());
+              psCommande.setString(5, mag.getId()+"");
               psCommande.executeUpdate();
 
 
@@ -261,7 +261,7 @@ public class VendeurBD{
               psCommande.setString(2, "N");
               psCommande.setString(3, "M");
               psCommande.setString(4, cli.getIdentifiant());
-              psCommande.setString(5, mag.getId());
+              psCommande.setString(5, mag.getId()+"");
               psCommande.executeUpdate();
 
 

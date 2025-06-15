@@ -74,7 +74,7 @@ public class AdministrateurBD{
       this.st = this.connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select idmag, villemag from MAGASIN where nommag ='" +nommag+ "'");
       while(rs.next()){
-        mag = new Magasin(rs.getString("idmag"), nommag, rs.getString("villemag"));
+        mag = new Magasin(rs.getInt("idmag"), nommag, rs.getString("villemag"));
       }
         PreparedStatement ps = this.connexion.prepareStatement("insert into CLIENT values (?,?,?,?,?,?,?,?,?,?)");
         ps.setInt(1, numVendeur);
@@ -108,21 +108,21 @@ public class AdministrateurBD{
         Magasin magasin = new Magasin(idmagMax(), nommag, villemag);
         PreparedStatement ps = this.connexion.prepareStatement
         ("insert into MAGASIN values(?,?,?)");
-        ps.setString(1, magasin.getId());
+        ps.setInt(1, magasin.getId());
         ps.setString(2, magasin.getNom());
         ps.setString(3, magasin.getVille());
         ps.executeUpdate();
     }
 
-    public String idmagMax() throws SQLException{
+    public int idmagMax() throws SQLException{
       Integer idMax = 0;
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select max(idmag) as idMax from MAGASIN");
       while(rs.next()){
-        idMax = Integer.parseInt(rs.getString("idMax"))+1;
+        idMax = rs.getInt("idMax")+1;
       }
       rs.close();
-      return idMax.toString();
+      return idMax;
     }
 
     public List<String> choixLibrairie() throws SQLException{
@@ -141,24 +141,24 @@ public class AdministrateurBD{
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select idmag, villemag from MAGASIN where nommag =" + '"' + nommag + '"');
       while(rs.next()){
-        mag = new Magasin(rs.getString("idmag"), nommag, rs.getString("villemag"));
+        mag = new Magasin(rs.getInt("idmag"), nommag, rs.getString("villemag"));
       }
       return mag;
     }
 
     public void AjouterLivre(String isbn, String titre, String auteur, String editeur, String theme, String nbpages, String datepubli, String prix, String qte, Magasin mag) throws SQLException{
-        Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), Integer.parseInt(datepubli), Double.parseDouble(prix));
+        Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), datepubli, Double.parseDouble(prix),Integer.parseInt(qte));
 
         PreparedStatement psLivre = this.connexion.prepareStatement("insert ignore into LIVRE values(?,?,?,?,?)");
         psLivre.setString(1, livre.getIsbn());   
         psLivre.setString(2, livre.getTitre()); 
         psLivre.setInt(3, livre.getNbPages());   
-        psLivre.setInt(4, (livre.getDatePubli()));   
+        psLivre.setString(4, (livre.getDatePubli()));   
         psLivre.setDouble(5, livre.getPrix());
         psLivre.executeUpdate();
         
         PreparedStatement psPosseder = this.connexion.prepareStatement("insert into POSSEDER values(?,?,?)");
-        psPosseder.setString(1, mag.getId());
+        psPosseder.setInt(1, mag.getId());
         psPosseder.setString(2, isbn);
         psPosseder.setInt(3, Integer.parseInt(qte));
 
@@ -174,7 +174,7 @@ public class AdministrateurBD{
         } 
         PreparedStatement ps = this.connexion.prepareStatement(("UPDATE POSSEDER SET qte = 0 where isbn = ? and idmag = ?"));
         ps.setString(1, isbn);
-        ps.setString(2, mag.getId());
+        ps.setInt(2, mag.getId());
         ps.executeUpdate();
         return true;
     }
@@ -193,7 +193,7 @@ public class AdministrateurBD{
         PreparedStatement ps = this.connexion.prepareStatement("UPDATE POSSEDER SET qte = qte + ? WHERE isbn = ? and idmag = ?");
         ps.setInt(1, qte);
         ps.setString(2, isbn);
-        ps.setString(3, mag.getId());
+        ps.setInt(3, mag.getId());
         ps.executeUpdate();
         rs.close();
         return true;
@@ -208,7 +208,7 @@ public class AdministrateurBD{
           System.out.println("------------------------------------------------------------");
         }
         while(rs.next()){
-          Livre livreActuel = new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"), rs.getInt("datepubli"), rs.getDouble("prix"));
+          Livre livreActuel = new Livre(rs.getString("isbn"), rs.getString("titre"), rs.getInt("nbpages"), rs.getString("datepubli"), rs.getDouble("prix"),rs.getInt("qte"));
           System.out.println("------------------------------------------------------------");
           System.out.println(livreActuel);
           System.out.println("------------------------------------------------------------");
