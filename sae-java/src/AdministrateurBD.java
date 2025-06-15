@@ -36,6 +36,13 @@ public class AdministrateurBD{
         }
     }
     
+    /**
+     * Fonction qui va regarder si le compte de l'administrateur est présent dans la base
+     * de donnée.
+     * @param identifiant : l'identifiant de l'admin
+     * @param mdp : le mot de passe de l'admin
+     * @return boolean : true le compte existe dans la base de donnée, false sinon
+     */
     public boolean connectAdmin(String identifiant, String mdp) throws SQLException{
       this.st = this.connexion.createStatement();
         ResultSet rs = this.st
@@ -44,6 +51,13 @@ public class AdministrateurBD{
       return rs.next();
     }
 
+    /**
+     * Fonction qui à partir d'un identifiant et un mot de passe, trouve l'administrateur 
+     * correspondant
+     * @param identifiant : l'identifiant de l'admin
+     * @param mdp : le mot de passe de l'admin
+     * @return Administrateur : l'administrateur, retourne null si l'admin n'a pas pu être trouvé
+     */
     public Administrateur trouveAdmin(String identifiant, String mdp) throws SQLException{
       Administrateur admin = null;
       
@@ -60,7 +74,19 @@ public class AdministrateurBD{
     }
 
     
-
+    /**
+     * Fonction qui v a créer un administrateur dans la base de donnée
+     * @param identifiant : l'identifiant de l'admin
+     * @param nom : le nom de l'admin
+     * @param prenom : le prénom de l'admin
+     * @param adresse : l'adresse de l'admin
+     * @param codepostal : le code postal de l'admin
+     * @param ville : la ville de l'admin
+     * @param email : l'email de l'admin
+     * @param tel : le téléphone de l'admin
+     * @param mdp : le mot de passe de l'admin
+     * @return int : l'id du compte
+     */
      public int creeClient(String identif, String nom, String prenom, String adresse, String codepostal, String ville,
             String email, String tel, String mdp) throws SQLException {
         int numCli = clientMax() + 1;
@@ -80,6 +106,20 @@ public class AdministrateurBD{
         return numCli;
     }
 
+    /**
+     * Fonction qui v a créer un vendeur dans la base de donnée
+     * @param nom : le nom du vendeur
+     * @param prenom : le prénom du vendeur
+     * @param identifiant : l'identifiant du vendeur
+     * @param adresse : l'adresse du vendeur
+     * @param tel : le téléphone du vendeur
+     * @param email : l'email du vendeur
+     * @param mdp : le mot de passe du vendeur
+     * @param codepostal : le code postal du vendeur
+     * @param ville : la ville du vendeur
+     * @param nommage : le nom du magasin du vendeur
+     * @return Vendeur : le nouveau vendeur
+     */
     public Vendeur CreerCompteVendeur(String nom, String prenom, String identifiant, String adresse, String tel, String email, String mdp, String codePostal, String ville, String nommag) throws SQLException, NumberFormatException{
       int numVendeur = clientMax() + 1;
       Magasin mag = null;
@@ -105,6 +145,10 @@ public class AdministrateurBD{
       return new Vendeur(numVendeur, nom, prenom, identifiant, adresse, telToInt, email, mdp, codePostal, ville, mag);
     }
 
+     /**
+     * Fonction qui va créer un nouveau numéro de client maximum, par rapport au numéro maximum déjà présent
+     * @return int : le nouveau numéro de client maximum 
+     */
     public int clientMax() throws SQLException {
         int max = 0;
         this.st = this.connexion.createStatement();
@@ -116,6 +160,11 @@ public class AdministrateurBD{
         return max;
     }
     
+    /**
+     * Fonction qui va ajouter un nouvelle librairie au réseau
+     * @param nommag : le nom de la librairie
+     * @param villemag : la ville de la librairie 
+     */
     public void ajouteNouvelleLibrairie(String nommag, String villemag) throws SQLException{
         Magasin magasin = new Magasin(idmagMax(), nommag, villemag);
         PreparedStatement ps = this.connexion.prepareStatement
@@ -126,6 +175,11 @@ public class AdministrateurBD{
         ps.executeUpdate();
     }
 
+    /**
+     * Fonction qui va créer un nouvel identifiant de librairie maximum, 
+     * par rapport au numéro maximum déjà présent
+     * @return String : le nouvel identifiant de librairie maximum 
+     */
     public int idmagMax() throws SQLException{
       Integer idMax = 0;
       this.st = connexion.createStatement();
@@ -137,6 +191,11 @@ public class AdministrateurBD{
       return idMax;
     }
 
+    /**
+     * Fonction qui va créer la liste des librairie présentes
+     * sur le réseau
+     * @return List<String> : la liste des nom des librairie du réseau 
+     */
     public List<String> choixLibrairie() throws SQLException{
       List<String> lesLibrairies = new ArrayList<>();
       this.st = connexion.createStatement();
@@ -148,6 +207,11 @@ public class AdministrateurBD{
       return lesLibrairies;
     }
 
+    /**
+     * Fonction qui à partir d'un nom de librairie va trouver la librairie correspondante 
+     * @param nommag : le nom de la librairie à trouver
+     * @return Magasin : la librairie correspondante (null si aucune n'a été trouvé pour ce nom de librairie)
+     */
     public Magasin trouveLibrairie(String nommag) throws SQLException{
       Magasin mag = null;
       this.st = connexion.createStatement();
@@ -158,6 +222,19 @@ public class AdministrateurBD{
       return mag;
     }
 
+    /**
+     * Fonction qui va ajouter un nouveau livre à une librairie passée en paramètre
+     * @param isbn : l'identifiant du livre
+     * @param titre : le titre du livre
+     * @param auteur : l'auteur du livre
+     * @param editeur : l'éditeur du livre
+     * @param theme : le thème du livre
+     * @param nbpages : le nombre de pages du livre
+     * @param datepubli : la date de publication du livre
+     * @param prix : le prix du livre
+     * @param qte : la quantité du livre à ajouter 
+     * @param mag : la librairie dans laquelle ajouter le livre  
+     */
     public void AjouterLivre(String isbn, String titre, String auteur, String editeur, String theme, String nbpages, String datepubli, String prix, String qte, Magasin mag) throws SQLException{
         Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), datepubli, Double.parseDouble(prix),Integer.parseInt(qte));
 
@@ -178,6 +255,12 @@ public class AdministrateurBD{
         //System.out.println("Une erreur est survenue lors de l'ajout du livre veuillez réessayer");
     }
 
+    /**
+     * Fonction qui va supprimer un livre d'une librairie passée en paramètre
+     * @param isbn : l'identifiant du livre
+     * @param mag : la librairie dans laquelle supprimer le livre  
+     * @return boolean : true si le livre a été supprimé, false sinon
+     */
     public boolean SupprimerLivre(String isbn, Magasin mag) throws SQLException{
         this.st = connexion.createStatement();
         ResultSet rs = this.st.executeQuery("select * from POSSEDER where isbn = '" + isbn + "'" + " and idmag = '" + mag.getId() + "'");
@@ -191,6 +274,14 @@ public class AdministrateurBD{
         return true;
     }
 
+    /**
+     * Fonction qui va mettre à jour la quantité d'un livre que possède
+     * une librairie passeé en paramètre 
+     * @param isbn : l'identifiant du livre
+     * @param mag : la librairie dans laquelle modifier la quantité le livre
+     * @param qte : la quantité de livre à ajouter ou à enlever  
+     * @return boolean : true si la quantité à été modifiée, false sinon
+     */
     public boolean majQteLivre(String isbn, Magasin mag, int qte) throws SQLException, NumberFormatException, QteInfAZeroException{
         this.st = connexion.createStatement();
 	  	  ResultSet rs = this.st.executeQuery("select qte from POSSEDER where isbn = '"+ isbn + "'" + " and idmag = '" + mag.getId() + "'");
@@ -211,6 +302,10 @@ public class AdministrateurBD{
         return true;
     }
 
+    /**
+     * Fonction qui va afficher tout les livres que possède un librairie
+     * @param mag : la librairie dont il faut afficher le stock
+     */
     public void afficherStockLibrairie(Magasin mag) throws SQLException{
         this.st = connexion.createStatement();
         ResultSet rs = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix, qte from LIVRE natural join POSSEDER natural join MAGASIN where idmag = "+ mag.getId());
@@ -229,6 +324,9 @@ public class AdministrateurBD{
       
     }
 
+    /**
+     * Fonction qui va afficher le nombre de livre vendus par magasins, par année
+     */
     public void requeteNbLivresMagAnnee() throws SQLException{
       String anneePrec = null;
       this.st= connexion.createStatement();
@@ -253,6 +351,10 @@ public class AdministrateurBD{
       System.out.println("---------------------------------------------------------------------");
     }
 
+    /**
+     * Fonction qui va afficher le pourcentage du chiffre d'affaire de chaque thème pour une année
+     * @param annee : l'annee à analyser
+     */
     public void requeteCAThemeAnnee(int annee) throws SQLException{
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("with CA2024 as (select sum(qte*prixvente) as total from DETAILCOMMANDE natural join COMMANDE  where YEAR(datecom) = " + annee+ ") select nomclass as Theme, ROUND((sum(qte*prixvente)/Total)*100) as total from CA2024 natural join DETAILCOMMANDE natural join COMMANDE natural join LIVRE natural join THEMES natural join CLASSIFICATION where YEAR(datecom) = " + annee + " group by LEFT(LPAD(iddewey,3,'0'),1) order by nomclass");
@@ -266,6 +368,10 @@ public class AdministrateurBD{
       System.out.println("-----------------------------------");
     }
     
+    /**
+     * Fonction qui va afficher l'évolution du chiffre d'affaire des magasins par mois, pour une année
+     * @param annee : l'annee à analyser
+     */
     public void requeteEvoCAMag(int annee) throws SQLException{
       int cptMois = 0;
       this.st = connexion.createStatement();
@@ -292,6 +398,9 @@ public class AdministrateurBD{
     
     }
 
+    /**
+     * Fonction qui va afficher la comparaison entre le nombre de ventes en lignes et le nombre de ventes en magasin par année
+     */
     public void requeteCompVenteLMAnnee() throws SQLException{
       String anneePrec = null;
       this.st = connexion.createStatement();
@@ -318,6 +427,9 @@ public class AdministrateurBD{
       System.out.println("------------------------------------------------------------");
     }
 
+    /**
+     * Fonction qui va afficher les dix éditeurs le plus importants en nombre d'auteurs
+     */
     public void requeteDixeditPlusImportants() throws SQLException{
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select nomedit as Editeur, count(idauteur) as nbauteurs from EDITEUR natural join EDITER natural join LIVRE natural join ECRIRE natural join AUTEUR group by nomedit order by nbauteurs desc limit 10");
@@ -332,6 +444,10 @@ public class AdministrateurBD{
       System.out.println("----------------------------------");
     }
 
+    /**
+     * Fonction qui va afficher l'origine des clients ayant acheté des livres d'un auteur passé en paramètre
+     * @param auteur : l'auteur à analyser
+     */
     public void requeteOrigineClientAuteur(String auteur) throws SQLException{
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select villecli as ville, sum(qte) as qte from CLIENT natural join COMMANDE natural join DETAILCOMMANDE natural join LIVRE natural join ECRIRE natural join AUTEUR where nomauteur = '" + auteur + "' group by villecli");
@@ -349,6 +465,9 @@ public class AdministrateurBD{
       System.out.println("--------------------");
     }
 
+    /**
+     * Fonction qui va afficher la valeur du stock de chaque magasin du réseau
+     */
     public void requeteValeurStockMag() throws SQLException{
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select nommag as Magasin, sum(qte*prix) as total from MAGASIN natural join POSSEDER natural join LIVRE group by nommag");
@@ -364,6 +483,9 @@ public class AdministrateurBD{
       System.out.println("--------------------------------");
     }
 
+    /**
+     * Fonction qui va afficher l'évolution du chiffre d'affaire par client chaque ann
+     */
     public void requeteEvoCAClient() throws SQLException{
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("with MaxCAParClient as (select idcli, YEAR(datecom) as annee, sum(qte*prixvente) as CA from CLIENT natural join COMMANDE natural join DETAILCOMMANDE natural join LIVRE group by YEAR(datecom), idcli) select annee, max(CA) as maximum, min(CA) as minimum, avg(CA) as moyenne from MaxCAParClient group by annee");
