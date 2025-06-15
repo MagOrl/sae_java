@@ -13,9 +13,7 @@ public class ConnexionMySQL {
 		
 		//this.mysql = DriverManager.getConnection("jdbc:mariadb://servinfo-maria:3306/DBfoucher", nomLogin,
 		//		motDePasse); // localhost --> nom du serv
-				this.mysql = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Librairie", nomLogin,
-		motDePasse); // localhost --> nom du serv
-		this.connecte = this.mysql != null;
+				
 	}
 
 	public void close() throws SQLException {

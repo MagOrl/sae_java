@@ -26,7 +26,7 @@ public class AdministrateurBD{
 
     
     /**
-     * Fonction qui va regarder sur le compte de l'administrateur est présent dans la base
+     * Fonction qui va regarder si le compte de l'administrateur est présent dans la base
      * de donnée.
      * @param identifiant : l'identifiant de l'admin
      * @param mdp : le mot de passe de l'admin
@@ -41,7 +41,7 @@ public class AdministrateurBD{
     }
 
     /**
-     * Fonction qui à partir d'un identifiant et un mot de passe, trouver l'administrateur 
+     * Fonction qui à partir d'un identifiant et un mot de passe, trouve l'administrateur 
      * correspondant
      * @param identifiant : l'identifiant de l'admin
      * @param mdp : le mot de passe de l'admin

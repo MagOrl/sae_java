@@ -22,6 +22,13 @@ public class VendeurBD{
         }
     }
 
+    /**
+     * Fonction qui va regarder si le compte de lu vendeur est présent dans la base
+     * de donnée.
+     * @param identifiant : l'identifiant du vendeur
+     * @param mdp : le mot de passe du vendeur
+     * @return boolean : true le compte existe dans la base de donnée, false sinon
+     */
     public boolean connectVendeur(String identifiant, String mdp) throws SQLException{
       this.st = this.connexion.createStatement();
         ResultSet rs = this.st
@@ -30,6 +37,13 @@ public class VendeurBD{
       return rs.next();
     }
 
+    /**
+     * Fonction qui à partir d'un identifiant et un mot de passe, trouve le vendeur 
+     * correspondant
+     * @param identifiant : l'identifiant du vendeur 
+     * @param mdp : le mot de passe du vendeur
+     * @return Vendeur : le vendeur, retourne null si le vendeur n'a pas pu être trouvé
+     */
     public Vendeur trouveVendeur(String identifiant, String mdp, String nommag) throws SQLException{
       Vendeur vendeur = null;
       
@@ -47,6 +61,13 @@ public class VendeurBD{
       return vendeur;
     }
 
+    /**
+     * Fonction qui à partir d'un identifiant et un mot de passe, trouve le client
+     * correspondant
+     * @param identifiant : l'identifiant du client
+     * @param mdp : le mot de passe du client
+     * @return Vendeur : le vendeur, retourne null si le vendeur n'a pas pu être trouvé
+     */
     public Client trouveClient(String identif, String mdp) throws SQLException {
         Client cli = null;
         this.st = this.connexion.createStatement();
@@ -62,7 +83,10 @@ public class VendeurBD{
         return cli;
     }
 
-
+    /**
+     * Fonction qui va créer un nouveau numéro de client maximum, par rapport au numéro maximum déjà présent
+     * @return int : le nouveau numéro de client maximum 
+     */
     public int idClientMax() throws SQLException {
         int max = 0;
         this.st = this.connexion.createStatement();
@@ -74,6 +98,12 @@ public class VendeurBD{
         return max;
     }
 
+    /**
+     * Fonction qui à partir d'un nom de librairieou d'un id va trouver la librairie correspondante 
+     * @param nommag : le nom de la librairie à trouver
+     * @param idmag : l'id de la librairie à trouver
+     * @return Magasin : la librairie correspondante (null si aucune librairie n'a été trouvé pour ce nom/id)
+     */
     public Magasin trouveLibrairie(String nommag, String idmag) throws SQLException{
       Magasin mag = null;
       this.st = connexion.createStatement();
@@ -95,6 +125,13 @@ public class VendeurBD{
       return mag;
     }
 
+    /**
+     * Fonction qui à partir du titre d'un livre, de sa date de publication et de son auteur, va toruver le livre correspondant 
+     * @param titre : le titre du livre à trouver
+     * @param datepubli : la date de pulication du livre à toruver
+     * @param auteur : l'auteur du livre à trouver
+     * @return Livre : le livre correspondant (null si aucun livre n'a été trouvé)
+     */
     public Livre trouveLivre(String titre, String datepubli, String auteur) throws SQLException, NumberFormatException{
       int intDatepubli = Integer.parseInt(datepubli);
       Livre livre = null;
@@ -107,6 +144,11 @@ public class VendeurBD{
       return livre;
     }
 
+    /**
+     * Fonction qui trouve un livre à partir de son isbn 
+     * @param isbn : l'isbn du livre à trouver
+     * @return Livre : le livre correspondant (null si aucun livre n'a été trouvé)
+     */
     public Livre trouveLivreIsbn(String isbn) throws SQLException{
       Livre livre = null;
       this.st = connexion.createStatement();
@@ -117,6 +159,11 @@ public class VendeurBD{
       return livre;
     }
 
+    /**
+     * Fonction qui va créer la liste des librairie présentes
+     * sur le réseau
+     * @return List<String> : la liste des nom des librairie du réseau 
+     */
     public List<String> choixLibrairie() throws SQLException{
       List<String> lesLibrairies = new ArrayList<>();
       this.st = connexion.createStatement();
@@ -186,6 +233,14 @@ public class VendeurBD{
         return true;
     }
 
+    /**
+     * Fonction qui va vérifier la disponibilité d'un livre dans un magasin
+     * pour une quantitié donnée 
+     * @param livre : le livre a vérifier la disponibilité
+     * @param qte : la quantité de livre dont on veut vérifier la disponibilité
+     * @param mag : le magasin dans lequel on veut vérifier la disponibilité 
+     * @return boolean : true si le livre est disponible, false sinon
+     */
     public boolean verifDispoLivre(Livre livre, int qte, Magasin mag) throws SQLException, NumberFormatException{
         this.st = connexion.createStatement();
         ResultSet rs = this.st.executeQuery("select qte from POSSEDER where isbn = " + livre.getIsbn() + " and idmag = " + mag.getId());
@@ -199,6 +254,13 @@ public class VendeurBD{
         return false;
     }
 
+    /**
+     * Fonction qui va transférer un livre dans le magasin du vendeur
+     * @param livre : le livre a transférer
+     * @param qte : la quantité de livre à transférer
+     * @param mag : le magasin dans lequel on veut tranférer le livre 
+     * @return boolean : true si le livre a été tranféré , false sinon
+     */
     public boolean transfererLivreCommande(Livre livre, int qteAtransferer, Magasin mag) throws SQLException, NumberFormatException, QteInfAZeroException{
       String idmagAutreLibrairie = null;
       this.st = connexion.createStatement();
@@ -231,6 +293,10 @@ public class VendeurBD{
       
     }
 
+    /**
+     * Fonction qui va créer un nouveau numéro de client maximum, par rapport au numéro maximum déjà présent
+     * @return int : le nouveau numéro de client maximum 
+     */
     public int numcomMax() throws SQLException {
         int max = 0;
         this.st = this.connexion.createStatement();
@@ -242,6 +308,13 @@ public class VendeurBD{
         return max+1;
     }
 
+    /**
+     * Fonction qui va passer commande pour un client
+     * @param Cli : le client pour qui commander
+     * @param commande : le dictionnaire des livres à commander aini que leur quantitié
+     * @param mag : le magasin dans lequel commander
+     * @return int : le nouveau numéro de client maximum 
+     */
     public boolean passerCommandeClient(Client cli, Map<Livre, Integer> commande, Magasin mag) throws SQLException, NumberFormatException{
       boolean res = false;
       int numlig = 0;
@@ -312,6 +385,10 @@ public class VendeurBD{
       return res;
     }
 
+    /**
+     * Fonction qui va retourner le numéro maximum que l'on peut attribuer à une commande
+     * @return int : le numéro de commande maximum
+     */
     public int trouverDerniereCommande() throws SQLException{
       this.st = connexion.createStatement();
       ResultSet rs = this.st.executeQuery("select max(numcom) as numComMax from COMMANDE");
@@ -321,6 +398,12 @@ public class VendeurBD{
       return 0;
     }
 
+    /**
+     * Fonction qui va éditer la facture d'un client qui vient de passer commande en magasin
+     * @param Cli : le client pour qui éditer la facture
+     * @param numcom : le numéro de la commande pour laquelle on doit éditer une facture
+     * @return boolean : true si la facture est renoyée, false sinon
+     */
     public boolean editerFacture(Client cli, int numCom) throws SQLException{
       int totalQteLivre = 0;
       double prixTotal = 0.;
