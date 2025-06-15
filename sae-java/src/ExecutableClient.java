@@ -127,9 +127,9 @@ public class ExecutableClient {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
         try {
             query.creeClient(demandeUtilisateur("indentifiant", usr), demandeUtilisateur("nom", usr),
-                    demandeUtilisateur("prenom", usr),
+                    demandeUtilisateur("prenom", usr), demandeUtilisateur("adresse", usr),
                     demandeUtilisateur("code postal", usr),
-                    demandeUtilisateur("adresse", usr), demandeUtilisateur("ville", usr),
+                    demandeUtilisateur("ville", usr),
                     demandeUtilisateur("email", usr),
                     demandeUtilisateur("numéro de téléphone", usr),
                     demandeUtilisateur("mot de passe", usr));
@@ -298,10 +298,9 @@ public class ExecutableClient {
                         cli.suppPanier(Integer.parseInt(splitres[0]),
                                 cli.getPanier(Integer.parseInt(splitres[0])).get(Integer.parseInt(splitres[1]) - 1));
                         affichePanier(cli);
-                    }catch(NullPointerException e){
+                    } catch (NullPointerException e) {
                         System.out.println("Vous avez mal entré les informations");
-                    }
-                     catch (IndexOutOfBoundsException ex) {
+                    } catch (IndexOutOfBoundsException ex) {
                         System.out.println("vous avez mit une mauvaise saisis");
                     }
                     break;
@@ -519,8 +518,11 @@ public class ExecutableClient {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
 
     }
+
     /**
-     * redirige le client selon ce qu'il veux choisir comme consultation de catalogue
+     * redirige le client selon ce qu'il veux choisir comme consultation de
+     * catalogue
+     * 
      * @param cli
      * @param usr
      */
