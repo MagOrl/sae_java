@@ -318,7 +318,9 @@ public class ExecutableVendeur {
                     return;
                 }
                 while (commander) {
-                    livreACommander = trouverLivre(usr);
+                    System.out.println("Entrez l'isbn du livre");
+                    String isbn = usr.nextLine();
+                    livreACommander = vendeurBD.trouveLivreIsbn(isbn);
                     if (livreACommander == null) {
                         System.out.println("Ce livre n'existe pas dans la librairie");
                         System.out.println("Appuyez sur n'importe quelle touche pour continuer");
@@ -341,6 +343,7 @@ public class ExecutableVendeur {
                         commander = true;
                     } else {
                         commander = false;
+                        quitte = true;
                     }
                 }
                 if (vendeurBD.passerCommandeClient(cli, livreQte, vendeur.getMag())) {
@@ -365,12 +368,14 @@ public class ExecutableVendeur {
     }
 
     public static void transfererLivre(Vendeur vendeur, Scanner usr) {
-        Livre livreAtransferer = trouverLivre(usr);
-
-        System.out.println("Entrez la quantité de livre à transférer");
-        String qte = usr.nextLine();
-
+        System.out.println("Entrez l'isbn du livre à transferer");
+        String isbn = usr.nextLine();
+        Livre livreAtransferer;
         try {
+            livreAtransferer = vendeurBD.trouveLivreIsbn(isbn);
+            System.out.println("Entrez la quantité de livre à transférer");
+            String qte = usr.nextLine();
+
             if (vendeurBD.transfererLivreCommande(livreAtransferer, Integer.parseInt(qte), vendeur.getMag())) {
                 System.out.println("Le livre a bien été transféré");
             } else {

@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Flow.Subscriber;
 
 public class VendeurBD{
 
@@ -246,15 +247,16 @@ public class VendeurBD{
               psCommande.setString(3, "M");
               psCommande.setString(4, cli.getIdentifiant());
               psCommande.setString(5, mag.getId()+"");
-              psCommande.executeUpdate();
-
+              psCommande.execute();
+              System.out.println("check 1");
 
               psDetailCommande.setInt(1, numcom);
               psDetailCommande.setInt(2, numlig);
               psDetailCommande.setInt(3, commande.get(livre));
               psDetailCommande.setDouble(4, livre.getPrix());
               psDetailCommande.setString(5, livre.getIsbn());
-              psDetailCommande.executeUpdate();
+              psDetailCommande.execute();
+              System.out.println("check 2");
 
               majQteLivre(livre.getIsbn(), mag, -commande.get(livre));
               res = true;
@@ -266,7 +268,8 @@ public class VendeurBD{
               psCommande.setString(3, "M");
               psCommande.setString(4, cli.getIdentifiant());
               psCommande.setString(5, mag.getId()+"");
-              psCommande.executeUpdate();
+              psCommande.execute();
+              System.out.println("check 3");
 
 
               psDetailCommande.setInt(1, numcom);
@@ -275,16 +278,18 @@ public class VendeurBD{
               psDetailCommande.setDouble(4, livre.getPrix());
               psDetailCommande.setString(5, livre.getIsbn());
               psDetailCommande.executeUpdate();
-              
+              System.out.println("check 4");
               majQteLivre(livre.getIsbn(), mag, -commande.get(livre));
               res = true;
           
           }else{
               psDeleteCommande.setInt(1, numcom);
               psDeleteDetailCommande.setInt(1, numcom);
+              System.out.println("check 5");
 
-              psDeleteDetailCommande.executeUpdate();
+              psDeleteDetailCommande.execute();
               psDeleteCommande.executeUpdate();
+              System.out.println("check 6");
 
               System.out.println("Le livre: " + livreActuel.getTitre() + " n'est pas disponible, commande impossible");
               return false;
