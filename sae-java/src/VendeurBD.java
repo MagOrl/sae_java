@@ -146,6 +146,14 @@ public class VendeurBD{
         psPosseder.setInt(3, Integer.parseInt(qte));
     }
 
+    /**
+     * Fonction qui va mettre à jour la quantité d'un livre que possède
+     * une librairie passeé en paramètre 
+     * @param isbn : l'identifiant du livre
+     * @param mag : la librairie dans laquelle modifier la quantité le livre
+     * @param qte : la quantité de livre à ajouter ou à enlever  
+     * @return boolean : true si la quantité à été modifiée, false sinon
+     */
     public boolean majQteLivre(String isbn, Magasin mag, int qte) throws SQLException, NumberFormatException, QteInfAZeroException{
         this.st = connexion.createStatement();
 	  	  ResultSet rs = this.st.executeQuery("select qte from POSSEDER where isbn = '"+ isbn + "'" + " and idmag = '" + mag.getId() + "'");

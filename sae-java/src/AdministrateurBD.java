@@ -469,7 +469,7 @@ public class AdministrateurBD{
     }
 
     /**
-     * Fonction qui va afficher l'évolution du chiffre d'affaire par client chaque année
+     * Fonction qui va afficher l'évolution du chiffre d'affaire par client chaque ann
      */
     public void requeteEvoCAClient() throws SQLException{
       this.st = connexion.createStatement();
