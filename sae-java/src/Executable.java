@@ -9,6 +9,11 @@ public class Executable {
 
     private static ConnexionMySQL connexion;
 
+    /**
+     * fait lancer le TUI
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
         Scanner usr = new Scanner(System.in);
         try {
@@ -18,6 +23,13 @@ public class Executable {
         }
     }
 
+    /**
+     * fonction principal du code, fait afficher le menu principale par lequel le
+     * client va se connecter
+     * 
+     * @param usr l'utilisateur
+     * @throws ClassNotFoundException
+     */
     private static void principale(Scanner usr) throws ClassNotFoundException {
         connexion = new ConnexionMySQL();
         bvn();
@@ -39,6 +51,9 @@ public class Executable {
         }
     }
 
+    /**
+     * permet d'afficher le logo LIVRE EXPRESS pour avoir du style
+     */
     private static void bvn() {
         System.out.println(
                 "                      _    _               ___                        \n"
@@ -52,6 +67,9 @@ public class Executable {
                         "                                                  |_|                 ");
     }
 
+    /**
+     * fait afficher le menu pour se connecter
+     */
     private static void afficheMenuConnex() {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ [1] Se connecter                                                                   │");
@@ -63,6 +81,12 @@ public class Executable {
         System.out.println("entrez une séléction");
     }
 
+    /**
+     * le menu par lequel l'utilisateur va se connecter pour acceder à la
+     * l'application
+     * 
+     * @param usr inputs de l'utilisateur
+     */
     private static void menuConnecter(Scanner usr) {
         Requetes query = new Requetes(connexion);
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
@@ -89,6 +113,11 @@ public class Executable {
         }
     }
 
+    /**
+     * menu fait pour que créée le compte utilisateur
+     * 
+     * @param usr
+     */
     private static void menuCreaCompte(Scanner usr) {
         Requetes query = new Requetes(connexion);
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
@@ -117,6 +146,16 @@ public class Executable {
         afficheMenuConnex();
     }
 
+    /**
+     * fonction qui permet d'automatiser les demande pour entrer les données
+     * requises de l'utilisateur
+     * 
+     * @param demande l'intitule de la demande
+     * @param usr     input utilisteur
+     * @return input utilisateur
+     * @throws QuitterExecption exception levée si l'utilisateur décide de quitter
+     *                          pendant sa création de compte
+     */
     private static String demandeUtilisateur(String demande, Scanner usr) throws QuitterExecption {
         System.out.println("Entrez votre " + demande);
         String res = usr.nextLine();
@@ -135,6 +174,16 @@ public class Executable {
         }
     }
 
+    /**
+     * fonction qui permet d'automatiser les demande pour entrer les données
+     * requises de l'utilisateur
+     * 
+     * @param demande l'intitule de la demande
+     * @param usr     input utilisteur
+     * @return input utilisateur
+     * @throws QuitterExecption exception levée si l'utilisateur décide de quitter
+     *                          pendant sa création de compte
+     */
     private static String demandeConnexion(String demande, Scanner usr) throws QuitterExecption {
         System.out.println("Entrez votre " + demande);
         String res = usr.nextLine();
@@ -152,6 +201,11 @@ public class Executable {
         return res;
     }
 
+    /**
+     * permet d'afficher l'acceuil du client
+     * 
+     * @param cli le client en question
+     */
     private static void afficheMenuClient(Client cli) {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Bonjour " + cli.getIdentifiant()
@@ -169,6 +223,13 @@ public class Executable {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
     }
 
+    /**
+     * permet de gerer le choix du client pour pouvoir afficher le menu qu'il
+     * choisit
+     * 
+     * @param cli le client en question
+     * @param usr les inputs du client
+     */
     private static void menuClient(Client cli, Scanner usr) {
         afficheMenuClient(cli);
         while (usr.hasNext()) {
@@ -200,11 +261,23 @@ public class Executable {
         }
     }
 
+    /**
+     * affiche le panier du client
+     * 
+     * @param cli le client
+     */
     private static void affichePanier(Client cli) {
         cli.affichePanier();
 
     }
 
+    /**
+     * permet au client de gérer sont panier et de potentiellement finaliser un
+     * achat
+     * 
+     * @param cli
+     * @param usr
+     */
     private static void panier(Client cli, Scanner usr) {
         Requetes query = new Requetes(connexion);
         affichePanier(cli);
@@ -261,6 +334,9 @@ public class Executable {
         }
     }
 
+    /**
+     * affiche le menu pour la gestion de compte
+     */
     private static void afficheGestionCompte() {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ [1] Voir mes informations personelle                                               │");
@@ -272,6 +348,13 @@ public class Executable {
 
     }
 
+    /**
+     * menu qui permet au client de voir ses inforamtions personel ainsi que
+     * pouvoir les modfier
+     * 
+     * @param cli le client
+     * @param usr les inputs du client
+     */
     private static void gestionCompte(Client cli, Scanner usr) {
         afficheGestionCompte();
         while (usr.hasNext()) {
@@ -292,6 +375,12 @@ public class Executable {
         }
     }
 
+    /**
+     * fonction qui va afficher les informations du client
+     * 
+     * @param cli le client
+     * @param usr ses inputs(ici il ne peut que quitter)
+     */
     private static void voirInfoperso(Client cli, Scanner usr) {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Voici vos informations :                                                           │");
@@ -311,6 +400,9 @@ public class Executable {
         }
     }
 
+    /**
+     * affiche tout les élément que le client peut possiblement changer
+     */
     private static void afficheChangeInfoPerso() {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Que voulez vous changer ?                                                          │");
@@ -329,6 +421,13 @@ public class Executable {
 
     }
 
+    /**
+     * fonction qui va permettre à l'utilisateur de changer ses inforamtions
+     * personelle
+     * 
+     * @param cli le client
+     * @param usr
+     */
     private static void changeInfoPerso(Client cli, Scanner usr) {
         afficheChangeInfoPerso();
         Requetes query = new Requetes(connexion);
@@ -369,6 +468,12 @@ public class Executable {
         }
     }
 
+    /**
+     * permet d'afficher l'historique de commande
+     * 
+     * @param cli
+     * @param usr
+     */
     private static void afficheHistorique(Client cli, Scanner usr) {
         Requetes query = new Requetes(connexion);
         String res = "";
@@ -396,6 +501,9 @@ public class Executable {
 
     }
 
+    /**
+     * permet d'afficher la consultation de catalogue
+     */
     private static void afficheConsulteCatalogue() {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Les catalogues :                                                                   │");
@@ -408,7 +516,11 @@ public class Executable {
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
 
     }
-
+    /**
+     * redirige le client selon ce qu'il veux choisir comme consultation de catalogue
+     * @param cli
+     * @param usr
+     */
     private static void consulteCatalogue(Client cli, Scanner usr) {
         afficheConsulteCatalogue();
         while (usr.hasNext()) {
@@ -417,11 +529,11 @@ public class Executable {
                 case "0":
                     return;
                 case "1":
-                    choisiMagasin(cli, usr);
+                    choisiMagasinTheme(cli, usr);
                     afficheConsulteCatalogue();
                     break;
                 case "2":
-                    System.out.println("to be built");
+                    choisiMagasinOnVousRecommande(cli, usr);
                     break;
                 default:
                     System.out.println("Mettre une valeur entre 0 et 2");
@@ -442,7 +554,7 @@ public class Executable {
 
     }
 
-    private static void choisiMagasin(Client cli, Scanner usr) {
+    private static void choisiMagasinTheme(Client cli, Scanner usr) {
         Requetes query = new Requetes(connexion);
         HashMap<Integer, Magasin> lesmag = new HashMap<>();
         try {
@@ -473,6 +585,42 @@ public class Executable {
         }
     }
 
+    private static void choisiMagasinOnVousRecommande(Client cli, Scanner usr) {
+        Requetes query = new Requetes(connexion);
+        HashMap<Integer, Magasin> lesmag = new HashMap<>();
+        try {
+            lesmag = query.afficheMagasin();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        afficheChoisisMagasin(lesmag);
+        while (usr.hasNext()) {
+            String res = usr.next();
+            switch (res) {
+                case "0":
+                    return;
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                    try {
+                        catalogue(query.onVousRecommande(cli, lesmag.get(Integer.parseInt(res) - 1)), usr, cli,
+                                lesmag.get(Integer.parseInt(res) - 1));
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    afficheChoisisMagasin(lesmag);
+                    break;
+                default:
+                    System.out.println("Veuillez entrer une séléction valide");
+                    break;
+            }
+        }
+    }
+
     private static void afficheSelonTheme(HashMap<Integer, String> hm) {
         for (Integer i : hm.keySet()) {
             System.out.println("[" + i + "] " + hm.get(i));
@@ -481,6 +629,13 @@ public class Executable {
         System.out.println("[10] Quitter");
     }
 
+    /**
+     * permet de rediriger la selon
+     * 
+     * @param cli
+     * @param usr
+     * @param mag
+     */
     private static void selonTheme(Client cli, Scanner usr, Magasin mag) {
         Requetes query = new Requetes(connexion);
         HashMap<Integer, String> themes = new HashMap<>();
@@ -519,6 +674,13 @@ public class Executable {
         }
     }
 
+    /**
+     * permet d'afficher le catalogue de livres
+     * 
+     * @param livres
+     * @param ind
+     * @param mag
+     */
     private static void afficheCatalogue(List<List<Livre>> livres, int ind, Magasin mag) {
         String column1Format = "%-50.50s";
         String column2Format = "%-8.8s";
@@ -546,6 +708,15 @@ public class Executable {
         System.out.println("[0->9] Commander le livre de votre choix et préciser la quantité avec un espace");
     }
 
+    /**
+     * permet au client de consulter les livres de la base de données et de
+     * potentielement commander un livre
+     * 
+     * @param livres
+     * @param usr
+     * @param cli
+     * @param mag
+     */
     private static void catalogue(List<List<Livre>> livres, Scanner usr, Client cli, Magasin mag) {
         if (livres.isEmpty()) {
             System.out.println("Aucun livres de cette catégorie dans le magasin " + mag.getNom());
