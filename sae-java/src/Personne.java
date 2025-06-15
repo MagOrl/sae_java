@@ -106,13 +106,14 @@ public abstract class Personne {
     public void setVille(String ville) {
         this.ville = ville;
     }
+
     @Override
-    public String toString(){
-        return "Numéro de compte : "+this.numCompte+"\n"+
-        "Nom : "+this.nom+"  "+"Prenom : " +this.prenom+"\n"+
-        "Identifiant : "+this.identifiant+"  "+"Adresse : "+this.adresse+"\n"+
-        "Téléphone : "+tel+"  "+"Email : "+this.email+"  Code postal : "+this.codePostal+
-        "  Ville : "+this.ville;
+    public String toString() {
+        return "Numéro de compte : " + this.numCompte + "\n" +
+                "Nom : " + this.nom + "  " + "Prenom : " + this.prenom + "\n" +
+                "Identifiant : " + this.identifiant + "  " + "Adresse : " + this.adresse + "\n" +
+                "Téléphone : " + tel + "  " + "Email : " + this.email + "  Code postal : " + this.codePostal +
+                "  Ville : " + this.ville;
     }
 
 }
