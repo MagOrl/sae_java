@@ -128,7 +128,19 @@ public class VendeurBD{
       return lesLibrairies;
     }
 
-    //a réparer
+    /**
+     * Fonction qui va ajouter un nouveau livre à une librairie passée en paramètre
+     * @param isbn : l'identifiant du livre
+     * @param titre : le titre du livre
+     * @param auteur : l'auteur du livre
+     * @param editeur : l'éditeur du livre
+     * @param theme : le thème du livre
+     * @param nbpages : le nombre de pages du livre
+     * @param datepubli : la date de publication du livre
+     * @param prix : le prix du livre
+     * @param qte : la quantité du livre à ajouter 
+     * @param mag : la librairie dans laquelle ajouter le livre  
+     */
     public void AjouterLivre(String isbn, String titre, String auteur, String editeur, String theme, String nbpages, String datepubli, String prix, String qte, Magasin mag) throws SQLException{
         Livre livre = new Livre(isbn, titre, Integer.parseInt(nbpages), Integer.parseInt(datepubli), Double.parseDouble(prix));
 
