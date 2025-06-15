@@ -8,3 +8,6 @@
 
 #./execprog.sh pour le programme principale (changer le chemin de la librairie mariaDB si cela ne fonctionne pas)
 #./texec.sh pour les tests (changer le chemin de la librairie mariaDB si cela ne fonctionne pas)
+
+#lien de la vidéo de démonstration (sur youtube):
+https://youtu.be/tFo9itqEkkE 
