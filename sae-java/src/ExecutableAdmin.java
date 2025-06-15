@@ -59,7 +59,7 @@ public class ExecutableAdmin {
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ [1] Se connecter                                                                   │");
         System.out.println("│                                                                                    │");
-        System.out.println("│ [2] Créer un compte                                                                │");
+        System.out.println("│ [2] Créer un compte administrateur                                                 │");
         System.out.println("│                                                                                    │");
         System.out.println("│ [0] Quitter                                                                        │");
         System.out.println("╰────────────────────────────────────────────────────────────────────────────────────╯");
@@ -76,13 +76,13 @@ public class ExecutableAdmin {
         System.out.println("Entrez votre mot de passe");
         mdp = usr.nextLine();
         try{
-        if(adminBD.connectAdmin(identifiant, mdp)){
-            menuAdmin(adminBD.trouveAdmin(identifiant, mdp), usr);
-        }else{
-            System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte créez en un");
-            principal(usr);
-        }
-        admin = adminBD.trouveAdmin(identifiant, mdp);
+            if(adminBD.connectAdmin(identifiant, mdp)){
+                menuAdmin(adminBD.trouveAdmin(identifiant, mdp), usr);
+            }else{
+                System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte créez en un");
+                principal(usr);
+            }
+            admin = adminBD.trouveAdmin(identifiant, mdp);
         }catch(SQLException e){
             System.out.println("Nous n'avons pas pu trouver votre compte veuillez réessayer, si vous n'avez pas de compte créez en un");
             principal(usr);
@@ -119,9 +119,9 @@ public class ExecutableAdmin {
         String numTel = usr.nextLine();
 
         try{
-        adminBD.creeClient(identifiant, nom, prenom, addresse, codePostal, ville, email, numTel, mdp);
-        System.out.println("Compte créé avec succès");
-        menuConnex();
+            adminBD.creeAdmin(identifiant, nom, prenom, addresse, codePostal, ville, email, numTel, mdp);
+            System.out.println("Compte créé avec succès");
+            menuConnex();
         }catch(NumberFormatException e){
             System.out.println("Veuillez entrer uniquement des nombres pour le numéro de téléphone");
             menuConnex();
@@ -377,7 +377,6 @@ public class ExecutableAdmin {
         try{
             adminBD.AjouterLivre(isbn, titre, auteur, editeur, theme, nbpages, datepubli, prix, qte, mag);
             System.out.println("Le livre a bien été ajouté");
-            //menuGererStocksGlobaux(admin, usr, mag);
         } catch (NumberFormatException e) {
             System.out.println("Veuillez entrez uniquement des chiffres pour le nombre de pages, la date de publication et la quantité");
         } catch (SQLException e) {
@@ -400,7 +399,6 @@ public class ExecutableAdmin {
         }catch (NumberFormatException e) {
             System.out.println("Veuillez entrez uniquement des chiffres pour le quantité");
         }catch(SQLException e){
-            //System.out.println(e.getMessage());
             System.out.println("Une erreur est survenue lors de la suppression du livre");
         }
     }
