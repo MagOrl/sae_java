@@ -17,7 +17,8 @@ public class AdministrateurBD{
         this.connexion = laConnexion;
         try {
             //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            // laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
 
         } catch (SQLException e) {
             e.printStackTrace();

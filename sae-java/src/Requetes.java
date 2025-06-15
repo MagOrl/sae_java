@@ -12,9 +12,9 @@ public class Requetes {
     public Requetes(ConnexionMySQL laConnexion) {
         this.laConnexion = laConnexion;
         try {
-            // laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
-            laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev",
-            "arsamerzoev");
+            laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
+            // laConnexion.connecter("servinfo-maria", "DBarsamerzoev", "arsamerzoev",
+            // "arsamerzoev");
         } catch (SQLException e) {
             e.printStackTrace();
         }

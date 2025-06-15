@@ -15,7 +15,9 @@ public class VendeurBD{
         this.connexion = laConnexion;
         try {
             //laConnexion.connecter("servinfo-maria", "DBfoucher", "foucher", "foucher");
-            laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            // laConnexion.connecter("localhost", "Librairie", "Kitcat", "Maria_K|DB_2109");
+            laConnexion.connecter("localhost", "Librairie", "root", "mypassword");
+
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -144,6 +146,8 @@ public class VendeurBD{
         psPosseder.setString(1, mag.getId()+"");
         psPosseder.setString(2, isbn);
         psPosseder.setInt(3, Integer.parseInt(qte));
+        psPosseder.executeUpdate();
+
     }
 
     public boolean majQteLivre(String isbn, Magasin mag, int qte) throws SQLException, NumberFormatException, QteInfAZeroException{
