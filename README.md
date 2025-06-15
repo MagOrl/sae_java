@@ -7,4 +7,4 @@
 #Commandes pour compiler et excuter tout les fihciers java de ce repo git
 
 #./execprog.sh pour le programme principale (changer le chemin de la librairie mariaDB si cela ne fonctionne pas)
-#./texec.sh pour les tests
+#./texec.sh pour les tests (changer le chemin de la librairie mariaDB si cela ne fonctionne pas)
