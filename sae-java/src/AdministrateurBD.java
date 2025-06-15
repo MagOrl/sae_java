@@ -213,7 +213,7 @@ public class AdministrateurBD{
 
     public void afficherStockLibrairie(Magasin mag) throws SQLException{
         this.st = connexion.createStatement();
-        ResultSet rs = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix from LIVRE natural join POSSEDER natural join MAGASIN where idmag = "+ mag.getId());
+        ResultSet rs = this.st.executeQuery("select isbn, titre, nbpages, datepubli, prix, qte from LIVRE natural join POSSEDER natural join MAGASIN where idmag = "+ mag.getId());
         if(!rs.next()){
           System.out.println("------------------------------------------------------------");
           System.out.println("La libraire actuelle (" + mag.getNom() + ") ne contient aucun livre");

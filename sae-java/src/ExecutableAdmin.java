@@ -291,6 +291,9 @@ public class ExecutableAdmin {
     }
 
     private static void afficheMenuGererStocksGlobaux(Administrateur admin, Scanner usr, Magasin mag) {
+        if(mag == null){
+            return;
+        }
         bvn();
         System.out.println("╭────────────────────────────────────────────────────────────────────────────────────╮");
         System.out.println("│ Que souhaitez vous faire ?                  Librairie actuelle : " + mag.getNom() + " │");
@@ -433,6 +436,7 @@ public class ExecutableAdmin {
         try{
             adminBD.afficherStockLibrairie(mag);
         }catch(SQLException e){
+            System.out.println(e.getMessage());
             System.out.println("Une erreur est survenue lors de l'affichage du stock de la librairie");
         }
     }

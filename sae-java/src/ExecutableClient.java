@@ -128,15 +128,15 @@ public class ExecutableClient {
         try {
             query.creeClient(demandeUtilisateur("indentifiant", usr), demandeUtilisateur("nom", usr),
                     demandeUtilisateur("prenom", usr),
-                    demandeUtilisateur("code postale", usr),
+                    demandeUtilisateur("code postal", usr),
                     demandeUtilisateur("adresse", usr), demandeUtilisateur("ville", usr),
                     demandeUtilisateur("email", usr),
                     demandeUtilisateur("numéro de téléphone", usr),
                     demandeUtilisateur("mot de passe", usr));
         } catch (NumberFormatException | SQLException e) {
-            System.out.print(
-                    "Queleque chose de mal c'est passer, ré-essayer en mettant des informations les plus cohérente possible");
-            System.out.print(
+            System.out.println(
+                    "Queleque chose de mal c'est passé, ré-essayez en mettant des informations les plus cohérente possible");
+            System.out.println(
                     "Par exemple ne mettez pas d'éspace en trop, et veillez à bien mettre exactement 5 character pour le code postale sans espace nulle part");
         } catch (QuitterExecption e) {
             bvn();
@@ -298,7 +298,10 @@ public class ExecutableClient {
                         cli.suppPanier(Integer.parseInt(splitres[0]),
                                 cli.getPanier(Integer.parseInt(splitres[0])).get(Integer.parseInt(splitres[1]) - 1));
                         affichePanier(cli);
-                    } catch (IndexOutOfBoundsException ex) {
+                    }catch(NullPointerException e){
+                        System.out.println("Vous avez mal entré les informations");
+                    }
+                     catch (IndexOutOfBoundsException ex) {
                         System.out.println("vous avez mit une mauvaise saisis");
                     }
                     break;
@@ -598,6 +601,7 @@ public class ExecutableClient {
             String res = usr.next();
             switch (res) {
                 case "0":
+                    afficheConsulteCatalogue();
                     return;
                 case "1":
                 case "2":

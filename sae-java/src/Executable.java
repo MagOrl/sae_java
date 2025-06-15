@@ -101,12 +101,14 @@ public class Executable {
                 case "2":
                 case "3":
                 case "4":
-                    System.out.println(res);
-                    System.out.println(resSplit[0]);
-                    System.out.println(resSplit[1]);
+                    try{
                     data.set(Integer.parseInt(resSplit[0]) - 1, resSplit[1]);
                     System.out.println("c'est fait !");
+                    }catch(ArrayIndexOutOfBoundsException e){
+                        System.out.println("entrez correctement les informations");
+                    }
                     break;
+
                 case "5":
                     enregistre(data);
                     System.out.println("c'est fait !");
